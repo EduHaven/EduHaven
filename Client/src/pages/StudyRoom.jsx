@@ -85,7 +85,7 @@ function StudyRoom() {
                 {/* Other sections */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="bg-gray-800 p-8 rounded-xl flex flex-col items-center justify-center space-y-4">
-                        <h2 className="text-xl text-white">Add new tasks</h2>
+                        <h2 className="text-xl text-white">Add new tasks hear</h2>
                         <button className="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg">
                             +
                         </button>
@@ -184,7 +184,7 @@ function StudyRoom() {
                         <h3 className="font-semibold mb-2">{room}</h3>
                         <p className="text-gray-400 text-sm mb-4">4 students studying</p>
                         <button className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg w-full">
-                            Join Room
+                            Join Room hear
                         </button>
                     </div>
                 ))}
