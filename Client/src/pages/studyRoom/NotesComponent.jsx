@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-// import React, { useState, useEffect } from "react";
-
-function NotesComponent() {
-  return (
-    <div className="bg-gray-800 p-8 rounded-xl flex flex-col items-center justify-center space-y-4">
-      <h2 className="text-xl text-white">Add new note</h2>
-      <button className="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg">
-        +
-      </button>
-=======
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -128,13 +117,9 @@ function NotesComponent() {
           <p className="text-gray-400">No notes to  display</p>
         )}
       </div>
->>>>>>> d9c54aa3aac7a944818d1529908f274ea068f4b6
     </div>
   );
 }
 
 export default NotesComponent;
-<<<<<<< HEAD
-=======
  
->>>>>>> d9c54aa3aac7a944818d1529908f274ea068f4b6
