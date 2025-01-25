@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router-dom";
 import { LogOut, Trash } from "lucide-react";
 import axios from "axios";
@@ -8,27 +9,32 @@ const ProfilePage = () => {
   const [user, setUser] = useState(null); // To store user details
   const [bio, setBio] = useState("This is your bio. Add something about yourself.");
   const [isEditingBio, setIsEditingBio] = useState(false);
+  const navigate = useNavigate();  // React Router hook for navigation
 
   useEffect(() => {
     const token = localStorage.getItem("token"); // Get the token from local storage
-  
     console.log("Token from local storage:", token); // Debug log to verify token retrieval
-  
-    if (token) {
-      try {
-        const decoded = jwtDecode(token); // Decode the token to get user info
-        console.log("Decoded token:", decoded); // Debug log to verify the decoded token
-        setUser(decoded); // Store decoded info in the state (userId, FullName)
-      } catch (error) {
-        console.error("Error decoding token:", error); // Handle decoding errors
-      }
+
+    if (!token) {
+      // If no token exists, navigate to the authentication page
+      navigate('/authenticate');
+      return; // Stop further execution if no token is found
     }
-  }, []);
-  
+
+    try {
+      const decoded = jwtDecode(token); // Decode the token to get user info
+      console.log("Decoded token:", decoded); // Debug log to verify the decoded token
+      setUser(decoded); // Store decoded info in the state (userId, FullName)
+    } catch (error) {
+      console.error("Error decoding token:", error); // Handle decoding errors
+      // In case of an error in decoding the token, navigate to authenticate page
+      navigate('/authenticate');
+    }
+  }, [navigate]);
 
   useEffect(() => {
     if (user) {
-      // If user is set, fetch user details from backend
+      // If user is set, fetch user details from the backend
       const fetchUserDetails = async () => {
         try {
           const response = await axios.get(`http://localhost:3000/user/details?id=${user.userId}`);
@@ -54,8 +60,9 @@ const ProfilePage = () => {
     }
   };
 
+  // If user is not logged in (should never happen because of the check above), stay on the login page
   if (!user) {
-    return <div>Loading...</div>; // Show loading while fetching data
+    return null; // User should be redirected by the navigate function earlier in useEffect
   }
 
   return (
