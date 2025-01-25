@@ -25,7 +25,7 @@ const PageNotFound = () => {
         </p>
         <button
           onClick={handleRedirect}
-          className="px-6 py-3 bg-orange-500 text-white text-lg rounded-md hover:bg-orange-400 transition duration-300 ease-in-out transform hover:scale-105"
+          className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-white"
         >
           Go Back to Home
         </button>
