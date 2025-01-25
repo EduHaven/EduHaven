@@ -64,13 +64,13 @@ function Layout() {
 
           <Link
             to="/profile"
-            className={`block p-3 rounded-lg transition-colors ${location.pathname === "/profile"
-              ? "bg-purple-600"
-              : "hover:bg-gray-700"
+            className={`block p-3 rounded-lg transition-colors ${
+                location.pathname === "/profile" ? "bg-purple-600" : "hover:bg-gray-700"
               }`}
           >
             <User className="w-6 h-6" />
           </Link>
+
 
         </div>
       </nav>

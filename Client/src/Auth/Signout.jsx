@@ -11,7 +11,7 @@ const Signout = () => {
       await axios.post("http://localhost:3000/logout", {}, { withCredentials: true });
 
       // Clear the auth token after successful logout
-      localStorage.removeItem("authToken");
+      localStorage.removeItem("token");
 
       // Redirect to the login page
       navigate("/");

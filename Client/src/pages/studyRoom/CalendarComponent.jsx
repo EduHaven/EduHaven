@@ -7,6 +7,7 @@ import EventPopup from "./eventPopup";
 function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([]);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
   const daysInMonth = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth() + 1,
@@ -19,8 +20,7 @@ function Calendar() {
   ).getDay();
   const daysArray = [...Array(daysInMonth).keys()].map((day) => day + 1);
   const [selectedDay, setSelectedDay] = useState(null);
-
-  const [time, setTime] = useState(new Date()); // Time state
+  const [time, setTime] = useState(new Date());
 
   const handlePrevMonth = () =>
     setCurrentDate(
@@ -34,8 +34,21 @@ function Calendar() {
   const fetchEvents = async () => {
     try {
       const response = await axios.get("http://localhost:3000/events");
-      if (response.data.success) setEvents(response.data.data);
-      else console.error("Failed to fetch events:", response.data.error);
+      if (response.data.success) {
+        setEvents(response.data.data);
+
+        // Process upcoming events
+        const today = new Date();
+        const futureEvents = response.data.data.filter(
+          (event) => new Date(event.date) >= today
+        );
+        futureEvents.sort(
+          (a, b) => new Date(a.date) - new Date(b.date) // Sort by date
+        );
+        setUpcomingEvents(futureEvents.slice(0, 2)); // Limit to two events
+      } else {
+        console.error("Failed to fetch events:", response.data.error);
+      }
     } catch (error) {
       console.error("Error fetching events:", error.message);
     }
@@ -45,7 +58,7 @@ function Calendar() {
     fetchEvents();
 
     const interval = setInterval(() => {
-      setTime(new Date()); // Update time every second
+      setTime(new Date());
     }, 1000);
 
     return () => clearInterval(interval);
@@ -70,6 +83,7 @@ function Calendar() {
   return (
     <>
       <div className="bg-gray-800 p-8 rounded-xl shadow-lg">
+        {/* Header: Time and Day */}
         <h1 className="text-5xl font-thin text-white mb-4">
           {time.toLocaleTimeString("en-US", {
             hour: "2-digit",
@@ -89,6 +103,7 @@ function Calendar() {
 
         <br />
 
+        {/* Calendar View */}
         <div className="p-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold">
@@ -104,7 +119,7 @@ function Calendar() {
               </button>
               <button
                 onClick={handleNextMonth}
-                className="p-1.5 bg-gray-700  rounded-full hover:bg-slate-600"
+                className="p-1.5 bg-gray-700 rounded-full hover:bg-slate-600"
               >
                 <ChevronRight />
               </button>
@@ -154,7 +169,32 @@ function Calendar() {
             })}
           </div>
         </div>
+
+        {/* Upcoming Events Section */}
+        <div className="mt-6">
+          <h3 className="text-xl font-bold text-gray-300 mb-2">
+            Upcoming Events
+          </h3>
+          {upcomingEvents.length > 0 ? (
+            <ul className="text-gray-200 space-y-2">
+              {upcomingEvents.map((event) => (
+                <li
+                  key={event.id}
+                  className="p-3 bg-gray-700 rounded-md shadow-md"
+                >
+                  <strong className="block text-purple-400">
+                    {new Date(event.date).toLocaleDateString()}
+                  </strong>
+                  <span className="block">{event.title}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-400">No upcoming events.</p>
+          )}
+        </div>
       </div>
+
       {selectedDay && (
         <EventPopup
           date={selectedDay}

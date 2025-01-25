@@ -10,23 +10,21 @@ const ProfilePage = () => {
   const [isEditingBio, setIsEditingBio] = useState(false);
 
   useEffect(() => {
-    const token = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("token="))
-      ?.split("=")[1]; // Get the token from cookies
-
-    console.log("Token from cookies:", token); // Add this line to see if token exists
-
+    const token = localStorage.getItem("token"); // Get the token from local storage
+  
+    console.log("Token from local storage:", token); // Debug log to verify token retrieval
+  
     if (token) {
       try {
         const decoded = jwtDecode(token); // Decode the token to get user info
-        console.log("Decoded token:", decoded); // Add this line to see the decoded token
+        console.log("Decoded token:", decoded); // Debug log to verify the decoded token
         setUser(decoded); // Store decoded info in the state (userId, FullName)
       } catch (error) {
         console.error("Error decoding token:", error); // Handle decoding errors
       }
     }
   }, []);
+  
 
   useEffect(() => {
     if (user) {

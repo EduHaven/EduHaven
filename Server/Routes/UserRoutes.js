@@ -4,7 +4,7 @@ import { login, logout, signup,getUserDetails } from "../Controller/UserControll
 const router = express.Router();
 router.post("/signup", signup);
 router.post("/login", login);
-router.get("/logout", logout);
+router.post("/logout", logout);
 router.get("/user/details", getUserDetails);
 
 export default router;

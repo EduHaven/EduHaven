@@ -17,7 +17,8 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="games" element={<GameRoom />} />
           <Route path="authenticate" element={<SignUp />} />
-          <Route path="/signout" element={<Signout />} />
+          {/* Unnecessary / removed. http://localhost:5173/signout loads after this, button is inactive right now */}
+          <Route path="signout" element={<Signout />} /> 
           <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Routes>
