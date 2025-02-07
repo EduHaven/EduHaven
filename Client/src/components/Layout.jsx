@@ -1,5 +1,8 @@
 import React from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import {jwtDecode} from "jwt-decode";
+import axios from "axios";
 import {
   BarChart2,
   BookOpen,
@@ -12,7 +15,47 @@ import {
 
 function Layout() {
   const location = useLocation();
-  const token = localStorage.getItem("token");
+  const socket=useRef(null);
+  
+  const [user, setUser] = useState(null);
+  
+  useEffect(() => {
+    const token=localStorage.getItem('token');
+    if (!token) return;
+
+    const fetchUser = async () => {
+      try {
+        const decoded = jwtDecode(token);
+        const response = await axios.get(`http://localhost:3000/user/details?id=${decoded.id}`);
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+  
+
+  if (!user && !socket) return <div>Loading...</div>;
+
+  useEffect(()=>{
+    if (!user) return;
+    try{
+      socket.current=new WebSocket('ws://localhost:3000');
+      socket.current.onopen = () => {
+             
+        socket.current.send(JSON.stringify({ type: "register", userId:user?._id }));
+        console.log("WebSocket connected");   
+      };
+    }catch(err)
+    {
+      console.error("Error Registering:", err);
+    }
+  },[user?._id])
+  
+  
+
 
   return (
     <div className="flex min-h-screen bg-gray-900 text-white">
@@ -58,6 +101,7 @@ function Layout() {
           >
             <Headphones className="w-6 h-6" />
           </Link>
+      
           <hr />
           <Link
             to="/project-details"
@@ -72,7 +116,7 @@ function Layout() {
         </div>
 
         <div className="space-y-8">
-          {!token && (
+          {!user && (
             <Link
               to="/authenticate"
               className={`block p-3 rounded-lg transition-colors ${
@@ -85,7 +129,7 @@ function Layout() {
             </Link>
           )}
 
-          {token && (
+          {user && (
             <Link
               to="/profile"
               className={`block p-3 rounded-lg transition-colors ${
@@ -102,7 +146,7 @@ function Layout() {
 
       {/* Main Content */}
       <main className="flex-1 p-8 ml-20">
-        <Outlet />
+        <Outlet context={{ user , socket }}/>
       </main>
     </div>
   );

@@ -9,7 +9,6 @@ import SignUp from './Auth/Authenticate.jsx';
 import ProfileRoutes from './pages/profileSettings/ProfileRoutes.jsx';
 import PageNotFound from '../src/pages/PageNotFound';
 import ProjectInfo from '../src/pages/ProjectInfo';
-
 function App() {
   const token = localStorage.getItem('token');
   console.log('app.js TOKEN~~~' + token);

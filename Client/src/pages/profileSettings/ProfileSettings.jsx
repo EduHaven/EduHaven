@@ -1,41 +1,12 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate ,useOutletContext} from "react-router-dom";
 import { User, Settings, Users, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 
 const ProfileSettings = () => {
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        console.log("Decoded token:", decoded);
-        setUser(decoded);
-      } catch (error) {
-        console.error("Error decoding token:", error);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (user && user.userId) {
-      (async () => {
-        try {
-          const response = await axios.get(
-            `http://localhost:3000/user/details?id=${user.userId}`
-          );
-          console.log("User details fetched:", response.data);
-          setUser(response.data);
-        } catch (error) {
-          console.error("Error fetching user details:", error);
-        }
-      })();
-    }
-  }, [user]);
+  const { user, socket } = useOutletContext();
 
   if (!user) return <div>Loading...</div>;
 
@@ -64,9 +35,9 @@ const ProfileSettings = () => {
           )}
         </div>
         <div>
-          <h1 className="text-5xl font-bold">{user.fullName}</h1>
+          <h1 className="text-5xl font-bold">{user.FullName}</h1>
           <p>
-            <strong>User ID:</strong> {user.id}
+            <strong>User ID:</strong> {user._id}
           </p>
         </div>
       </div>
@@ -105,9 +76,11 @@ const ProfileSettings = () => {
         </aside>
         {/* Main Content */}
         <main className="flex-1 p-8">
-          <Outlet />
+          <Outlet context={{user,socket}}/>
         </main>
       </div>
+      {/* Pass user data using Outlet */}
+      
     </>
   );
 };
