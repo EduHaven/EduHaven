@@ -1,65 +1,12 @@
-import { createContext, useState, useContext, useEffect } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate ,useOutletContext} from "react-router-dom";
 import { User, Settings, Users, LogOut } from "lucide-react";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 
-// Create a context for user profile
-const UserProfileContext = createContext({
-  user: null,
-  setUser: () => {},
-  fetchUserDetails: () => Promise.resolve(null)
-});
-
-// Provider component
-export const UserProfileProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-
-  const fetchUserDetails = async (userId) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/user/details?id=${userId}`
-      );
-      const userData = response.data;
-      setUser(userData);
-      return userData;
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-      return null;
-    }
-  };
-
-  return (
-    <UserProfileContext.Provider value={{ user, setUser, fetchUserDetails }}>
-      {children}
-    </UserProfileContext.Provider>
-  );
-};
-
-// Custom hook for using user profile context
-export const useUserProfile = () => {
-  const context = useContext(UserProfileContext);
-  if (!context) {
-    throw new Error('useUserProfile must be used within a UserProfileProvider');
-  }
-  return context;
-};
-
 const ProfileSettings = () => {
-  const { user, fetchUserDetails } = useUserProfile();
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        fetchUserDetails(decoded.id);
-      } catch (error) {
-        console.error("Error decoding token:", error);
-      }
-    }
-  }, []);
+  const { user, socket } = useOutletContext();
 
   if (!user) return <div>Loading...</div>;
 
@@ -89,9 +36,9 @@ const ProfileSettings = () => {
           )}
         </div>
         <div>
-          <h1 className="text-5xl font-bold">{`${user.FirstName} ${user.LastName}`}</h1>
+          <h1 className="text-5xl font-bold">{user.FullName}</h1>
           <p>
-            <strong>User ID:</strong> {user._id}
+            <strong>User ID:</strong> {user.__id}
           </p>
           {user.Bio && <p className="mt-2 text-gray-300">{user.Bio}</p>}
         </div>
@@ -129,12 +76,13 @@ const ProfileSettings = () => {
             </button>
           </div>
         </aside>
-
-        {/* Content Area */}
-        <main className="flex-1 p-8 bg-gray-900">
-          <Outlet />
+        {/* Main Content */}
+        <main className="flex-1 p-8">
+          <Outlet context={{user,socket}}/>
         </main>
       </div>
+      {/* Pass user data using Outlet */}
+      
     </>
   );
 };

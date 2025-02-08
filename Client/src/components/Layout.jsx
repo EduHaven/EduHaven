@@ -1,4 +1,7 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import {jwtDecode} from "jwt-decode";
+import axios from "axios";
 import {
   BarChart2,
   GamepadIcon,
@@ -11,7 +14,47 @@ import {
 
 function Layout() {
   const location = useLocation();
-  const token = localStorage.getItem("token");
+  const socket=useRef(null);
+  
+  const [user, setUser] = useState(null);
+  
+  useEffect(() => {
+    const token=localStorage.getItem('token');
+    if (!token) return;
+
+    const fetchUser = async () => {
+      try {
+        const decoded = jwtDecode(token);
+        const response = await axios.get(`http://localhost:3000/user/details?id=${decoded.id}`);
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+  
+
+  if (!user && !socket) return <div>Loading...</div>;
+
+  useEffect(()=>{
+    if (!user) return;
+    try{
+      socket.current=new WebSocket('ws://localhost:3000');
+      socket.current.onopen = () => {
+             
+        socket.current.send(JSON.stringify({ type: "register", userId:user?._id }));
+        console.log("WebSocket connected");   
+      };
+    }catch(err)
+    {
+      console.error("Error Registering:", err);
+    }
+  },[user?._id])
+  
+  
+
 
   const SidebarLink = ({ to, IconComponent, label }) => {
     const isActive = location.pathname === to;
@@ -81,20 +124,36 @@ function Layout() {
         </div>
 
         <div className="space-y-8">
-          {!token && (
-            <SidebarLink
+          {!user && (
+            <Link
               to="/authenticate"
-              IconComponent={LogIn}
-              label="Login"
-            />
+              className={`block p-3 rounded-lg transition-colors ${
+                location.pathname === "/authenticate"
+                  ? "bg-purple-600"
+                  : "hover:bg-gray-700"
+              }`}
+            >
+              <LogIn className="w-6 h-6" />
+            </Link>
           )}
+
           {token && (
-            <SidebarLink to="/profile" IconComponent={User} label="Profile" />
+            <Link
+              to="/profile"
+              className={`block p-3 rounded-lg transition-colors ${
+                location.pathname === "/profile"
+                  ? "bg-purple-600"
+                  : "hover:bg-gray-700"
+              }`}
+            >
+              <User className="w-6 h-6" />
+            </Link>
           )}
         </div>
       </nav>
 
-      <main className="flex-1 p-6 ml-[4.5rem]">
+      {/* Main Content */}
+      <main className="flex-1 p-8 ml-20">
         <Outlet />
       </main>
     </div>

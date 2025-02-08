@@ -2,11 +2,11 @@ import Task from "../Model/ToDoModel.js";
 
 export const getAllTodos = async (req, res) => {
   try {
-    if (!req.user || !req.user.id) {
+    if (!req.user || !req.user._id) {
       return res.status(401).json({ success: false, error: 'Unauthorized. User ID missing.' });
     }
 
-    const tasks = await Task.find({ user: req.user.id });
+    const tasks = await Task.find({ user: req.user._id });
     res.status(200).json({ success: true, data: tasks });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

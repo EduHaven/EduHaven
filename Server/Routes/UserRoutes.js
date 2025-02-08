@@ -1,5 +1,5 @@
 import express from "express";
-import { login, logout, signup, getUserDetails, updateProfile, uploadProfilePicture } from "../Controller/UserController.js";
+import { login, logout, signup, getUserDetails,getFriends,addFriend,removeFriend,getUsers, updateProfile, uploadProfilePicture } from "../Controller/UserController.js";
 import authMiddleware from '../Middlewares/authMiddleware.js';
 import multer from 'multer';
 import path from 'path';
@@ -47,5 +47,9 @@ router.post('/user/upload-profile-picture',
   upload.single('profilePicture'), 
   uploadProfilePicture
 );
+router.get("/user/:userId/friends", getFriends);
+router.get("/user/:userId/users", getUsers);
+router.post("/user/friend/add", addFriend);
+router.post("/user/friend/remove", removeFriend);
 
 export default router;

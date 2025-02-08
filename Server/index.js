@@ -9,11 +9,12 @@ import {TimerSessionRoutes} from "./Routes/TimerSessionsRoutes.js";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-
-
+import { startWebSocket } from "./Socket.js";
+import http from 'http';
 
 dotenv.config();
 const app = express();
+const server=http.createServer(app);
 const port = 3000; 
 
 const corsOptions = {
@@ -43,8 +44,12 @@ app.use("/",NotesRoutes)
 app.use("/",EventRoutes);
 app.use("/",TimerSessionRoutes);
 
+
+startWebSocket(server);
+
 // Start the server
-app.listen(port, () => {
+server.listen(port, () => {
     ConnectDB();
   console.log(`Server running at http://localhost:${port}`);
 });
+

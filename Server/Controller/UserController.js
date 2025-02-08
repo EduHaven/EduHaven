@@ -1,4 +1,5 @@
 import User from "../Model/UserModel.js";
+import friends from "../Model/FriendModel.js";
 import bcrypt from "bcrypt";
 import generateAuthToken from "../utils/GenerateAuthToken.js";
 import mongoose from "mongoose";
@@ -231,3 +232,165 @@ export const uploadProfilePicture = async (req, res) => {
     });
   }
 };
+export const getFriends=async (req,res) =>{
+    try{
+      const userId=req.params.userId;
+      // Check if it's a valid ObjectId
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID format' });
+      }
+      const user=await friends.findOne({userId:userId});
+      if(!user){
+        return res.status(200).json({'friends':[]});
+      }
+      const userFriends=Array.from(user.friends.entries()).map(([friendId,friendData])=>({
+        friendId,
+        friendName:friendData.friendName
+      }));
+      return res.status(200).json({'friends':userFriends});
+
+
+    }
+    catch(error){
+      console.error("Error fetching friends:", error);
+    }
+};
+
+export const addFriend=async (req,res)=>{
+    try{
+      
+      const {userId,friendId}=req.body;
+      // Check if it's a valid ObjectId
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID format' });
+      }
+
+      // Check if it's a valid ObjectId
+      if (!mongoose.Types.ObjectId.isValid(friendId)) {
+        return res.status(400).json({ message: 'Invalid friend ID format' });
+      }
+
+      if(userId==friendId)
+      {
+        return res.status(400).json({ message: 'Cannot add yourself' });
+      }
+
+      let user=await friends.findOne({userId:userId});
+      let userFriend=await friends.findOne({userId:friendId});
+      if(!user){
+        user=new friends({userId:userId,friends:{}});
+        await user.save();
+      }
+      if(!userFriend)
+      {
+        userFriend=new friends({userId:friendId,friends:{}});
+        await userFriend.save();
+      }
+
+      const userData=await User.findById(userId);
+      const friendData=await User.findById(friendId);
+      if(!userData)
+      {
+        return res.status(404).json({'message':'User not found'});
+      }
+      if(!friendData)
+      {
+        return res.status(404).json({'message':'Friend not found'});
+      }
+      const userName=userData.FullName;
+      const friendName=friendData.FullName;
+      
+      user.friends.set(friendId,{friendName:friendName});
+      await user.save();
+
+      userFriend.friends.set(userId,{friendName:userName});
+      await userFriend.save();
+
+      res.json({'message':"friend added successfully"});
+
+
+    }
+    catch(error){
+      console.error("Error adding friend:", error);
+    }
+
+}
+
+export const removeFriend=async (req,res)=>{
+  try{
+    const {userId,friendId}=req.body;
+
+    
+    // Check if it's a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid user ID format' });
+    }
+
+    // Check if it's a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(friendId)) {
+      return res.status(400).json({ message: 'Invalid friend ID format' });
+    }
+
+    const user=await friends.findOne({userId:userId});
+    const userFriend=await friends.findOne({userId:friendId});
+    if(!user){
+      return res.status(404).json({'message':'User not found'});
+    }
+
+    if(!user.friends.has(friendId))
+    {
+      return res.status(400).json({ message: 'Friend not found in the list' });
+    }
+
+    user.friends.delete(friendId);
+    await user.save();
+
+    userFriend.friends.delete(userId);
+    await userFriend.save();
+
+    res.json({'message':"friend removed successfully"});
+
+
+  }
+  catch(error){
+    console.error("Error adding friend:", error);
+  }
+
+}
+
+export const getUsers=async (req,res)=>{
+    try{
+        const userId=req.params.userId;
+        // Check if it's a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+          return res.status(400).json({ message: 'Invalid user ID format' });
+        }
+        const friendsData=await friends.findOne({userId:userId});
+        if( !friendsData || friendsData.friends.length==0 )
+        {
+          
+          // Find all users and select only the '_id' and 'name' fields
+          const users = await User.find().select('_id FullName');
+          return res.status(200).json({"users":users});
+        }
+        else
+        {
+          const userFriends=friendsData.friends;
+          let users = await User.find().select('_id FullName');
+          users=users.map(user=>({
+            _id: user._id.toString(),
+            FullName: user.FullName.toString()
+          }))
+          const NotFriends=users.filter(user=>{
+            return !userFriends.has(user._id);
+          })
+
+          return res.status(200).json({"users":NotFriends});
+        }
+    }
+    catch(error){
+      console.error("Error fetching users:", error);
+    }
+
+
+}
