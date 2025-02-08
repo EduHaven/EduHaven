@@ -4,7 +4,6 @@ import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 
 const ProfileSettings = () => {
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const { user, socket } = useOutletContext();
 
