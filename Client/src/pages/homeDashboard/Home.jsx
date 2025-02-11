@@ -8,15 +8,23 @@ import TimerComponent from "./TimerComponent.jsx";
 import NotesComponent from "./NotesComponent.jsx";
 import GoalsComponent from "./GoalsComponent.jsx";
 import StudyStats from "./TimerStats.jsx";
+import ShimmerStudyRoom from "../../components/shimmerUI/shimmerHome.jsx"; // Import the skeleton UI
 
 function StudyRoom() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [selectedId, setSelectedId] = useState(""); // for AI. donot remove
+  const [selectedId, setSelectedId] = useState(""); // for AI. don't remove
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) setIsLoggedIn(true);
+    // Simulate loading delay (replace with real data loading as needed)
+    setTimeout(() => setIsLoading(false), 1500);
   }, []);
+
+  if (isLoading) {
+    return <ShimmerStudyRoom />;
+  }
 
   return (
     <>
@@ -29,8 +37,8 @@ function StudyRoom() {
           }
         `}
       </style>
-      <div className="space-y-4 ">
-        {/* nav-bar  */}
+      <div className="space-y-4">
+        {/* Navbar */}
         <div className="flex justify-between items-center">
           <button className="flex gap-3 font-bold text-lg items-center">
             <ExternalLink />
@@ -38,7 +46,7 @@ function StudyRoom() {
           </button>
           <h1 className="text-2xl font-bold">Stay hungry; stay foolish.</h1>
           <div className="flex items-center gap-6">
-            {/* ai */}
+            {/* AI Chatbot */}
             <Ai onShowId={setSelectedId} />
             {!isLoggedIn && (
               <Link
@@ -52,9 +60,9 @@ function StudyRoom() {
           </div>
         </div>
 
-        <div className="flex gap-6 w-full h-auto flex-col [min-width:700px]:flex-col lg:flex-row">
+        <div className="flex gap-6 w-full flex-col lg:flex-row">
           <div className="flex-1 h-100 flex flex-col gap-6">
-            <div className="flex bg-gray-800 rounded-3xl ">
+            <div className="flex bg-gray-800 rounded-3xl">
               <TimerComponent />
               <StudyStats />
             </div>
@@ -86,3 +94,4 @@ function StudyRoom() {
 }
 
 export default StudyRoom;
+
