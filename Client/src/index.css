@@ -133,4 +133,38 @@ body {
   background-size: 200% 100%;
   animation: glitterShimmer 1.5s ease-in-out infinite;
 }
+/* 
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+} */
+
+.shimmer-glow {
+  background: linear-gradient(
+    90deg,
+    #374151 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    #374151 100%
+  );
+  background-size: 200% 100%;
+  animation: glitterShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+
+
+/* 🛑 Prevent Size Fluctuations */
+.shimmer-box {
+  width: 100%; /* Matches actual card width */
+  height: 180px; /* Matches actual card height */
+  flex-shrink: 0; /* Prevents shrinking */
+}
+
+
+
 
