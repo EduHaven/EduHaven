@@ -30,7 +30,7 @@ const ShimmerStudyRoom = () => {
       </div>
 
       {/* Discussion Rooms */}
-      <h1 className="text-2xl font-bold text-gray-400">Connect with friends</h1>
+      <h1 className="text-2xl font-bold text-gray-400"></h1>
       <div className="grid grid-cols-3 gap-6">
         {Array(3)
           .fill(null)

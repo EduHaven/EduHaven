@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { Book, Laptop, Code, Palette, Brain, Microscope, ShoppingCart, Star, Search, X, Filter, ChevronDown } from "lucide-react"
+import CourseRoomShimmer from '../components/shimmerUI/shimmerCourse';
 
 const courses = [
   {
@@ -87,6 +88,8 @@ const courses = [
     image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
   },
 ]
+
+
 
 const Button = ({ children, onClick, className, disabled }) => {
   return (
@@ -244,6 +247,15 @@ export default function CourseRoom() {
   const [currentlyPreviewing, setCurrentlyPreviewing] = useState(null)
   const [isCartOpen, setIsCartOpen] = useState(false)
 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) return <CourseRoomShimmer />;
+
   const addToCart = (course) => {
     const existingItem = cart.find((item) => item.course.id === course.id)
     if (existingItem) {
@@ -346,6 +358,7 @@ export default function CourseRoom() {
               />
             </div>
           </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.map((course) => (
               <div
