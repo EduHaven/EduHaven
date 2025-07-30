@@ -1,21 +1,56 @@
 /* Overall Calendar Container */
 .react-calendar {
   background-color: transparent;
-  width: 300px !important;
-  max-width: 100%;
+  width: 100% !important;
+  max-width: 300px !important;
+  min-width: 280px !important;
   border: none;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 640px) {
+  .react-calendar {
+    min-width: 260px !important;
+    max-width: 280px !important;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .react-calendar {
+    min-width: 240px !important;
+    max-width: 260px !important;
+    font-size: 0.7rem;
+  }
 }
 
 /* Month & Year Navigation Buttons */
 .react-calendar__navigation button {
   color: var(--cal-nav-text) !important;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: bold;
   background: transparent;
   border: none;
-  padding: 2px;
+  padding: 4px 8px;
   border-radius: 5px;
   transition: background 0.2s ease-in-out;
+  min-height: 32px;
+}
+
+@media (max-width: 640px) {
+  .react-calendar__navigation button {
+    font-size: 0.75rem;
+    padding: 3px 6px;
+    min-height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .react-calendar__navigation button {
+    font-size: 0.7rem;
+    padding: 2px 4px;
+    min-height: 24px;
+  }
 }
 
 /* Disabled Buttons */
@@ -29,14 +64,33 @@
 
 /* Individual Day Tiles */
 .react-calendar__tile {
-  padding: 10px !important;
+  padding: 8px 4px !important;
   text-align: center;
   font-size: 0.75rem;
-  border-radius: 5rem;
+  border-radius: 4px;
   transition: background 0.2s ease-in-out;
   color: #cbd5e0;
-  border-radius: 4px;
   color: var(--cal-tile-text);
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .react-calendar__tile {
+    padding: 6px 2px !important;
+    font-size: 0.7rem;
+    min-height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .react-calendar__tile {
+    padding: 4px 1px !important;
+    font-size: 0.65rem;
+    min-height: 24px;
+  }
 }
 
 .react-calendar__tile:enabled {
@@ -62,7 +116,6 @@
   font-weight: bold;
 }
 
-
 /* ------------------------------------------------------------------------- */
 
 /* Change hover color of month names */
@@ -82,4 +135,37 @@
 .react-calendar__year-view__months__month.react-calendar__tile--active {
   background-color: #4a5568 !important;
   color: #ffffff !important;
+}
+
+/* Additional responsive improvements */
+@media (max-width: 640px) {
+  .react-calendar__navigation {
+    margin-bottom: 0.5rem;
+  }
+
+  .react-calendar__month-view__weekdays {
+    font-size: 0.7rem;
+  }
+
+  .react-calendar__month-view__weekdays__weekday {
+    padding: 4px 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .react-calendar__navigation {
+    margin-bottom: 0.25rem;
+  }
+
+  .react-calendar__month-view__weekdays {
+    font-size: 0.65rem;
+  }
+
+  .react-calendar__month-view__weekdays__weekday {
+    padding: 2px 1px;
+  }
+
+  .react-calendar__month-view__days {
+    gap: 1px;
+  }
 }

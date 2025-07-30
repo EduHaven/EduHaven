@@ -16,19 +16,24 @@ function NavBar() {
   }, []);
 
   return (
-    <div className="flex justify-between items-center bg-transparent z-10">
-      <PinnedLinks />
-      <Slogan />
-      <div className="flex items-center gap-4">
+    <div className="flex flex-col sm:flex-row justify-between items-center bg-transparent z-10 gap-3 sm:gap-0">
+      <div className="w-full sm:w-auto order-2 sm:order-1">
+        <PinnedLinks />
+      </div>
+      <div className="order-1 sm:order-2">
+        <Slogan />
+      </div>
+      <div className="flex items-center gap-2 sm:gap-4 order-3">
         {isLoggedIn && <OnlineUsers />}
         <Ai onShowId={setSelectedId} />
         {!isLoggedIn && (
           <Link
-            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg flex items-center gap-2"
+            className="bg-green-600 hover:bg-green-700 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center gap-2 text-sm sm:text-base"
             to="/authenticate"
           >
-            <User className="w-5 h-5" />
-            Login
+            <User className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Login</span>
+            <span className="sm:hidden">Sign In</span>
           </Link>
         )}
       </div>

@@ -10,8 +10,8 @@ function AnimatedDigits({ value }) {
       {value.split("").map((digit, index) => (
         <span
           key={index}
-          className="relative inline-block h-16"
-          style={{ minWidth: "1ch" }}
+          className="relative inline-block h-10 sm:h-12 md:h-14 lg:h-16"
+          style={{ minWidth: "0.8ch" }}
         >
           <AnimatePresence mode="wait">
             {/* Using a composite key so that when a digit changes, it remounts */}

@@ -63,11 +63,11 @@ function NotesComponent() {
 
 
   // This function manages whether to update note or create new.
-  const handleSync = (title,content) => {
+  const handleSync = (title, content) => {
     setRotate(true);
     setTimeout(() => setIsSynced(true), 700);
     if (notes[currentPage]._id === undefined) {
-      handleAddNote(title,content);
+      handleAddNote(title, content);
       return;
     }
   };
@@ -94,7 +94,7 @@ function NotesComponent() {
     }
   };
 
-  const handleAddNote = async (title,content) => {
+  const handleAddNote = async (title, content) => {
     if (
       title.trim() === "" ||
       content.trim() === ""
@@ -142,127 +142,127 @@ function NotesComponent() {
     }
   };
 
-  const validateFields=(title,content)=>{
-    if(!title.trim()){
+  const validateFields = (title, content) => {
+    if (!title.trim()) {
       setTitleError("*title is required")
     }
-    else{
+    else {
       setTitleError("")
     }
 
-    if(!content.trim()){
+    if (!content.trim()) {
       setContentError("*content is required")
     }
-    else{
+    else {
       setContentError("")
     }
   }
 
 
-const handleNoteContentChange = (event) => {
-  const updatedText = event.target.value;
-  const noteIndex = currentPage;
+  const handleNoteContentChange = (event) => {
+    const updatedText = event.target.value;
+    const noteIndex = currentPage;
 
-  const currentTitle = notes[noteIndex]?.title || "";
-  validateFields(currentTitle, updatedText);
+    const currentTitle = notes[noteIndex]?.title || "";
+    validateFields(currentTitle, updatedText);
 
-  setNotes((prevNotes) =>
-    prevNotes.map((note, index) =>
-      index === noteIndex ? { ...note, content: updatedText } : note
-    )
-  );
+    setNotes((prevNotes) =>
+      prevNotes.map((note, index) =>
+        index === noteIndex ? { ...note, content: updatedText } : note
+      )
+    );
 
-  if (error) setError("");
+    if (error) setError("");
 
-  if (updatedText.trim() && currentTitle.trim()) {
-    if (isSynced) {
-      setIsSynced(false);
-      setRotate(false);
-    }
+    if (updatedText.trim() && currentTitle.trim()) {
+      if (isSynced) {
+        setIsSynced(false);
+        setRotate(false);
+      }
 
-    clearTimeout(contentTimeoutRef.current);
+      clearTimeout(contentTimeoutRef.current);
 
-    const noteId = notes[noteIndex]?._id;
-    const contentToSave = updatedText.trim();
+      const noteId = notes[noteIndex]?._id;
+      const contentToSave = updatedText.trim();
 
-    contentTimeoutRef.current = setTimeout(async () => {
-      try {
-        if (noteId) {
-          await axios.put(
-            `${backendUrl}/note/${noteId}`,
-            { content: contentToSave },
-            getAuthHeader()
-          );
+      contentTimeoutRef.current = setTimeout(async () => {
+        try {
+          if (noteId) {
+            await axios.put(
+              `${backendUrl}/note/${noteId}`,
+              { content: contentToSave },
+              getAuthHeader()
+            );
+          }
+          handleSync(notes[noteIndex].title, updatedText); // sets synced = true
+        } catch (err) {
+          console.error("Error updating note content:", err);
+          setError("Failed to save changes");
+          setIsSynced(true);
         }
-        handleSync(notes[noteIndex].title,updatedText); // sets synced = true
-      } catch (err) {
-        console.error("Error updating note content:", err);
-        setError("Failed to save changes");
+      }, 3000);
+    } else {
+      clearTimeout(contentTimeoutRef.current);
+      if (!isSynced) {
         setIsSynced(true);
+        setRotate(false);
       }
-    }, 3000);
-  } else {
-    clearTimeout(contentTimeoutRef.current);
-    if (!isSynced) {
-      setIsSynced(true);
-      setRotate(false);
     }
-  }
-};
+  };
 
 
-const handleTitleChange = (event) => {
-  const updatedTitle = event.target.value;
-  const noteIndex = currentPage;
+  const handleTitleChange = (event) => {
+    const updatedTitle = event.target.value;
+    const noteIndex = currentPage;
 
-  const currentContent = notes[noteIndex]?.content || "";
-  validateFields(updatedTitle, currentContent);
+    const currentContent = notes[noteIndex]?.content || "";
+    validateFields(updatedTitle, currentContent);
 
-  // Update title in local state
-  setNotes((prevNotes) =>
-    prevNotes.map((note, index) =>
-      index === noteIndex ? { ...note, title: updatedTitle } : note
-    )
-  );
+    // Update title in local state
+    setNotes((prevNotes) =>
+      prevNotes.map((note, index) =>
+        index === noteIndex ? { ...note, title: updatedTitle } : note
+      )
+    );
 
-  if (error) setError("");
-  const noteId = notes[noteIndex]?._id;
+    if (error) setError("");
+    const noteId = notes[noteIndex]?._id;
 
-  if (updatedTitle.trim() && currentContent.trim()) {
-    if (isSynced) {
-      setIsSynced(false);
-      setRotate(false);
-    }
+    if (updatedTitle.trim() && currentContent.trim()) {
+      if (isSynced) {
+        setIsSynced(false);
+        setRotate(false);
+      }
 
-    clearTimeout(titleTimeoutRef.current);
+      clearTimeout(titleTimeoutRef.current);
 
-    
-    const titleToSave = updatedTitle.trim();
 
-    titleTimeoutRef.current = setTimeout(async () => {
-      try {
-        if (noteId) {
-          await axios.put(
-            `${backendUrl}/note/${noteId}`,
-            { title: titleToSave },
-            getAuthHeader()
-          );
+      const titleToSave = updatedTitle.trim();
+
+      titleTimeoutRef.current = setTimeout(async () => {
+        try {
+          if (noteId) {
+            await axios.put(
+              `${backendUrl}/note/${noteId}`,
+              { title: titleToSave },
+              getAuthHeader()
+            );
+          }
+          handleSync(updatedTitle, notes[noteIndex].content); // sets synced = true after delay
+        } catch (err) {
+          console.error("Error updating note title:", err);
+          setError("Failed to save changes");
+          setIsSynced(true); // Reset sync state on error
         }
-        handleSync(updatedTitle,notes[noteIndex].content); // sets synced = true after delay
-      } catch (err) {
-        console.error("Error updating note title:", err);
-        setError("Failed to save changes");
-        setIsSynced(true); // Reset sync state on error
+      }, 3000);
+    } else {
+      clearTimeout(titleTimeoutRef.current);
+      if (!isSynced) {
+        setIsSynced(true);
+        setRotate(false);
       }
-    }, 3000);
-  } else {
-    clearTimeout(titleTimeoutRef.current);
-    if (!isSynced) {
-      setIsSynced(true);
-      setRotate(false);
     }
-  }
-};
+  };
 
 
 
@@ -275,95 +275,96 @@ const handleTitleChange = (event) => {
   };
 
   return (
-    <div className="bg-sec txt rounded-3xl py-6 px-3 w-full mx-auto relative shadow">
+    <div className="bg-sec txt rounded-2xl sm:rounded-3xl py-4 sm:py-6 px-2 sm:px-3 w-full mx-auto relative shadow">
       {error && console.error(error)}
 
       {/* Navigation */}
-      <div className="flex justify-between px-3">
-        <div className="flex gap-4 items-center">
-          <h3 className="text-2xl font-semibold">Notes</h3>
+      <div className="flex justify-between px-2 sm:px-3">
+        <div className="flex gap-2 sm:gap-4 items-center">
+          <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold">Notes</h3>
           <button
-            className="p-1.5 rounded-full hover:bg-ter"
+            className="p-1 sm:p-1.5 rounded-full hover:bg-ter"
             onClick={addNewPage}
           >
-            <Plus />
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
-        <div className="flex space-x-2 items-center">
-          <span className="text-yellow-300 opacity-90 text-lg">
+        <div className="flex space-x-1 sm:space-x-2 items-center">
+          <span className="text-yellow-300 opacity-90 text-sm sm:text-lg">
             {notes.length > 0 ? `${currentPage + 1}/${notes.length}` : "1/1"}
           </span>
           <button
             onClick={goToPreviousPage}
-            className={`p-1.5 rounded-full hover:bg-ter ${currentPage === 0 ? "txt-dim" : ""
+            className={`p-1 sm:p-1.5 rounded-full hover:bg-ter ${currentPage === 0 ? "txt-dim" : ""
               }`}
           >
-            <ChevronLeft />
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <button
             onClick={goToNextPage}
-            className={`p-1.5 rounded-full hover:bg-ter ${currentPage === notes.length - 1 ? "txt-dim" : ""
+            className={`p-1 sm:p-1.5 rounded-full hover:bg-ter ${currentPage === notes.length - 1 ? "txt-dim" : ""
               }`}
           >
-            <ChevronRight />
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>
 
       {/* Title, Delete and Sync Button */}
-      <div className="flex justify-between mt-5 items-center w-full px-3 mb-1.5">
+      <div className="flex justify-between mt-4 sm:mt-5 items-center w-full px-2 sm:px-3 mb-1.5">
         <div className="flex-1 relative">
           <input
             type="text"
             value={notes[currentPage]?.title || ""}
             onChange={handleTitleChange}
             placeholder="Title"
-            className="bg-transparent outline-none p-0.5 text-lg w-full font-semibold text-yellow-400 opacity-85"
+            className="bg-transparent outline-none p-0.5 text-base sm:text-lg w-full font-semibold text-yellow-400 opacity-85"
           />
           {titleError && <p className="text-red-400 text-xs absolute -bottom-3">{titleError}</p>}
         </div>
 
         {!isSynced && (
           <button
-            className="text-black text-lg hover:bg-yellow-300 rounded-full mx-3 py-0.5 px-4 bg-yellow-400 flex items-center gap-2 transition-transform transform opacity-100"
+            className="text-black text-sm sm:text-lg hover:bg-yellow-300 rounded-full mx-2 sm:mx-3 py-0.5 px-2 sm:px-4 bg-yellow-400 flex items-center gap-1 sm:gap-2 transition-transform transform opacity-100"
           >
-            sync
+            <span className="hidden sm:inline">sync</span>
+            <span className="sm:hidden">S</span>
             <div
-              className="h-4"
+              className="h-3 sm:h-4"
               style={{
                 transform: rotate ? "rotate(-360deg)" : "rotate(0deg)",
                 transition: "transform 0.7s ease-in-out",
               }}
             >
-              <RefreshCcwDot className="h-4" />
+              <RefreshCcwDot className="h-3 sm:h-4" />
             </div>
           </button>
         )}
         <button onClick={() => handleDeleteNote(notes[currentPage]?._id)}>
-          <Trash className="h-5 txt-dim hover:text-red-500" />
+          <Trash className="h-4 sm:h-5 txt-dim hover:text-red-500" />
         </button>
       </div>
 
       {/* Content */}
-      <div className="relative w-full h-64 overflow-hidden">
+      <div className="relative w-full h-48 sm:h-56 lg:h-64 overflow-hidden">
         <div
           className="absolute w-full pointer-events-none"
           style={{
-            backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 30px, #6E6E6E 39px )`,
-            backgroundSize: "100% 32px",
+            backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 26px, #6E6E6E 27px )`,
+            backgroundSize: "100% 28px",
             transform: `translateY(-${scrollPosition}px)`,
             height: `${scrollHeight}px`,
             marginTop: "2px",
           }}
         ></div>
-      
+
         <textarea
           ref={textAreaRef}
           id="area"
-          className="relative w-full h-full bg-transparent txt-dim p-2 px-3 outline-none resize-none font-kalam font-light"
+          className="relative w-full h-full bg-transparent txt-dim p-2 px-2 sm:px-3 outline-none resize-none font-kalam font-light text-sm sm:text-base"
           style={{
-            lineHeight: "32px",
-            paddingTop: "8px",
+            lineHeight: "28px",
+            paddingTop: "6px",
           }}
           placeholder="Take a note..."
           onScroll={handleScroll}
@@ -371,10 +372,10 @@ const handleTitleChange = (event) => {
           onChange={handleNoteContentChange}
         ></textarea>
       </div>
-      {contentError && <span className="text-red-400 text-xs mt-1 absolute bottom-4 left-3">{contentError}</span>}
+      {contentError && <span className="text-red-400 text-xs mt-1 absolute bottom-3 sm:bottom-4 left-2 sm:left-3">{contentError}</span>}
 
       {/* Date and Time */}
-      <div className="absolute bottom-4 right-12 txt-dim bg-sec flex justify-between">
+      <div className="absolute bottom-3 sm:bottom-4 right-8 sm:right-12 txt-dim bg-sec flex justify-between text-xs sm:text-sm">
         {notes[currentPage]?.createdAt
           ? new Date(notes[currentPage].createdAt).toLocaleDateString() +
           "\u00A0\u00A0\u00A0" +

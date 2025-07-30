@@ -55,12 +55,11 @@ const Setgoals = ({ onGoalCreated }) => {
 
   return (
     <div
-      className={`px-4 pt-2 rounded-xl ${
-        title.trim() !== "" ? "bg-ter shadow" : ""
-      }`}
+      className={`px-2 sm:px-3 md:px-4 pt-2 rounded-lg sm:rounded-xl ${title.trim() !== "" ? "bg-ter shadow" : ""
+        }`}
       style={{ containerType: "inline-size" }}
     >
-      <div className="flex items-center px-2">
+      <div className="flex items-center px-1 sm:px-2">
         <input
           type="text"
           placeholder="Type a goal..."
@@ -68,23 +67,23 @@ const Setgoals = ({ onGoalCreated }) => {
           onChange={(e) => setTitle(e.target.value)}
           onKeyDown={handleKeyPress}
           autoFocus
-          className="w-full bg-transparent border-b border-txt-dim txt-dim py-2 px-2 focus:outline-none"
+          className="w-full bg-transparent border-b border-txt-dim txt-dim py-1.5 sm:py-2 px-1 sm:px-2 focus:outline-none text-sm sm:text-base"
         />
-        <button onClick={handleCreate} className="txt ml-2">
-          <Plus />
+        <button onClick={handleCreate} className="txt ml-1 sm:ml-2 p-1 hover:bg-primary rounded">
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </div>
       {/* Render when there's some text in the input */}
       {title.trim() !== "" && (
         <>
-          <p className="text-red-400">Currenty only calender is functional.</p>
-          <div className="mt-3 mb-4 flex gap-6 [@container(max-width:420px)]:flex-col">
-            <div className="flex-1">
+          <p className="text-red-400 text-xs sm:text-sm px-1 sm:px-2 mt-2">Currently only calendar is functional.</p>
+          <div className="mt-3 mb-4 flex flex-col lg:flex-row gap-3 sm:gap-4 lg:gap-6">
+            <div className="flex-1 space-y-3 sm:space-y-4">
               {/* Repeat Dropdown */}
-              <div className="mb-4 [@container(max-width:420px)]:flex gap-12 items-center">
-                <label className="block font-semibold mb-1">Repeat:</label>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                <label className="block font-semibold text-sm sm:text-base min-w-fit">Repeat:</label>
                 <select
-                  className="bg-ter rounded-lg p-2 w-full txt border border-txt-dim"
+                  className="bg-ter rounded-lg p-1.5 sm:p-2 w-full txt border border-txt-dim text-sm sm:text-base"
                   value={repeat}
                   onChange={(e) => setRepeat(e.target.value)}
                 >
@@ -98,10 +97,10 @@ const Setgoals = ({ onGoalCreated }) => {
                 </select>
               </div>
               {/* Time Dropdown */}
-              <div className="mb-4 [@container(max-width:420px)]:flex gap-16 items-center">
-                <label className="block font-semibold mb-1">Time:</label>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                <label className="block font-semibold text-sm sm:text-base min-w-fit">Time:</label>
                 <select
-                  className="bg-ter rounded-lg p-2 w-full txt border border-txt-dim"
+                  className="bg-ter rounded-lg p-1.5 sm:p-2 w-full txt border border-txt-dim text-sm sm:text-base"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                 >
@@ -121,10 +120,10 @@ const Setgoals = ({ onGoalCreated }) => {
                 </select>
               </div>
               {/* Reminder Dropdown */}
-              <div className="[@container(max-width:420px)]:flex gap-7 items-center">
-                <label className="block font-semibold mb-1">Reminder:</label>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                <label className="block font-semibold text-sm sm:text-base min-w-fit">Reminder:</label>
                 <select
-                  className="bg-ter rounded-lg p-2 w-full txt border border-txt-dim"
+                  className="bg-ter rounded-lg p-1.5 sm:p-2 w-full txt border border-txt-dim text-sm sm:text-base"
                   value={reminder}
                   onChange={(e) => setReminder(e.target.value)}
                 >
@@ -143,14 +142,17 @@ const Setgoals = ({ onGoalCreated }) => {
                 </select>
               </div>
             </div>
-            <div className="max-w-fit rounded-lg m-auto">
-              <h1 className="font-semibold text-md">Add deadline:</h1>
-              <Calendar
-                onChange={(date) => setDeadline(date)}
-                value={deadline || new Date()}
-                next2Label={null}
-                prev2Label={null}
-              />
+            <div className="w-full lg:max-w-fit rounded-lg mx-auto lg:mx-0">
+              <h1 className="font-semibold text-sm sm:text-base mb-2 text-center lg:text-left">Add deadline:</h1>
+              <div className="flex justify-center lg:justify-start">
+                <Calendar
+                  onChange={(date) => setDeadline(date)}
+                  value={deadline || new Date()}
+                  next2Label={null}
+                  prev2Label={null}
+                  className="!max-w-full !w-full sm:!w-auto"
+                />
+              </div>
             </div>
           </div>
         </>
