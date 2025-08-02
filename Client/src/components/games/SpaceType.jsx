@@ -587,13 +587,30 @@ const SpaceType = () => {
   const [startTime] = useState(Date.now());
   const [lasers, setLasers] = useState([]);
   const [particles, setParticles] = useState([]);
+  const [gameContainerSize, setGameContainerSize] = useState({ width: 0, height: 0 });
   const shipRef = useRef(null);
+  const gameContainerRef = useRef(null);
   const [currentTarget, setCurrentTarget] = useState(null);
 
   // Sound effects
   const [playLaser] = useSound("./laser.mp3", { volume: 0.5 });
   const [playExplosion] = useSound("./explosion.mp3", { volume: 0.5 });
   const [playGameOver] = useSound("./gameover.mp3", { volume: 0.5 });
+
+  useEffect(() => {
+    const updateContainerSize = () => {
+      if (gameContainerRef.current) {
+        const rect = gameContainerRef.current.getBoundingClientRect();
+        setGameContainerSize({
+          width: rect.width,
+          height: rect.height
+        });
+      }
+    };
+    updateContainerSize();
+    window.addEventListener('resize', updateContainerSize);
+    return () => window.removeEventListener('resize', updateContainerSize);
+  }, []);
 
   const createParticles = (x, y) => {
     const newParticles = Array.from({ length: 8 }, (_, i) => ({
@@ -610,11 +627,13 @@ const SpaceType = () => {
   };
 
   const fireLaser = (targetEnemy) => {
-    if (!shipRef.current) return;
+    if (!shipRef.current || !gameContainerRef.current) return;
 
+    const containerRect = gameContainerRef.current.getBoundingClientRect();
     const shipRect = shipRef.current.getBoundingClientRect();
-    const shipX = shipRect.left + shipRect.width / 2;
-    const shipY = shipRect.top;
+
+    const shipX = shipRect.left - containerRect.left + shipRect.width / 2;
+    const shipY = shipRect.top - containerRect.top;
 
     const targetX = targetEnemy.position.x + 40; // Center of enemy
     const targetY = targetEnemy.position.y + 40;
@@ -658,28 +677,30 @@ const SpaceType = () => {
   }, [level]);
 
   const spawnEnemy = useCallback(() => {
-    if (enemies.length < 5 && !isPaused && !gameOver) {
+    if (enemies.length < 5 && !isPaused && !gameOver && gameContainerSize.width > 0) {
       const word = getWordForLevel();
       const newEnemy = {
         id: Date.now(),
         word,
         position: {
-          x: Math.random() * (window.innerWidth - 100) + 50,
+          x: Math.random() * (gameContainerSize.width - 100) + 50,
           y: -50,
         },
         speed: 1 + level * 0.2,
       };
       setEnemies((prev) => [...prev, newEnemy]);
     }
-  }, [enemies.length, isPaused, gameOver, level]);
+  }, [enemies.length, isPaused, gameOver, level, gameContainerSize, getWordForLevel]);
 
   useEffect(() => {
+    if (gameContainerSize.width === 0) return;
+
     const spawnInterval = setInterval(spawnEnemy, 2000 - level * 100);
     return () => clearInterval(spawnInterval);
-  }, [spawnEnemy, level]);
+  }, [spawnEnemy, level, gameContainerSize]);
 
   useEffect(() => {
-    if (isPaused || gameOver) return;
+    if (isPaused || gameOver || gameContainerSize.height === 0) return;
 
     const gameLoop = setInterval(() => {
       setEnemies((prev) => {
@@ -693,7 +714,7 @@ const SpaceType = () => {
 
         // Check for enemies reaching bottom
         const reachedBottom = updated.some(
-          (enemy) => enemy.position.y > window.innerHeight - 100
+          (enemy) => enemy.position.y > gameContainerSize.height - 100
         );
         if (reachedBottom) {
           setHealth((h) => {
@@ -707,7 +728,7 @@ const SpaceType = () => {
         }
 
         return updated.filter(
-          (enemy) => enemy.position.y <= window.innerHeight - 100
+          (enemy) => enemy.position.y <= gameContainerSize.height - 100
         );
       });
 
@@ -720,13 +741,14 @@ const SpaceType = () => {
     }, 16);
 
     return () => clearInterval(gameLoop);
-  }, [isPaused, gameOver, score, startTime, playGameOver]);
+  }, [isPaused, gameOver, score, startTime, playGameOver, gameContainerSize]);
 
   const handleKeyPress = useCallback(
     (e) => {
       if (gameOver || isPaused) return;
       if (e.key === "Enter") {
         useBomb();
+        return;
       }
       const char = e.key.toLowerCase();
       if (!/^[a-z]$/.test(char)) return;
@@ -757,7 +779,7 @@ const SpaceType = () => {
         }
       }
     },
-    [enemies, currentWord, gameOver, isPaused, score, playLaser, playExplosion]
+    [enemies, currentWord, gameOver, isPaused, score, playLaser, playExplosion, level]
   );
 
   useEffect(() => {
@@ -780,8 +802,26 @@ const SpaceType = () => {
     }
   };
 
+  const resetGame = () => {
+    setEnemies([]);
+    setCurrentWord("");
+    setScore(0);
+    setLevel(1);
+    setHealth(100);
+    setShields(3);
+    setBombs(2);
+    setGameOver(false);
+    setIsPaused(false);
+    setWpm(0);
+    setTypedChars([]);
+    setLasers([]);
+    setParticles([]);
+    setCurrentTarget(null);
+  };
+
   return (
-    <div className="relative w-[calc(100vw-10rem)] h-[calc(100vh-3.5rem)] bg-black overflow-hidden spacetype">
+    <div ref={gameContainerRef}
+     className="relative w-[calc(100vw-10rem)] h-[calc(100vh-3.5rem)] bg-black overflow-hidden spacetype">
       {/* Starry background */}
       <div
         className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986')] 
@@ -830,9 +870,9 @@ const SpaceType = () => {
         {enemies.map((enemy) => (
           <motion.div
             key={enemy.id}
-            className="absolute"
-            initial={{ x: enemy.position.x, y: -50 }}
-            animate={{ x: enemy.position.x, y: enemy.position.y }}
+            className="absolute z-20"
+            initial={{ x: enemy.position.x, y: -50, scale: 0 }}
+            animate={{ x: enemy.position.x, y: enemy.position.y, scale: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ duration: 0.016 }}
           >
@@ -841,7 +881,7 @@ const SpaceType = () => {
                 className={`w-20 h-20 bg-purple-600 rounded-full opacity-50 animate-pulse
                 ${
                   currentTarget?.id === enemy.id
-                    ? "ring-2 ring-purple-400 ring-opacity-50"
+                    ? "ring-4 ring-purple-400 ring-opacity-75 shadow-purple-400/50"
                     : ""
                 }`}
               />
@@ -867,7 +907,7 @@ const SpaceType = () => {
               top: laser.startY,
               width: "2px",
               transformOrigin: "left center",
-              transform: `rotate(${Math.PI / 4}rad)`,
+              transform: `rotate(${laser.angle}rad)`,
             }}
             initial={{ scaleX: 0, opacity: 1 }}
             animate={{
@@ -911,30 +951,42 @@ const SpaceType = () => {
         ref={shipRef}
         className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
       >
-        <div className="w-20 h-20 bg-purple-400 clip-path-triangle" />
+        <div 
+          className="w-16 h-16 bg-gradient-to-t from-purple-400 to-pink-400 shadow-lg"
+          style={{
+            clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+            filter: 'drop-shadow(0 0 10px rgba(168, 85, 247, 0.5))'
+          }}
+        />
       </div>
 
       {/* Typed Characters Display */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-purple-300">
-        {typedChars.slice(-10).join("")}
+        {currentWord}
       </div>
 
       {/* Game Over Screen */}
       {gameOver && (
-        <div className="absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center">
-          <div className="text-center text-purple-300">
-            <h2 className="text-4xl mb-4">Game Over</h2>
-            <p className="mb-4">Final Score: {score}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="flex text-white items-center gap-2 mx-auto bg-purple-600 px-4 py-2 rounded-lg"
-            >
-              <RefreshCw size={20} /> Play Again
-            </button>
-            <br />
-            <Link to={"/games"} className="flex text-white items-center gap-2 mx-auto bg-purple-600 px-4 py-2 rounded-lg max-w-min">
-              <ArrowLeft /> Exit
-            </Link>
+        <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+          <div className="text-center text-purple-300 bg-gray-900 p-8 rounded-lg border border-purple-500">
+            <h2 className="text-4xl mb-4 text-purple-400">Game Over</h2>
+            <p className="mb-2 text-xl">Final Score: <span className="text-purple-400">{score}</span></p>
+            <p className="mb-4 text-lg">Level Reached: <span className="text-purple-400">{level}</span></p>
+            <p className="mb-6 text-lg">WPM: <span className="text-purple-400">{wpm}</span></p>
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={resetGame}
+                className="flex text-white items-center gap-2 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-colors"
+              >
+                <RefreshCw size={20} /> Play Again
+              </button>
+              <button 
+                onClick={() => console.log('Exit to menu')}
+                className="flex text-white items-center gap-2 bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg transition-colors"
+              >
+                <ArrowLeft size={20} /> Exit
+              </button>
+            </div>
           </div>
         </div>
       )}

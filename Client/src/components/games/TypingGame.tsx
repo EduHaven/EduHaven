@@ -198,6 +198,10 @@ export default function TypingGame() {
             id: Date.now(),
             position: { x: window.innerWidth / 2, y: 480 },
             targetEnemy: matchedEnemy.id,
+            direction: {
+              x: 0,
+              y: 0
+            }
           };
           setProjectiles((prev) => [...prev, newProjectile]);
 
