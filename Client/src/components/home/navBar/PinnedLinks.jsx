@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { ExternalLink, Plus, X, MoreVertical } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Helper to get domain from a URL
 function getDomain(url) {
@@ -21,7 +22,7 @@ function getFaviconUrl(link) {
 function normalizeUrl(url) {
   if (!url) return url;
   const trimmed = url.trim();
-  if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+  if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) {
     return `https://${trimmed}`;
   }
   return trimmed;
@@ -59,18 +60,22 @@ function PinnedLinks() {
   // Handle clicks outside dropdown and modals
   useEffect(() => {
     function handleClickOutside(event) {
-      if (showDropdown && 
-          dropdownRef.current && 
-          !dropdownRef.current.contains(event.target) &&
-          buttonRef.current &&
-          !buttonRef.current.contains(event.target)) {
+      if (
+        showDropdown &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
         setShowDropdown(false);
         setOpenMenuId(null);
       }
 
-      if (showModal && 
-          modalRef.current && 
-          !modalRef.current.contains(event.target)) {
+      if (
+        showModal &&
+        modalRef.current &&
+        !modalRef.current.contains(event.target)
+      ) {
         setShowModal(false);
         setEditItemId(null);
         setTitle("");
@@ -78,19 +83,20 @@ function PinnedLinks() {
         setExtraLinks([]);
       }
 
-      if (showPopupBlockerModal &&
-          popupBlockerModalRef.current &&
-          !popupBlockerModalRef.current.contains(event.target)) {
+      if (
+        showPopupBlockerModal &&
+        popupBlockerModalRef.current &&
+        !popupBlockerModalRef.current.contains(event.target)
+      ) {
         setShowPopupBlockerModal(false);
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showDropdown, showModal, showPopupBlockerModal]);
-
 
   const handleSaveLink = () => {
     if (!title.trim() || !mainLink.trim()) return;
@@ -98,7 +104,7 @@ function PinnedLinks() {
     const normalizedMainLink = normalizeUrl(mainLink);
     const normalizedExtraLinks = extraLinks
       .filter((l) => l.trim())
-      .map(link => normalizeUrl(link));
+      .map((link) => normalizeUrl(link));
 
     if (editItemId) {
       const updated = pinnedLinks.map((item) => {
@@ -185,7 +191,11 @@ function PinnedLinks() {
     const testWindow = window.open(firstLink, "_blank", "noopener,noreferrer");
 
     // Check if the popup was blocked
-    if (!testWindow || testWindow.closed || typeof testWindow.closed === 'undefined') {
+    if (
+      !testWindow ||
+      testWindow.closed ||
+      typeof testWindow.closed === "undefined"
+    ) {
       // Popups were blocked, show the modal.
       setLinksToOpen(links);
       setShowPopupBlockerModal(true);
@@ -199,11 +209,11 @@ function PinnedLinks() {
 
     setShowDropdown(false);
   };
-  
+
   const handleRetryOpenLinks = () => {
     linksToOpen.forEach((link) => {
-        const normalizedLink = normalizeUrl(link);
-        window.open(normalizedLink, "_blank", "noopener,noreferrer");
+      const normalizedLink = normalizeUrl(link);
+      window.open(normalizedLink, "_blank", "noopener,noreferrer");
     });
     setShowPopupBlockerModal(false);
     setLinksToOpen([]);
@@ -222,7 +232,7 @@ function PinnedLinks() {
 
       {/* Dropdown of existing pinned links + add button */}
       {showDropdown && (
-        <div 
+        <div
           ref={dropdownRef}
           className="absolute top-full left-0 mt-2 bg-sec shadow-md rounded-lg p-2 z-10 min-w-[17rem]"
         >
@@ -242,7 +252,7 @@ function PinnedLinks() {
                     alt="icon"
                     className="w-4 h-4"
                     onError={(e) => {
-                      e.target.style.display = 'none';
+                      e.target.style.display = "none";
                     }}
                   />
                 ))}
@@ -291,100 +301,124 @@ function PinnedLinks() {
 
       {/* Modal for adding/editing a workspace */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
-          <div 
-            ref={modalRef}
-            className="bg-sec p-6 rounded-lg shadow-lg w-full max-w-md"
+        <AnimatePresence>
+          <motion.div
+            key="backdrop"
+            className="fixed inset-0 z-50 backdrop-blur-sm bg-black/40 flex items-center justify-center transition-colors"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold txt">
-                {editItemId ? "Edit link" : "Create a link"}
-              </h2>
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setEditItemId(null);
-                  setTitle("");
-                  setMainLink("");
-                  setExtraLinks([]);
-                }}
-                className="p-1 hover:bg-ter rounded"
-              >
-                <X className="w-5 h-5 txt" />
-              </button>
-            </div>
+            <motion.div
+              key="modal"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="bg-sec backdrop-blur-xl border border-white/20 p-6 rounded-2xl shadow-2xl max-w-sm w-full "
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold txt">
+                  {editItemId ? "Edit link" : "Create a link"}
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setEditItemId(null);
+                    setTitle("");
+                    setMainLink("");
+                    setExtraLinks([]);
+                  }}
+                  className="p-1 hover:bg-ter rounded"
+                >
+                  <X className="w-5 h-5 txt" />
+                </button>
+              </div>
 
-            <label className="block mb-4">
-              <span className="text-sm font-medium text-gray-700 uppercase tracking-wide">
-                TITLE
-              </span>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full mt-1 p-2 border border-gray-300 rounded bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="e.g. Amazon"
-              />
-            </label>
-
-            <label className="block mb-4">
-              <span className="text-sm font-medium text-gray-700 uppercase tracking-wide">
-                LINKS
-              </span>
-              <input
-                type="text"
-                value={mainLink}
-                onChange={(e) => setMainLink(e.target.value)}
-                className="w-full mt-1 p-2 border border-gray-300 rounded bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="e.g. amazon.com (protocol will be added automatically)"
-              />
-            </label>
-
-            {extraLinks.map((linkVal, idx) => (
-              <div key={idx} className="mb-2">
+              {/* Title */}
+              <label className="block mb-4">
+                <span className="text-md  font-semibold  dark:text-gray-300  tracking-wide ">
+                  Title
+                </span>
                 <input
                   type="text"
-                  value={linkVal}
-                  onChange={(e) => handleExtraLinkChange(idx, e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Another link..."
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full mt-1 p-2 border border-gray-500 rounded-lg 
+               bg-transparent txt placeholder:text-sm
+               focus:outline-none focus:ring-2 focus:ring-current"
+                  placeholder="e.g. Amazon"
                 />
-              </div>
-            ))}
+              </label>
 
-            <button
-              type="button"
-              onClick={handleAddAnotherLink}
-              className="text-sm flex items-center gap-1 mt-2 text-blue-600 hover:text-blue-800"
-            >
-              <Plus className="w-4 h-4" />
-              Add another tab
-            </button>
+              {/* Main link */}
+              <label className="block mb-4">
+                <span className="text-md  font-semibold  dark:text-gray-300 tracking-wide">
+                  Links
+                </span>
+                <input
+                  type="text"
+                  value={mainLink}
+                  onChange={(e) => setMainLink(e.target.value)}
+                  className="w-full mt-1 p-2 border border-gray-500 rounded-lg 
+               bg-transparent txt placeholder:text-sm
+               focus:outline-none focus:ring-2 focus:ring-current"
+                  placeholder="e.g. amazon.com (protocol will be added automatically)"
+                />
+              </label>
 
-            <div className="flex justify-end mt-6">
-              <button 
-                onClick={handleSaveLink} 
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {/* Additional tabs/links */}
+              {extraLinks.map((linkVal, idx) => (
+                <div key={idx} className="mb-2">
+                  <input
+                    type="text"
+                    value={linkVal}
+                    onChange={(e) => handleExtraLinkChange(idx, e.target.value)}
+                    className="w-full mt-1 p-2 border border-gray-500 rounded-lg 
+               bg-transparent txt placeholder:text-sm
+               focus:outline-none focus:ring-2 focus:ring-current"
+                    placeholder="Another link..."
+                  />
+                </div>
+              ))}
+
+              {/* "Add another tab" button */}
+              <button
+                type="button"
+                onClick={handleAddAnotherLink}
+                className="text-sm flex font-medium items-center gap-1 mt-2 txt hover:opacity-80 transition-colors"
               >
-                {editItemId ? "Save" : "Add"}
+                <Plus className="w-4 h-4" />
+                Add another tab
               </button>
-            </div>
-          </div>
-        </div>
+
+              {/* Save (Add/Edit) button */}
+              <div className="flex justify-end mt-6">
+                <button
+                  onClick={handleSaveLink}
+                  className="px-4 py-2 rounded txt btn hover:bg-ter/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-current transition-colors"
+                >
+                  {editItemId ? "Save" : "Add"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
       )}
 
       {/* --- NEW POPUP BLOCKER MODAL --- */}
       {showPopupBlockerModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
-          <div 
+          <div
             ref={popupBlockerModalRef}
             className="bg-sec p-6 rounded-lg shadow-lg w-full max-w-sm text-center"
           >
             <h3 className="text-xl font-bold txt mb-4">Popups Blocked</h3>
             <p className="txt mb-4">
-              Your browser is blocking the links from opening. Please disable the popup blocker for this site and try again.
+              Your browser is blocking the links from opening. Please disable
+              the popup blocker for this site and try again.
             </p>
-            <button 
+            <button
               onClick={handleRetryOpenLinks}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
