@@ -29,6 +29,12 @@ function GameRoom() {
       path: "typing-game",
       img: "./spaceType.svg",
     },
+    {
+      name:"Whac-a-mole",
+      difficulty:"Medium",
+      path:'whac-a-mole',
+      img:"./Whac-a-mole.png"
+    }
   ];
   return (
     <div className="m-6 ">
