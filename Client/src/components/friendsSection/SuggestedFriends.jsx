@@ -67,12 +67,12 @@ function SuggestedFriends({ onViewSentRequests }) {
           )}
         </div>
       </div>
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {suggestedFriends
           .slice()
           .reverse()
           .map((user) => (
-            <div key={user._id} className=" relative group py-1 bg-slate-4 00">
+            <div key={user._id} className=" relative group py-2 bg-slate-4">
               <div className="flex items-center">
                 {user.ProfilePicture ? (
                   <img
@@ -94,20 +94,28 @@ function SuggestedFriends({ onViewSentRequests }) {
                   <p className="text-sm txt-dim line-clamp-1">{user.Bio}</p>
                 </div>
               </div>
-              <div className=" absolute top-[8%] right-0 bg-sec p-1.5 px-2 transition-all opacity-0 group-hover:opacity-100">
+              <div className=" absolute flex top-[6%] right-0 bg-sec p-1.5 transition-all opacity-0 group-hover:opacity-100">
+                <button 
+                onClick={() => {
+                  window.location.href = `/stats/${user._id}`;
+                }}
+                className="bg-ter text-xs px-1.5 py-2.5 rounded-lg flex items-center justify-center gap-1 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:bg-[var(--btn-hover)] txt mx-2">
+                  <User className="w-4 h-4" />
+                  View Profile
+                </button>
                 {user.requestSent ? (
                   <button
                     disabled
-                    className="w-full border border-gray-500/50 text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition bg-sec txt"
+                    className="border border-gray-500/50 text-xs px-1.5 py-2.5 rounded-lg flex items-center justify-center gap-1 transition-all duration-200 hover:scale-105 hover:shadow-lg bg-sec txt"
                   >
                     Request Sent
                   </button>
                 ) : (
                   <button
                     onClick={() => sendRequest(user._id)}
-                    className="w-full bg-ter text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--btn-hover)] txt"
+                    className="bg-ter text-xs px-2.5 py-2.5 rounded-lg flex items-center justify-center gap-1 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:bg-[var(--btn-hover)] txt"
                   >
-                    <UserPlus className="w-5 h-5" />
+                    <UserPlus className="w-4 h-4" />
                     Add Friend
                   </button>
                 )}

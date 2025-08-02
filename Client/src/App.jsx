@@ -3,6 +3,7 @@ import RouterSelector from "./lib/RouterSelector";
 import Layout from "./components/Layout";
 import Home from "./pages/Home.jsx";
 import Stats from "./pages/Stats";
+import UserStats from "./pages/UserStats";
 import GameRoom from "./routes/GameRoutes.jsx";
 import Signout from "./Auth/Signout";
 // import SignUp from "./Auth/Authenticate.jsx";
@@ -43,6 +44,7 @@ function App() {
             <Route path="/auth/google/callback" element={<GoogleRedirect />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="*" element={<PageNotFound />} />
+            <Route path="/stats/:userId" element={<UserStats />} />
           </Routes>
         </RouterSelector>
         <ToastContainer
