@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -8,77 +9,66 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-// Sample leaderboard data
-const leaderboardData = {
-  daily: [
-    { rank: 1, name: "John", score: 150, isFriend: true },
-    { rank: 2, name: "Jane", score: 140, isFriend: true },
-    { rank: 3, name: "Max", score: 130, isFriend: false },
-    { rank: 4, name: "Anna", score: 120, isFriend: false },
-    { rank: 5, name: "Lucas", score: 110, isFriend: true },
-    { rank: 6, name: "Mia", score: 100, isFriend: false },
-    { rank: 7, name: "Sophia", score: 95, isFriend: true },
-    { rank: 8, name: "Daniel", score: 90, isFriend: false },
-    { rank: 9, name: "Olivia", score: 85, isFriend: true },
-    { rank: 10, name: "Ethan", score: 80, isFriend: false },
-    { rank: 11, name: "Isabella", score: 75, isFriend: false },
-    { rank: 12, name: "Liam", score: 70, isFriend: true },
-  ],
-  weekly: [
-    { rank: 1, name: "Alex", score: 700, isFriend: true },
-    { rank: 2, name: "Charlie", score: 680, isFriend: false },
-    { rank: 3, name: "Sam", score: 650, isFriend: true },
-    { rank: 4, name: "Jordan", score: 640, isFriend: false },
-    { rank: 5, name: "Blake", score: 620, isFriend: true },
-    { rank: 6, name: "Taylor", score: 600, isFriend: true },
-    { rank: 7, name: "Ryan", score: 590, isFriend: false },
-    { rank: 8, name: "Dakota", score: 580, isFriend: true },
-    { rank: 9, name: "Harper", score: 570, isFriend: false },
-    { rank: 10, name: "Reed", score: 550, isFriend: true },
-    { rank: 11, name: "Morgan", score: 540, isFriend: true },
-    { rank: 12, name: "Skyler", score: 530, isFriend: false },
-  ],
-  monthly: [
-    { rank: 1, name: "Sara", score: 3000, isFriend: true },
-    { rank: 2, name: "Tom", score: 2900, isFriend: false },
-    { rank: 3, name: "Lily", score: 2800, isFriend: true },
-    { rank: 4, name: "Chris", score: 2700, isFriend: true },
-    { rank: 5, name: "David", score: 2600, isFriend: false },
-    { rank: 6, name: "Katie", score: 2500, isFriend: true },
-    { rank: 7, name: "James", score: 2400, isFriend: false },
-    { rank: 8, name: "Emma", score: 2300, isFriend: true },
-    { rank: 9, name: "Matthew", score: 2200, isFriend: false },
-    { rank: 10, name: "Olivia", score: 2100, isFriend: true },
-    { rank: 11, name: "Daniel", score: 2000, isFriend: false },
-    { rank: 12, name: "Jack", score: 1900, isFriend: true },
-  ],
+const backendUrl = import.meta.env.VITE_API_URL;
+
+const getAuthHeader = () => {
+  const token = localStorage.getItem("token");
+  return { headers: { Authorization: `Bearer ${token}` } };
 };
 
 const Leaderboard = () => {
   const [view, setView] = useState("weekly");
-  const [isOpen, setIsOpen] = useState(false); // State to control dropdown visibility
-  const [friendsOnly, setFriendsOnly] = useState(false); // State for "Friends Only" toggle
+  const [isOpen, setIsOpen] = useState(false);
+  const [friendsOnly, setFriendsOnly] = useState(false);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+
+  const getCurrentUserIdFromToken = () => {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+
+    try {
+      const base64Payload = token.split(".")[1];
+      const payload = JSON.parse(atob(base64Payload));
+      return payload.id;
+    } catch (error) {
+      console.error("Invalid token", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const id = getCurrentUserIdFromToken();
+    setCurrentUserId(id);
+  }, []);
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const res = await axios.get(`${backendUrl}/leaderboard?period=${view}&friendsOnly=${friendsOnly}`, getAuthHeader());
+        console.log(res)
+        const data = await res.data;
+        console.log(data)
+        setLeaderboard(data);
+      } catch (error) {
+        console.error("Failed to fetch leaderboard:", error);
+      }
+    };
+
+    fetchLeaderboard();
+  }, [friendsOnly,view]);
 
   const handleDropdownClick = (viewType) => {
     setView(viewType);
-    setIsOpen(false); // Close the dropdown when a selection is made
+    setIsOpen(false);
   };
 
   const handleFriendsOnlyToggle = () => {
-    setFriendsOnly((prev) => !prev); // Toggle the "Friends Only" filter
+    setFriendsOnly((prev) => !prev);
   };
 
-  // Example: Current user's data (you can get this dynamically)
-  const currentUser = {
-    name: "You",
-    rank: 2,
-    score: leaderboardData[view][1]?.score,
-  };
-
-  // Filter the leaderboard based on "Friends Only" toggle
-  const filteredLeaderboard = leaderboardData[view].filter(
-    (entry) => !friendsOnly || entry.isFriend
-  );
+  const currentUser = leaderboard.find((user) => user.userId === currentUserId);
 
   return (
     <div className="bg-gray-800 p-6 pl-0 rounded-3xl shadow-md text-center w-full">
@@ -114,40 +104,68 @@ const Leaderboard = () => {
 
       {/* Friends Only Toggle */}
       <div className="mt-4 flex pl-6 items-center gap-2">
-        <label className="text-sm text-gray-300">Friends Only</label>
+      <label className="text-sm text-gray-300">Friends Only</label>
         <Button
-          className={`${
-            friendsOnly ? "bg-green-600" : "bg-gray-600"
-          } px-4 py-2 rounded-md`}
+          variant="outline"
           onClick={handleFriendsOnlyToggle}
+          className={`relative w-14 h-8 rounded-full px-0 border-2 transition-all duration-200 ${friendsOnly ? "bg-green-500 border-green-600" : "bg-gray-600 border-gray-500"
+            }`}
         >
-          {friendsOnly ? "On" : "Off"}
+          <span
+            className={`absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-white transition-transform duration-200 ${friendsOnly ? "translate-x-6" : ""
+              }`}
+          ></span>
         </Button>
+
       </div>
 
       <div className="mt-4">
-        <ul>
-          {filteredLeaderboard.slice(0, 10).map((entry) => (
-            <li
-              key={entry.rank}
-              className={`flex justify-between py-2 px-4 ${
-                entry.name === currentUser.name ? "bg-gray-600" : ""
-              }`}
-            >
-              <span>
-                {entry.rank}. {entry.name}
-              </span>
-              <span>{entry.score} points</span>
-            </li>
-          ))}
+        <ul className="divide-y divide-gray-700 rounded-lg overflow-hidden">
+          {leaderboard.slice(0, 10).map((user, index) => {
+            const isCurrentUser = user.userId === currentUserId;
+
+            const getBadge = (rank) => {
+              switch (rank) {
+                case 0:
+                  return "🥇";
+                case 1:
+                  return "🥈";
+                case 2:
+                  return "🥉";
+                default:
+                  return `${rank + 1}.`;
+              }
+            };
+
+            return (
+              <li
+                key={user.userId}
+                className={`flex justify-between items-center py-3 px-5 transition-all duration-200
+        ${isCurrentUser ? "bg-green-700 text-white font-semibold" : "hover:bg-gray-700"}
+      `}
+              >
+                <span className="flex items-center gap-2">
+                  <span className="w-6 text-right">
+                    {getBadge(index)}
+                  </span>
+                  <span>{user.username}</span>
+                </span>
+                <span className="text-sm">{user.totalDuration} minutes</span>
+              </li>
+            );
+          })}
+
         </ul>
       </div>
 
-      {/* Show current user's position at the end */}
-      <div className="mt-4 text-lg font-semibold">
-        Your Position: {currentUser.rank} - {currentUser.name} (
-        {currentUser.score} points)
-      </div>
+
+      {currentUserId && currentUser && (
+        <div className="mt-4 text-lg font-semibold">
+          Your Position: {leaderboard.findIndex(u => u.userId === currentUserId) + 1} -{" "}
+          ({currentUser.totalDuration} minutes)
+        </div>
+      )}
+
     </div>
   );
 };
