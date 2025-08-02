@@ -14,12 +14,31 @@ function SignUp() {
   };
 
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState("");
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
   } = useForm();
+
+  const evaluatePasswordStrength = (password) => {
+    const lengthCriteria = password.length >= 8;
+    const uppercaseCriteria = /[A-Z]/.test(password);
+    const lowercaseCriteria = /[a-z]/.test(password);
+    const digitCriteria = /[0-9]/.test(password);
+    const specialCharCriteria = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (!password) return "";
+
+    const passedCriteria = [lengthCriteria, uppercaseCriteria, lowercaseCriteria, digitCriteria, specialCharCriteria].filter(Boolean).length;
+
+    if (passedCriteria <= 2) return "Weak";
+    if (passedCriteria === 3 || passedCriteria === 4) return "Medium";
+    return "Strong";
+  };
+
   const onSubmit = async (data) => {
     console.log("Form submitted:", data);
     try {
@@ -27,20 +46,17 @@ function SignUp() {
       if (!data.FirstName || !data.LastName) {
         throw new Error("First Name and Last Name are required");
       }
-      // navigate("/verify");
 
       const response = await axios.post(url, data);
       console.log(response.data);
       reset();
       var token = undefined;
-      if (data.token) {
+      if (response.data.token) {
         token = response.data.token;
       }
-      // const activationToken = response.data.activationToken;
 
       if (token) {
         localStorage.setItem("token", token);
-        // localStorage.setItem("activationToken", activationToken);
       }
       toast.success("Account created successfully! Please login to continue.");
       navigate("/authenticate");
@@ -49,6 +65,7 @@ function SignUp() {
       toast.error(error.response?.data?.error || "An error occurred");
     }
   };
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -57,12 +74,14 @@ function SignUp() {
         </h2>
       </div>
 
-      <button onClick={handleGoogleLogin} className="flex items-center justify-center gap-2 border border-gray-400 rounded-xl text-black dark:text-white font-semibold p-2 text-lg w-full">
+      <button
+        onClick={handleGoogleLogin}
+        className="flex items-center justify-center gap-2 border border-gray-400 rounded-xl text-black dark:text-white font-semibold p-2 text-lg w-full"
+      >
         <img src="/GoogleIcon.svg" alt="Google sign-in" className="size-6" />
-
-        <p>Continue with google</p>
+        <p>Continue with Google</p>
       </button>
-      {/* or */}
+
       <div className="flex items-center my-6">
         <div className="flex-grow h-px bg-gray-300"></div>
         <span className="mx-4 text-gray-500 font-medium text-sm">OR</span>
@@ -71,10 +90,7 @@ function SignUp() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-900 dark:text-gray-300"
-          >
+          <label htmlFor="email" className="block text-sm font-medium text-gray-900 dark:text-gray-300">
             Email
           </label>
           <div className="mt-2.5">
@@ -101,10 +117,7 @@ function SignUp() {
 
         <div className="flex gap-4">
           <div className="w-1/2">
-            <label
-              htmlFor="first-name"
-              className="block text-sm font-medium text-gray-900 dark:text-gray-300"
-            >
+            <label htmlFor="first-name" className="block text-sm font-medium text-gray-900 dark:text-gray-300">
               First Name
             </label>
             <div className="mt-2.5">
@@ -125,10 +138,7 @@ function SignUp() {
             </div>
           </div>
           <div className="w-1/2">
-            <label
-              htmlFor="last-name"
-              className="block text-sm font-medium text-gray-900 dark:text-gray-300"
-            >
+            <label htmlFor="last-name" className="block text-sm font-medium text-gray-900 dark:text-gray-300">
               Last Name
             </label>
             <div className="mt-2">
@@ -151,10 +161,7 @@ function SignUp() {
         </div>
 
         <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-900 dark:text-gray-300"
-          >
+          <label htmlFor="password" className="block text-sm font-medium text-gray-900 dark:text-gray-300">
             Password
           </label>
           <div className="mt-2.5 relative">
@@ -167,6 +174,10 @@ function SignUp() {
                 minLength: {
                   value: 6,
                   message: "Password must be at least 6 characters",
+                },
+                onChange: (e) => {
+                  const pwd = e.target.value;
+                  setPasswordStrength(evaluatePasswordStrength(pwd));
                 },
               })}
               className="block w-full rounded-lg bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
@@ -181,6 +192,11 @@ function SignUp() {
             {errors.Password && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.Password.message}
+              </p>
+            )}
+            {passwordStrength && (
+              <p className={`text-sm mt-1 font-semibold ${passwordStrength === "Weak" ? "text-red-500" : passwordStrength === "Medium" ? "text-yellow-500" : "text-green-500"}`}>
+                Password Strength: {passwordStrength}
               </p>
             )}
           </div>
