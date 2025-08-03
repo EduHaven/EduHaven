@@ -19,7 +19,7 @@ function AdCard({ slideInterval = 3000 }) {
   }, [slideInterval, slides.length]);
 
   return (
-    <>
+    <div className="text-white p-4 rounded-2xl shadow-lg space-y-4 w-full max-w-md">
       <h1 className="text-lg font-semibold">More app from us: </h1>
 
       <a
@@ -31,7 +31,7 @@ function AdCard({ slideInterval = 3000 }) {
         <img src={icn} alt="Ad Preview" className="h-16 w-16 rounded-xl" />
         <div>
           <h2 className="txt font-bold text-lg">Focus Dock</h2>
-          <p className="txt-dim text-sm">
+          <p className="txt-dim text-sm text-gray-300">
             Increase your productivity 10X with focus dock.
           </p>
         </div>
@@ -42,7 +42,7 @@ function AdCard({ slideInterval = 3000 }) {
           href={PLAY_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 bg-ter p-1.5 rounded-lg hover:btn transition-colors text-center"
+          className="flex-1 bg-ter p-1.5 rounded-lg hover:btn-hover transition-colors text-center"
         >
           learn more
         </a>
@@ -57,28 +57,27 @@ function AdCard({ slideInterval = 3000 }) {
       </div>
 
       {/* Carousel area with fade */}
-      <div className="relative aspect-[27/35] w-full">
+      <div className="relative aspect-[27/35] w-full  overflow-hidden rounded-xl">
         {slides.map((src, idx) => (
           <a
             key={idx}
             href={PLAY_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute inset-0"
+            className="absolute inset-0 transition-opacity duration-500"
           >
             <img
               src={src}
               alt={`Slide ${idx + 1}`}
               className={`
                 h-auto w-full rounded-xl
-                transition-opacity duration-500
                 ${idx === current ? "opacity-100" : "opacity-0"}
               `}
             />
           </a>
         ))}
       </div>
-    </>
+    </div>
   );
 }
 

@@ -17,6 +17,10 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
+
+
+
+
 // ──────────────────────────────────────────────────────────────
 // Helper functions for date formatting
 // ──────────────────────────────────────────────────────────────
@@ -267,11 +271,10 @@ const StudyStats = () => {
   };
 
   return (
-    <div className="flex bg-[#2D364A] rounded-3xl text-center w-full overflow-hidden">
+    <div className="flex bg-gray-800 rounded-3xl text-center w-full overflow-hidden">
       {/* Chart showing Total Study Hours and Study-Room Hours */}
       <div
-        className="flex-1 bg-gray-800 pr-4 rounded-3xl"
-        style={{ background: "#1e293b" }}
+        className="flex-1 bg-gray-800 pr-4 rounded-3xl bg-muted text-muted-foreground"
       >
         {/* Header with computed summary study stats */}
         <div className="flex flex-col md:flex-row justify-between items-center m-6">
