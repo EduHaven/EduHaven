@@ -295,16 +295,11 @@ export default function Themes() {
     if (id !== "light") document.documentElement.classList.add(id);
   };
 
-
   const onSelectTheme = (id) => {
-    const selected = themes.find((t) => t.id === id);
-    if (!selected) return;
-  
     setTheme(id);
-    localStorage.setItem("theme", JSON.stringify(selected));
+    localStorage.setItem("theme", id);
     applyTheme(id);
   };
-  
 
   return (
     <div className="max-w-6xl mx-auto space-y-12 ">
