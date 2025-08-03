@@ -23,6 +23,7 @@
     "express": "^4.21.2",
     "fs-extra": "^11.3.0",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.18.0",
     "mongoose": "^8.16.0",
     "multer": "^1.4.5-lts.1",
     "node-fetch": "^3.3.2",

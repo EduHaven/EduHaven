@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { useUserProfile } from "../../contexts/UserProfileContext";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Trash2 } from "lucide-react";
 import UpdateButton from "./UpdateButton";
 const backendUrl = import.meta.env.VITE_API_URL;
 
@@ -87,6 +87,13 @@ function EducationAndSkills() {
     setProfileData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const clearField = (fieldName) => {
+    setProfileData((prev) => ({
+      ...prev,
+      [fieldName]: "",
     }));
   };
 
@@ -182,9 +189,22 @@ function EducationAndSkills() {
         <div className="">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-6 py-2">
             <div className="space-y-2">
-              <label className="block text-md font-medium text-[var(--txt-dim)]">
-                University/Institution
-              </label>
+              <div className="flex justify-between items-center">
+                <label className="block text-md font-medium text-[var(--txt-dim)]">
+                  University/Institution
+                </label>
+                {profileData.University && (
+                  <button
+                    type="button"
+                    onClick={() => clearField('University')}
+                    className="text-red-500 hover:text-red-700 transition-colors p-1 rounded"
+                    title="Clear University"
+                    disabled={isLoading}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
               <input
                 type="text"
                 name="University"
@@ -197,9 +217,22 @@ function EducationAndSkills() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-md font-medium text-[var(--txt-dim)]">
-                Field of Study
-              </label>
+              <div className="flex justify-between items-center">
+                <label className="block text-md font-medium text-[var(--txt-dim)]">
+                  Field of Study
+                </label>
+                {profileData.FieldOfStudy && (
+                  <button
+                    type="button"
+                    onClick={() => clearField('FieldOfStudy')}
+                    className="text-red-500 hover:text-red-700 transition-colors p-1 rounded"
+                    title="Clear Field of Study"
+                    disabled={isLoading}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
               <input
                 type="text"
                 name="FieldOfStudy"
@@ -212,9 +245,22 @@ function EducationAndSkills() {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="block text-md font-medium text-[var(--txt-dim)]">
-                Graduation Year
-              </label>
+              <div className="flex justify-between items-center">
+                <label className="block text-md font-medium text-[var(--txt-dim)]">
+                  Graduation Year
+                </label>
+                {profileData.GraduationYear && (
+                  <button
+                    type="button"
+                    onClick={() => clearField('GraduationYear')}
+                    className="text-red-500 hover:text-red-700 transition-colors p-1 rounded"
+                    title="Clear Graduation Year"
+                    disabled={isLoading}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
               <input
                 type="number"
                 name="GraduationYear"
@@ -332,9 +378,22 @@ function EducationAndSkills() {
 
         {/* Additional Notes Section */}
         <div className="space-y-2 p-6 py-2">
-          <label className="block text-md font-medium text-[var(--txt-dim)]">
-            Additional Information
-          </label>
+          <div className="flex justify-between items-center">
+            <label className="block text-md font-medium text-[var(--txt-dim)]">
+              Additional Information
+            </label>
+            {profileData.OtherDetails.additionalNotes && (
+              <button
+                type="button"
+                onClick={() => handleOtherDetailsChange("additionalNotes", "")}
+                className="text-red-500 hover:text-red-700 transition-colors p-1 rounded"
+                title="Clear Additional Information"
+                disabled={isLoading}
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
           <textarea
             value={profileData.OtherDetails.additionalNotes || ""}
             onChange={(e) =>

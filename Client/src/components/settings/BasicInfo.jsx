@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { useUserProfile } from "../../contexts/UserProfileContext";
-import { Camera, User } from "lucide-react";
+import { Camera, User, Trash2 } from "lucide-react";
 import UpdateButton from "./UpdateButton";
 const backendUrl = import.meta.env.VITE_API_URL;
 
@@ -67,6 +67,13 @@ export default function BasicInfo() {
     setProfileData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const clearField = (fieldName) => {
+    setProfileData((prev) => ({
+      ...prev,
+      [fieldName]: "",
     }));
   };
 
@@ -267,9 +274,22 @@ export default function BasicInfo() {
 
         {/* Bio Section */}
         <div className="space-y-2 p-6 py-2">
-          <label className="block text-md font-medium text-[var(--txt-dim)]">
-            Bio
-          </label>
+          <div className="flex justify-between items-center">
+            <label className="block text-md font-medium text-[var(--txt-dim)]">
+              Bio
+            </label>
+            {profileData.Bio && (
+              <button
+                type="button"
+                onClick={() => clearField('Bio')}
+                className="text-red-500 hover:text-red-700 transition-colors p-1 rounded"
+                title="Clear Bio"
+                disabled={isProfileUpdateLoading}
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
           <textarea
             name="Bio"
             value={profileData.Bio}
@@ -288,9 +308,22 @@ export default function BasicInfo() {
         {/* Location & Demographics */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 py-2">
           <div className="space-y-2">
-            <label className="block text-md font-medium text-[var(--txt-dim)]">
-              Country
-            </label>
+            <div className="flex justify-between items-center">
+              <label className="block text-md font-medium text-[var(--txt-dim)]">
+                Country
+              </label>
+              {profileData.Country && (
+                <button
+                  type="button"
+                  onClick={() => clearField('Country')}
+                  className="text-red-500 hover:text-red-700 transition-colors p-1 rounded"
+                  title="Clear Country"
+                  disabled={isProfileUpdateLoading}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
             <input
               type="text"
               name="Country"
@@ -303,9 +336,22 @@ export default function BasicInfo() {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-md font-medium text-[var(--txt-dim)]">
-              Gender
-            </label>
+            <div className="flex justify-between items-center">
+              <label className="block text-md font-medium text-[var(--txt-dim)]">
+                Gender
+              </label>
+              {profileData.Gender && (
+                <button
+                  type="button"
+                  onClick={() => clearField('Gender')}
+                  className="text-red-500 hover:text-red-700 transition-colors p-1 rounded"
+                  title="Clear Gender"
+                  disabled={isProfileUpdateLoading}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
             <select
               name="Gender"
               value={profileData.Gender}
