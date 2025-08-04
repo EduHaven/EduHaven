@@ -4,9 +4,14 @@ import "./index.css";
 import App from "./App.jsx";
 import { Analytics } from '@vercel/analytics/react';
 
+// 🧠 Import the ThemeProvider
+import { ThemeProvider } from "./context/ThemeContext"; // adjust path if needed
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
-    <Analytics/>
+    <ThemeProvider>
+      <App />
+      <Analytics />
+    </ThemeProvider>
   </StrictMode>
 );

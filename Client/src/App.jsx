@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import RouterSelector from "./lib/RouterSelector";
 import Layout from "./components/Layout";
@@ -21,6 +22,15 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
+  // ✅ STEP 1: Handle theme switching
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("selectedTheme") || "light";
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
   return (
     <UserProfileProvider>
       <SocketProvider>

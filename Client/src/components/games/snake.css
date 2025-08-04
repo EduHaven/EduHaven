@@ -1,48 +1,121 @@
+/* 🎮 Main Game Container */
 .Snakegame {
-  #c {
-    width: calc(100vw - 10rem);
-    height: calc(100vh - 8rem);
-    border-radius: 2rem;
-  }
+  position: relative;
+}
 
-  #snakenav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 4rem;
-    top: 10px;
-    right: 10px;
-    font-family: "Merriweather Sans", sans-serif;
-    font-size: 1.1rem;
-    color: white;
-  }
+/* 🎨 Game Canvas */
+.Snakegame canvas {
+  display: block;
+  width: calc(100vw - 10rem);
+  height: calc(100vh - 8rem);
+  border-radius: 2rem;
+  background: rgb(26, 26, 26);
+  border: 1px solid rgb(53, 53, 53);
+  color: #969696;
+}
 
-  #snakenav .block {
-    display: flex;
-    gap: 1.5rem;
-  }
+/* 🚨 Pause Notice */
+.Snakegame .notice-pause {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "Merriweather Sans", sans-serif;
+  font-size: 14px;
+  color: #b6b6b6;
+}
 
-  #snakenav label {
-    margin-left: 9px;
-  }
+/* 🧭 Navbar Container */
+.Snakegame #snakenav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  margin-bottom: 1rem;
+  background-color: var(--navbar-bg, #1e1e2f);
+  color: var(--navbar-text, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-family: "Merriweather Sans", sans-serif;
+  font-size: 1.1rem;
+  position: relative;
+}
 
-  .notice-pause {
-    position: fixed;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: "Merriweather Sans", sans-serif;
-    font-size: 14px;
-    color: #b6b6b6;
-  }
+/* 🎯 Centered High Score */
+.Snakegame #snakenav .snake-highscore {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: var(--highscore-text, #facc15); /* fallback: yellow-400 */
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.4rem 1rem;
+  border-radius: 0.6rem;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+}
 
-  canvas {
-    display: block;
-    width: 100vw;
-    height: 100vh;
-    background: rgb(26, 26, 26);
-    border: 1px solid rgb(53, 53, 53);
-    color: #969696;
-    /* color: white; */
-  }
+/* 🔄 Right-side Navbar Block */
+.Snakegame #snakenav .block {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* 🌓 Toggle Switch Label */
+.Snakegame #snakenav label {
+  margin-left: 9px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+/* ✅ Modern Checkbox Switch */
+.Snakegame input[type="checkbox"] {
+  appearance: none;
+  width: 45px;
+  height: 24px;
+  background-color: #ccc;
+  border-radius: 50px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  outline: none;
+}
+
+.Snakegame input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 2px;
+  left: 2px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.Snakegame input[type="checkbox"]:checked {
+  background-color: #4ade80; /* green-400 */
+}
+
+.Snakegame input[type="checkbox"]:checked::before {
+  transform: translateX(21px);
+}
+
+/* 🌗 Light Theme Variables */
+[data-theme='light'] {
+  --navbar-bg: #f3f4f6;
+  --navbar-text: #1f2937;
+  --highscore-text: #b91c1c; /* red-700 */
+}
+
+/* 🌑 Dark Theme Variables */
+[data-theme='dark'] {
+  --navbar-bg: #1e1e2f;
+  --navbar-text: #ffffff;
+  --highscore-text: #facc15; /* yellow-400 */
 }
