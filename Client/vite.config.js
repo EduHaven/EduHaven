@@ -18,6 +18,11 @@ export default defineConfig(({ mode }) => {
         input: path.resolve(__dirname, "index.html"),
       },
     },
+    server: {
+    allowedHosts: [
+      "5173-shrishtimangla-eduhaven-i83bkzh3i87.ws-us120.gitpod.io"
+    ]
+  }
     // dev server only—no need for historyApiFallback here
   };
 });
