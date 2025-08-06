@@ -42,7 +42,7 @@ const sendMail = async (Email, subject, emailData) => {
         }
         .otp {
             font-size: 36px;
-            color: #7b68ee; /* Purple text */
+            color: #7b68ee;
             margin-bottom: 30px;
         }
     </style>

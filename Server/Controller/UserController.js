@@ -367,3 +367,102 @@ export const uploadProfilePicture = async (req, res) => {
     });
   }
 };
+
+// ---------------------- PASSWORD MANAGEMENT ----------------------
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { Email } = req.body;
+
+    if (!Email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const user = await User.findOne({ Email });
+    if (!user) {
+      return res.status(404).json({ error: "No account found with this email" });
+    }
+
+    const resetToken = jwt.sign(
+      { userId: user._id },
+      process.env.RESET_PASSWORD_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+
+    await sendMail(
+      Email,
+      "EduHaven Password Reset",
+      {
+        FirstName: user.FirstName,
+        link: resetLink
+      },
+      "resetPassword" // Optional template ID if used
+    );
+
+    return res.status(200).json({ message: "Password reset link sent to your email." });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    return res.status(500).json({ error: "Failed to send reset email" });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ error: "Token and new password are required" });
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.RESET_PASSWORD_SECRET);
+    } catch (error) {
+      return res.status(400).json({ error: "Invalid or expired token" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    await User.findByIdAndUpdate(decoded.userId, { Password: hashedPassword });
+
+    return res.status(200).json({ message: "Password has been reset successfully" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return res.status(500).json({ error: "Failed to reset password" });
+  }
+};
+export const changePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await User.findById(userId); // No need for .select('+Password') here
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found." });
+    }
+
+    if (!user.Password) {
+      return res.status(400).json({ success: false, error: "User does not have a password set (OAuth login?)" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.Password);
+
+    if (!isMatch) {
+      return res.status(400).json({ success: false, error: "Current password is incorrect." });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.Password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Password changed successfully." });
+  } catch (error) {
+    console.error("Error in changePassword:", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+};
