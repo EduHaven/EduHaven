@@ -13,10 +13,6 @@ cloudinary.config({
     process.env.CLOUDINARY_API_SECRET || "BXpWyZHYKbAexc3conUG88t6TVM",
 });
 
-
-
-
-
 export const signup = async (req, res) => {
   try {
     const { FirstName, LastName, Email, Password } = req.body;
@@ -365,5 +361,35 @@ export const uploadProfilePicture = async (req, res) => {
       error: "Failed to upload profile picture",
       details: error.message,
     });
+  }
+};
+
+// NEW: Get user streak data
+export const getUserStreaks = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const user = await User.findById(req.user._id).select("streaks");
+    
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Initialize streaks if they don't exist
+    if (!user.streaks) {
+      user.streaks = { current: 0, max: 0, lastStudyDate: null };
+      await user.save();
+    }
+
+    return res.status(200).json({
+      current: user.streaks.current || 0,
+      max: user.streaks.max || 0,
+      lastStudyDate: user.streaks.lastStudyDate
+    });
+  } catch (error) {
+    console.error("Error fetching user streaks:", error);
+    return res.status(500).json({ error: "Failed to fetch streak data" });
   }
 };

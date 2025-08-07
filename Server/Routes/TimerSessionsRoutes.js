@@ -10,7 +10,12 @@ import { updateStreaks } from "../utils/streakUpdater.js";
 router.post("/timer", auth, async (req, res) => {
   try {
     const { startTime, endTime, duration } = req.body;
-    if (duration > 10) updateStreaks(req.user.id);
+    
+    // Update streak if user studied at least 10 minutes
+    if (duration >= 10) {
+      await updateStreaks(req.user.id);
+    }
+    
     const session = new StudySession({
       user: req.user.id,
       startTime,

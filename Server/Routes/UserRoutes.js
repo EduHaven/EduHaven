@@ -1,5 +1,14 @@
 import express from "express";
-import { login, logout, signup, getUserDetails, updateProfile, uploadProfilePicture, verifyUser } from "../Controller/UserController.js";
+import { 
+  login, 
+  logout, 
+  signup, 
+  getUserDetails, 
+  updateProfile, 
+  uploadProfilePicture, 
+  verifyUser,
+  getUserStreaks 
+} from "../Controller/UserController.js";
 import authMiddleware from '../Middlewares/authMiddleware.js';
 import multer from 'multer';
 import path from 'path';
@@ -38,12 +47,11 @@ const upload = multer({
   }
 });
 
-// uploadmanish.single("image"),cloudinaryUpload
-
+// Existing routes
 router.post("/signup", signup);
 router.post("/verify", verifyUser);
 router.post("/login", login);
-router.post("/logout",  logout);
+router.post("/logout", logout);
 router.get("/user/details", getUserDetails);
 router.put("/user/profile", authMiddleware, updateProfile);
 router.post('/user/upload-profile-picture', 
@@ -51,5 +59,8 @@ router.post('/user/upload-profile-picture',
   upload.single('profilePicture'), 
   uploadProfilePicture
 );
+
+// NEW: Streak endpoint
+router.get("/user/streaks", authMiddleware, getUserStreaks);
 
 export default router;
