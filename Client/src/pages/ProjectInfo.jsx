@@ -100,13 +100,17 @@ export default function Info() {
                 Key Features
               </h2>
               <ul className="txt-dim space-y-2">
-                <li>
-                  ✅ Add notes, Set goals, Add Events for organised learning
+                <li className="flex items-center gap-2">
+                  <i className="fas fa-check-circle text-purple-700 text-xl"></i>
+                  Add notes, Set goals, Add Events for organised learning
                 </li>
-                <li>
-                  📊 Analytics Productivity tracking with real-time insights.
-                </li>
-                <li>🎮 Gamification Badges & streaks to boost motivation.</li>
+                <li className="flex items-center gap-2">
+                  <i className="fas fa-chart-line text-purple-700 text-xl"></i>
+                  Analytics Productivity tracking with real-time insights.
+                </li >
+                <li className="flex items-center gap-2">
+                  <i className="fas fa-gamepad text-purple-700 text-xl"></i>
+                  Gamification Badges & streaks to boost motivation.</li>
               </ul>
             </div>
             <div>
@@ -114,9 +118,9 @@ export default function Info() {
                 Real-Time Collaboration
               </h2>
               <ul className="list-none list-inside txt-dim space-y-2">
-                <li>💬 Study Rooms Live chat, audio/video calls via WebRTC.</li>
-                <li>🤖 AI Chatbot Study assistance & productivity guidance.</li>
-                <li>👥 Social Features Add friends, track, and collaborate.</li>
+                <li className="flex items-center gap-2"> <i className="fas fa-comments text-purple-700 text-xl"></i>Study Rooms Live chat, audio/video calls via WebRTC.</li>
+                <li className="flex items-center gap-2"> <i className="fas fa-robot text-purple-700 text-xl"></i>AI Chatbot Study assistance & productivity guidance.</li>
+                <li className="flex items-center gap-2"> <i className="fas fa-user-friends text-purple-700 text-xl"></i>Social Features Add friends, track, and collaborate.</li>
               </ul>
             </div>
           </div>
