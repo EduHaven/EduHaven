@@ -167,7 +167,39 @@ const StudyStats = () => {
   const [view, setView] = useState("daily");
   const [isOpen, setIsOpen] = useState(false);
   const [stats, setStats] = useState([]);
+  const [streaks, setStreaks] = useState({ current: 0, max: 0 });
+  const [loading, setLoading] = useState(true);
   const backendUrl = import.meta.env.VITE_API_URL;
+
+  // Fetch streak data
+  useEffect(() => {
+    const fetchStreakData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${backendUrl}/user/streaks`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          setStreaks({
+            current: result.current || 0,
+            max: result.max || 0
+          });
+        } else {
+          console.error("Failed to fetch streak data");
+        }
+      } catch (error) {
+        console.error("Error fetching streak data:", error);
+      }
+    };
+
+    fetchStreakData();
+  }, [backendUrl]);
 
   useEffect(() => {
     const handleGetStats = async () => {
@@ -253,11 +285,13 @@ const StudyStats = () => {
         }
       } catch (error) {
         console.error("Error fetching stats:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     handleGetStats();
-  }, [view]);
+  }, [view, backendUrl]);
 
   const summary = computeSummary(stats);
 
@@ -362,11 +396,23 @@ const StudyStats = () => {
         <div className="text-4xl mb-8 font-bold text-blue-500">Null</div>
         Current Streak:
         <div className="text-4xl mb-8 font-bold text-yellow-500">
-          32 <span className="text-lg font-normal">days</span>
+          {loading ? (
+            <span className="text-2xl text-gray-400">Loading...</span>
+          ) : (
+            <>
+              {streaks.current} <span className="text-lg font-normal">days</span>
+            </>
+          )}
         </div>
         Max Streak:
         <div className="text-4xl mb-8 font-bold text-green-500">
-          50 <span className="text-lg font-normal">days</span>
+          {loading ? (
+            <span className="text-2xl text-gray-400">Loading...</span>
+          ) : (
+            <>
+              {streaks.max} <span className="text-lg font-normal">days</span>
+            </>
+          )}
         </div>
       </div>
     </div>

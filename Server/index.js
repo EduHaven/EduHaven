@@ -18,7 +18,7 @@ import FriendsRoutes from "./Routes/FriendsRoutes.js";
 import SessionRoutes from "./Routes/SessionRoutes.js";
 
 import { initializeSocket } from "./Socket/socket.js";
-
+import scheduleStreakReset from "./utils/streakCronJob.js";
 const app = express();
 const port = 3000;
 
@@ -59,3 +59,5 @@ server.listen(port, () => {
   ConnectDB();
   console.log(`Server running at http://localhost:${port}`);
 });
+
+scheduleStreakReset();
