@@ -61,3 +61,4 @@ server.listen(port, () => {
 });
 
 scheduleStreakReset();//resets streak
+

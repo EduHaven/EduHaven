@@ -42,9 +42,9 @@ const UserSchema = new mongoose.Schema(
       },
     ],
     streaks: {
-      current: { type: Number, default: 0 },
-      max: { type: Number, default: 0 },
-      lastStudyDate: { type: Date },
+        current: { type: Number, default: 0 },
+        max: { type: Number, default: 0 },
+        lastStudyDate: { type: Date, default: null }
     },
     SessionRooms: [
       {
