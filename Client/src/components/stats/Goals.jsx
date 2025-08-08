@@ -1,14 +1,7 @@
-import { useState } from "react";
-import { CheckCircle, ChevronDown } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { useState, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,51 +9,116 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-const data = {
-  daily: [
-    { name: "Mon", completed: 5, pending: 3 },
-    { name: "Tue", completed: 12, pending: 2 },
-    { name: "Wed", completed: 8, pending: 4 },
-    { name: "Thu", completed: 15, pending: 5 },
-    { name: "Fri", completed: 10, pending: 3 },
-    { name: "Sat", completed: 18, pending: 1 },
-    { name: "Sun", completed: 20, pending: 0 },
-  ],
-  weekly: [
-    { name: "Week 1", completed: 40, pending: 10 },
-    { name: "Week 2", completed: 52, pending: 8 },
-    { name: "Week 3", completed: 38, pending: 12 },
-    { name: "Week 4", completed: 60, pending: 6 },
-  ],
-  monthly: [
-    { name: "Jan", completed: 150, pending: 20 },
-    { name: "Feb", completed: 180, pending: 15 },
-    { name: "Mar", completed: 120, pending: 25 },
-    { name: "Apr", completed: 200, pending: 10 },
-  ],
+const backendUrl = import.meta.env.VITE_API_URL;
+
+const getAuthHeader = () => {
+  const token = localStorage.getItem("token");
+  return { headers: { Authorization: `Bearer ${token}` } };
 };
 
-const Goals = () => {
+const Leaderboard = () => {
   const [view, setView] = useState("weekly");
-  const [isOpen, setIsOpen] = useState(false); // Add state to manage dropdown visibility
+  const [isOpen, setIsOpen] = useState(false);
+  const [friendsOnly, setFriendsOnly] = useState(false);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  // Theme state
+  const [theme, setTheme] = useState({
+    primary: "#ffffff",
+    secondary: "#f0f0f0",
+    tertiary: "#e0e0e0",
+    text: "#000000",
+    accent: "#000000",
+  });
+
+  // Load theme from localStorage
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme) {
+      try {
+        setTheme(JSON.parse(storedTheme));
+      } catch (err) {
+        console.error("Failed to parse theme from localStorage", err);
+      }
+    }
+  }, []);
+
+  const getCurrentUserIdFromToken = () => {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+
+    try {
+      const base64Payload = token.split(".")[1];
+      const payload = JSON.parse(atob(base64Payload));
+      return payload.id;
+    } catch (error) {
+      console.error("Invalid token", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const id = getCurrentUserIdFromToken();
+    setCurrentUserId(id);
+  }, []);
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const res = await axios.get(
+          `${backendUrl}/leaderboard?period=${view}&friendsOnly=${friendsOnly}`,
+          getAuthHeader()
+        );
+        setLeaderboard(res.data);
+      } catch (error) {
+        console.error("Failed to fetch leaderboard:", error);
+      }
+    };
+
+    fetchLeaderboard();
+  }, [friendsOnly, view]);
 
   const handleDropdownClick = (viewType) => {
     setView(viewType);
-    setIsOpen(false); // Close the dropdown when an item is selected
+    setIsOpen(false);
+  };
+
+  const handleFriendsOnlyToggle = () => {
+    setFriendsOnly((prev) => !prev);
+  };
+
+  const currentUser = leaderboard.find((user) => user.userId === currentUserId);
+
+  const getBadge = (rank) => {
+    switch (rank) {
+      case 0:
+        return "🥇";
+      case 1:
+        return "🥈";
+      case 2:
+        return "🥉";
+      default:
+        return `${rank + 1}.`;
+    }
   };
 
   return (
-    <div className="bg-gray-800 p-6 pl-0 rounded-3xl shadow-md text-center w-full">
+    <div
+      className="p-6 pl-0 rounded-3xl shadow-md text-center w-full bg-[var(--bg-sec)]"
+    >
       <nav className="flex justify-between items-center pl-6">
         <h3 className="text-lg font-semibold flex items-center gap-2">
-          <CheckCircle className="w-5 h-5 text-green-500" /> <strong>13</strong>
-          /<strong>135</strong>
-          Goals done
+          <strong>Leaderboard</strong>
         </h3>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              className="flex items-center gap-1 hover:bg-gray-700"
+              className="flex items-center gap-1"
+              style={{
+                backgroundColor: theme.tertiary,
+                color: theme.text,
+              }}
               onClick={() => setIsOpen(!isOpen)}
             >
               {view.charAt(0).toUpperCase() + view.slice(1)}{" "}
@@ -83,31 +141,68 @@ const Goals = () => {
         </DropdownMenu>
       </nav>
 
-      <div className="mt-4 w-full" style={{ height: 300 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data[view]}>
-            <XAxis dataKey="name" stroke="#ddd" />
-            <YAxis stroke="#ddd" />
-            <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="completed"
-              stroke="#10b981"
-              strokeWidth={2}
-              dot={{ r: 4 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="pending"
-              stroke="#ef4444"
-              strokeWidth={2}
-              dot={{ r: 4 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+      {/* Friends Only Toggle */}
+      <div className="mt-4 flex pl-6 items-center gap-2">
+        <label className="text-sm" style={{ color: theme.text }}>
+          Friends Only
+        </label>
+        <Button
+          variant="outline"
+          onClick={handleFriendsOnlyToggle}
+          className="relative w-14 h-8 rounded-full px-0 border-2 transition-all duration-200"
+        >
+          <span
+            className="absolute top-0.5 left-0.5 w-6 h-6 rounded-full transition-transform duration-200"
+            style={{
+              backgroundColor: "var(--txt)",
+              transform: friendsOnly ? "translateX(24px)" : "translateX(0px)",
+            }}
+          ></span>
+        </Button>
       </div>
+
+      {/* Leaderboard */}
+      <div className="mt-4">
+        <ul
+          className="rounded-lg overflow-hidden"
+          style={{ backgroundColor: theme.primary }}
+        >
+          {leaderboard.slice(0, 10).map((user, index) => {
+            const isCurrentUser = user.userId === currentUserId;
+
+            return (
+              <li
+                key={user.userId}
+                className="flex justify-between items-center py-3 px-5 transition-all duration-200"
+                style={{
+                  backgroundColor: isCurrentUser
+                    ? theme.accent
+                    : theme.secondary,
+                  color: isCurrentUser ? theme.tertiary : theme.text,
+                  fontWeight: isCurrentUser ? "600" : "normal",
+                }}
+              >
+                <span className="flex items-center gap-2">
+                  <span className="w-6 text-right">{getBadge(index)}</span>
+                  <span>{user.username}</span>
+                </span>
+                <span className="text-sm">{user.totalDuration} minutes</span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      {/* Current User Position */}
+      {currentUserId && currentUser && (
+        <div className="mt-4 text-lg font-semibold">
+          Your Position:{" "}
+          {leaderboard.findIndex((u) => u.userId === currentUserId) + 1} -{" "}
+          ({currentUser.totalDuration} minutes)
+        </div>
+      )}
     </div>
   );
 };
 
-export default Goals;
+export default Leaderboard;
