@@ -14,10 +14,11 @@ import {
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
+import { mockLocalUser } from "../../../mock/mockUser";
 const backendUrl = import.meta.env.VITE_API_URL;
 
 const ProfileCard = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(mockLocalUser);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -46,7 +47,7 @@ const ProfileCard = () => {
   }, []);
   if (isLoading || !user) {
     return (
-      <div className="rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-500/50 to-purple-500/5 rounded-3xl shadow-2xl pt-6 w-full h-fit relative overflow-hidden">
+      <div className="rounded-3xl overflow-hidden bg-gradient-to-br from-[var(--bg-ter)] to-[var(bg-primary)] rounded-3xl shadow-2xl pt-6 w-full h-fit relative overflow-hidden">
         {/* Skeleton nav */}
         <div className="flex justify-end gap-6 px-4">
           <div className="w-6 h-6 rounded-full bg-gray-400/30"></div>
@@ -98,7 +99,7 @@ const ProfileCard = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-indigo-500/50 to-purple-500/5 rounded-3xl shadow-2xl pt-6 w-full h-fit relative overflow-hidden">
+    <div className="bg-gradient-to-br from-[var(--bg-ter)] to-[var(bg-primary)] rounded-3xl shadow-2xl pt-6 w-full h-fit relative overflow-hidden">
       {/* nav */}
       <div className="flex justify-end gap-6 px-4">
         <Link to={"/settings/"}>
@@ -118,7 +119,7 @@ const ProfileCard = () => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-indigo-600/50 flex items-center justify-center">
+              <div className="w-full h-full bg-[var(--txt-disabled)] flex items-center justify-center">
                 <User className="w-16 h-16 text-white/70" />
               </div>
             )}
@@ -161,7 +162,7 @@ const ProfileCard = () => {
             <MessageCircle className="w-5 h-5" />
             <span>Chat</span>
           </button>
-          <button className="bg-purple-600 hover:bg-purple-700 transition-colors text-[var(--text-primary)] px-6 py-2 h-10 rounded-lg flex items-center space-x-2 w-full sm:w-auto text-center flex-1 text-nowrap">
+          <button className="bg-[var(--btn)] hover:bg-[var(--btn-hover)]transition-colors text-white px-6 py-2 h-10 rounded-lg flex items-center space-x-2 w-full sm:w-auto text-center flex-1 text-nowrap">
             <UserPlus className="w-5 h-5" />
             <span>Add friend</span>
           </button>
@@ -169,7 +170,7 @@ const ProfileCard = () => {
       </div>
 
       {/* Additional Details */}
-      <div className="bg-gray-500/20 rounded-3xl p-4 space-y-4">
+      <div className="rounded-3xl p-4 space-y-4">
         {user.FieldOfStudy && (
           <div className="flex items-center gap-4 text-[var(--text-secondary)]">
             <Landmark className="h-7 w-7" />
