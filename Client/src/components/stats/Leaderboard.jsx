@@ -105,11 +105,7 @@ const Leaderboard = () => {
 
   return (
     <div
-      className="p-6 pl-0 rounded-3xl shadow-md text-center w-full"
-      style={{
-        backgroundColor: theme.secondary,
-        color: theme.text,
-      }}
+      className="p-6 pl-0 rounded-3xl shadow-md text-center w-full bg-[var(--bg-sec)]"
     >
       <nav className="flex justify-between items-center pl-6">
         <h3 className="text-lg font-semibold flex items-center gap-2">
@@ -119,10 +115,6 @@ const Leaderboard = () => {
           <DropdownMenuTrigger asChild>
             <Button
               className="flex items-center gap-1"
-              style={{
-                backgroundColor: theme.tertiary,
-                color: theme.text,
-              }}
               onClick={() => setIsOpen(!isOpen)}
             >
               {view.charAt(0).toUpperCase() + view.slice(1)}{" "}
@@ -147,22 +139,18 @@ const Leaderboard = () => {
 
       {/* Friends Only Toggle */}
       <div className="mt-4 flex pl-6 items-center gap-2">
-        <label className="text-sm" style={{ color: theme.text }}>
+        <label className="text-sm" >
           Friends Only
         </label>
         <Button
           variant="outline"
           onClick={handleFriendsOnlyToggle}
           className="relative w-14 h-8 rounded-full px-0 border-2 transition-all duration-200"
-          style={{
-            backgroundColor: friendsOnly ? theme.accent : theme.tertiary,
-            borderColor: friendsOnly ? theme.accent : theme.tertiary,
-          }}
         >
           <span
             className="absolute top-0.5 left-0.5 w-6 h-6 rounded-full transition-transform duration-200"
             style={{
-              backgroundColor: theme.primary,
+              backgroundColor: "var(--txt)",
               transform: friendsOnly ? "translateX(24px)" : "translateX(0px)",
             }}
           ></span>
