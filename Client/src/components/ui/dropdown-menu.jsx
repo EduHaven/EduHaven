@@ -21,7 +21,7 @@ const DropdownMenuContent = ({ children, align = "end" }) => {
   return (
     <div
       className={cn(
-        "absolute mt-2 w-48 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-50",
+        "absolute mt-2 w-48 border bg-primary rounded-md shadow-lg z-50",
         align === "end" ? "right-0" : "left-0"
       )}
     >
@@ -34,7 +34,7 @@ const DropdownMenuItem = ({ children, onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="block w-full px-4 py-2 text-left text-sm text-gray-200 hover:bg-gray-700"
+      className="block w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-ter)]"
     >
       {children}
     </button>
