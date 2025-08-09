@@ -13,11 +13,6 @@ cloudinary.config({
     process.env.CLOUDINARY_API_SECRET || "BXpWyZHYKbAexc3conUG88t6TVM",
 });
 
-
-
-
-
-
 export const signup = async (req, res) => {
   try {
     const { FirstName, LastName, Email, Password } = req.body;
@@ -28,55 +23,40 @@ export const signup = async (req, res) => {
     }
 
     // Check if user already exists
-    let user = await User.findOne({ Email: Email });
-    if (user) {
+    let existingUser = await User.findOne({ Email });
+    if (existingUser) {
       return res.status(409).json({ error: "User already exists" });
     }
-    // const imageurl = req.body.imageUrl;
-    // console.log(imageurl)
-    // Hash the password
-    const haspass = await bcrypt.hash(Password, 12);
 
-    // Create a temporary user object (not saved in the database yet)
-    user = {
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(Password, 12);
+
+    // Save the user in the database
+    const newUser = await User.create({
       FirstName,
       LastName,
       Email,
-      Password: haspass, // Store hashed password
-      ProfilePicture: "https://cdn-icons-png.flaticon.com/512/219/219986.png", // Default profile picture
-    };
-
-    const otp = Math.floor(Math.random() * 1000000)
-      .toString()
-      .padStart(6, "0");
-    const activationToken = jwt.sign(
-      {
-        user,
-        otp,
-      },
-      process.env.Activation_Secret,
-      {
-        expiresIn: "1d",
-      }
-    );
-
-    await sendMail(Email,FirstName,otp);
-
-    const token = generateAuthToken(user);
-
-    res.cookie("activationToken", activationToken, {
-      expires: new Date(Date.now() + 86400000),
-      httpOnly: true,
+      Password: hashedPassword,
+      ProfilePicture: "https://cdn-icons-png.flaticon.com/512/219/219986.png",
     });
 
+    // Generate JWT token
+    const token = generateAuthToken(newUser);
+
+    // Return token and user info (without password)
     return res.status(201).json({
-      message: "OTP sent to your email.",
+      message: "Signup successful",
       token,
-      activationToken,
+      user: {
+        _id: newUser._id,
+        FirstName: newUser.FirstName,
+        LastName: newUser.LastName,
+        Email: newUser.Email,
+        ProfilePicture: newUser.ProfilePicture,
+      },
     });
   } catch (error) {
     console.error("Error during signup:", error);
-
     return res.status(500).json({ error: error.message });
   }
 };
@@ -309,5 +289,35 @@ export const uploadProfilePicture = async (req, res) => {
       error: "Failed to upload profile picture",
       details: error.message,
     });
+  }
+};
+
+// NEW: Get user streak data
+export const getUserStreaks = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const user = await User.findById(req.user._id).select("streaks");
+    
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Initialize streaks if they don't exist
+    if (!user.streaks) {
+      user.streaks = { current: 0, max: 0, lastStudyDate: null };
+      await user.save();
+    }
+
+    return res.status(200).json({
+      current: user.streaks.current || 0,
+      max: user.streaks.max || 0,
+      lastStudyDate: user.streaks.lastStudyDate
+    });
+  } catch (error) {
+    console.error("Error fetching user streaks:", error);
+    return res.status(500).json({ error: "Failed to fetch streak data" });
   }
 };

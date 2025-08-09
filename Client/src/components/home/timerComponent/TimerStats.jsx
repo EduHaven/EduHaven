@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Clock4, Flame, BarChart2 } from "lucide-react";
 
@@ -8,15 +8,56 @@ const dropdownButtonVariants = {
   hover: { backgroundColor: "var(--bg-ter)" },
 };
 
-function StudyStats() {
+function TimerStats() {
   const [selectedTime, setSelectedTime] = useState("Today");
   const [isOpen, setIsOpen] = useState(false);
+  const [streaks, setStreaks] = useState({ current: 0, max: 0 });
+  const [loading, setLoading] = useState(true);
+  const backendUrl = import.meta.env.VITE_API_URL;
+
   const studyData = {
     Today: "0.5 h",
     "This week": "3.2 h",
     "This month": "10.4 h",
     "All time": "45.8 h",
   };
+
+  // Fetch streak data
+  useEffect(() => {
+    const fetchStreakData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(`${backendUrl}/user/streaks`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          setStreaks({
+            current: result.current || 0,
+            max: result.max || 0
+          });
+        } else {
+          console.error("Failed to fetch streak data");
+        }
+      } catch (error) {
+        console.error("Error fetching streak data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStreakData();
+  }, [backendUrl]);
 
   return (
     <motion.div
@@ -101,7 +142,13 @@ function StudyStats() {
         transition={{ duration: 0.3, delay: 0.3 }}
       >
         <Flame className="h-12 w-12 p-2.5 bg-yellow-400/70 rounded-full text-gray-100" />
-        <p className="text-2xl font-bold text-yellow-400">20 days</p>
+        <p className="text-2xl font-bold text-yellow-400">
+          {loading ? (
+            <span className="text-lg">Loading...</span>
+          ) : (
+            `${streaks.current} days`
+          )}
+        </p>
       </motion.div>
 
       <motion.p
@@ -132,4 +179,4 @@ function StudyStats() {
   );
 }
 
-export default StudyStats;
+export default TimerStats;
