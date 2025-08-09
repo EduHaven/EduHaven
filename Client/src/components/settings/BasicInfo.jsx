@@ -229,7 +229,7 @@ export default function BasicInfo() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="bg-sec hover:bg-[var(--btn-hover)] px-4 py-2 rounded-lg shadow-sm transition-colors"
+              className="bg-sec hover:bg-[var(--btn-hover)] px-4 py-2 rounded-lg shadow-sm transition-colors hover:text-white"
               disabled={isProfilePicLoading || isProfileUpdateLoading}
             >
               Change image

@@ -161,7 +161,7 @@ const ProfileCard = () => {
             <MessageCircle className="w-5 h-5" />
             <span>Chat</span>
           </button>
-          <button className="bg-purple-600 hover:bg-purple-700 transition-colors text-[var(--text-primary)] px-6 py-2 h-10 rounded-lg flex items-center space-x-2 w-full sm:w-auto text-center flex-1 text-nowrap">
+          <button className="btn transition-colors px-6 py-2 h-10 rounded-lg flex items-center space-x-2 w-full sm:w-auto text-center flex-1 text-nowrap">
             <UserPlus className="w-5 h-5" />
             <span>Add friend</span>
           </button>
