@@ -1,48 +1,221 @@
-.Snakegame {
-  #c {
-    width: calc(100vw - 10rem);
-    height: calc(100vh - 8rem);
-    border-radius: 2rem;
-  }
+/*
+  snake.css - Final Stylesheet for Full-Screen Layout
+  This version ensures a true full-screen experience as per the reference image.
+*/
 
-  #snakenav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 4rem;
-    top: 10px;
-    right: 10px;
-    font-family: "Merriweather Sans", sans-serif;
-    font-size: 1.1rem;
-    color: white;
-  }
-
-  #snakenav .block {
-    display: flex;
-    gap: 1.5rem;
-  }
-
-  #snakenav label {
-    margin-left: 9px;
-  }
-
-  .notice-pause {
-    position: fixed;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: "Merriweather Sans", sans-serif;
-    font-size: 14px;
-    color: #b6b6b6;
-  }
-
-  canvas {
-    display: block;
-    width: 100vw;
-    height: 100vh;
-    background: rgb(26, 26, 26);
-    border: 1px solid rgb(53, 53, 53);
-    color: #969696;
-    /* color: white; */
-  }
+/* --- THEME DEFINITIONS --- */
+/* Base theme variables - used by both light and dark themes */
+:root {
+  --text-primary: #111;
+  --text-secondary: #444;
+  --button-active-bg: var(--neon-glow-color);
 }
+
+/* Light theme overrides */
+.light-theme {
+  --primary-bg: #ede8e8;
+  --navbar-bg: rgba(255, 255, 255, 0.75);
+  --navbar-border-color: rgba(0, 0, 0, 0.1);
+  --button-group-bg: rgba(0, 0, 0, 0.05);
+  --divider-color: rgba(0, 0, 0, 0.1);
+  --canvas-bg: #121212;
+}
+
+/* Dark theme overrides */
+.dark-theme {
+  --primary-bg: #121212;
+  --navbar-bg: rgba(40, 40, 40, 0.25);
+  --navbar-border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #fff;
+  --text-secondary: #ccc;
+  --button-group-bg: rgba(0, 0, 0, 0.3);
+  --divider-color: rgba(255, 255, 255, 0.1);
+  --canvas-bg: transparent;
+}
+
+
+/* Main container for the entire game screen */
+.snake-container {
+  /* Force full-screen layout */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  
+  /* Flexbox for vertical layout */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center children horizontally */
+  justify-content: flex-start; /* Align content to the top */
+  
+  padding: 2rem;
+  box-sizing: border-box;
+  background-color: var(--primary-bg);
+  font-family: "Segoe UI", "Merriweather Sans", sans-serif;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+/* --- Glassmorphism Navbar --- */
+.snake-navbar {
+  width: 100%;
+  max-width: 1200px; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  margin-bottom: 1.5rem; /* Space between navbar and play area */
+  border-radius: 1.25rem;
+  flex-shrink: 0;
+
+  /* Glassmorphism Effect */
+  background: var(--navbar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--navbar-border-color);
+
+  /* Dynamic Neon Glow */
+  box-shadow: 0 0 20px 2px var(--neon-glow-color);
+  transition: box-shadow 0.3s ease;
+}
+
+/* Left Section: Back Link */
+.nav-left .back-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+.nav-left .back-link:hover {
+  color: var(--neon-glow-color);
+}
+
+/* Center Section: Hi-Score */
+.nav-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-primary);
+}
+.hiscore-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.hiscore-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 0 10px var(--neon-glow-color);
+}
+
+/* Right Section: Segmented Button Group */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-right .button-group {
+  display: flex;
+  background-color: var(--button-group-bg);
+  border-radius: 0.75rem;
+  padding: 4px;
+  border: 1px solid var(--navbar-border-color);
+}
+
+.mode-button {
+  background-color: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-transform: capitalize;
+}
+
+.mode-button:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+/* Light theme hover override */
+.light-theme .mode-button:hover:not(.active) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.mode-button.active {
+  background-color: var(--button-active-bg);
+  color: var(--text-primary);
+  box-shadow: 0 0 15px -2px var(--neon-glow-color);
+}
+
+/* Separator between theme switcher and button group */
+.theme-switcher-container {
+  display: flex;
+  align-items: center;
+  /* Add a vertical divider line */
+  border-right: 1px solid var(--divider-color);
+  padding-right: 1rem;
+}
+
+.theme-switcher {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  color: var(--neon-glow-color);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.theme-switcher:hover {
+  background-color: var(--button-group-bg);
+}
+
+/* --- Canvas Container --- */
+.snake-canvas-container {
+  flex-grow: 1; /* This makes the container expand to fill available space */
+  width: 100%;
+  max-width: 1200px; 
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.5); /* White border for the play area */
+  box-shadow: 0 0 15px rgba(0,0,0,0.3); 
+  display: flex; /* Ensure canvas inside fills this container */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: var(--canvas-bg);
+}
+
+/* Light theme border override */
+.light-theme .snake-canvas-container {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+canvas#c {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+}
+
+/* --- Footer Notice --- */
+.notice-pause {
+  width: 100%;
+  text-align: center;
+  margin-top: 1.5rem; /* Space above the footer notice */
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  transition: color 0.3s ease;
+}
+
