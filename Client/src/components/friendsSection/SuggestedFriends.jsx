@@ -1,12 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { User, UserPlus, MoreVertical } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 const backendUrl = import.meta.env.VITE_API_URL;
 
 function SuggestedFriends({ onViewSentRequests }) {
   const [suggestedFriends, setSuggestedFriends] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdrownRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -86,7 +88,7 @@ function SuggestedFriends({ onViewSentRequests }) {
           .slice()
           .reverse()
           .map((user) => (
-            <div key={user._id} className=" relative group py-1 bg-slate-4 00">
+            <div key={user._id} onClick={() => navigate(`/${user._id}`)} className=" relative group py-1 bg-slate-4 00">
               <div className="flex items-center">
                 {user.ProfilePicture ? (
                   <img
