@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Users, UserPlus2, UserCheck, UserMinus } from "lucide-react";
 import TabNavigation from "../components/friendsPage/TabNavigation";
 import MainContent from "../components/friendsPage/MainContent";
 
@@ -96,18 +97,23 @@ function FriendsPage() {
     axios
       .get(`${backendUrl}${endpoint}`, getAuthHeader())
       .then((res) => {
+        // Sort users by createdAt date, newest first
+        const sortedData = res.data.sort((a, b) => 
+          new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        
         switch (tab) {
           case "suggested":
-            setSuggestedFriends(res.data);
+            setSuggestedFriends(sortedData);
             break;
           case "friendRequests":
-            setFriendRequests(res.data);
+            setFriendRequests(sortedData);
             break;
           case "sentRequests":
-            setSentRequests(res.data);
+            setSentRequests(sortedData);
             break;
           case "allFriends":
-            setAllFriends(res.data);
+            setAllFriends(sortedData);
             break;
           default:
             break;

@@ -23,7 +23,7 @@ export const userList = async (req, res) => {
         { _id: { $nin: currentUser.sentRequests || [] } },
         { _id: { $nin: currentUser.friendRequests || [] } },
       ],
-    }).select("FirstName LastName ProfilePicture Bio OtherDetails");
+    }).sort({ _id: -1 }).select("FirstName LastName ProfilePicture Bio OtherDetails");
 
     res.json(users);
   } catch (err) {

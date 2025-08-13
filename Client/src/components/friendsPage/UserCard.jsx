@@ -10,25 +10,26 @@ function UserCard({
   onRemoveFriend,
 }) {
   return (
-    <div className="bg-[var(--bg-ter)] p-4 rounded-xl shadow-md">
-      {/* {console.log(user)} */}
-      <div className="flex items-center">
+    <div className="bg-[var(--bg-ter)] p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+      <div className="flex items-start gap-4">
         <img
           src={user.ProfilePicture}
           alt="Profile"
-          className="w-14 h-14 rounded-full"
+          className="w-16 h-16 rounded-full object-cover border-2 border-[var(--btn)]"
         />
-        <div className="ml-4 flex-1">
-          <h4 className="text-lg font-semibold">{`${user.FirstName} ${user.LastName || ""}`}</h4>
-          <p className="text-sm text-gray-500">{user.Bio}</p>
+        <div className="flex-1">
+          <h4 className="text-xl font-semibold text-[var(--txt)]">{`${user.FirstName} ${user.LastName || ""}`}</h4>
+          <p className="text-sm text-[var(--txt-sec)] mt-1 line-clamp-2">{user.Bio || "No bio available"}</p>
 
-          <div className="mt-2">
+          <div className="mt-3 flex flex-wrap gap-2">
             {user.OtherDetails?.interests ? (
-              <span className="text-xs text-gray-600 bg-gray-200 px-2 py-1 rounded-full inline-block">
-                {user.OtherDetails.interests  }
-              </span>
+              user.OtherDetails.interests.split(',').map((interest, index) => (
+                <span key={index} className="text-xs text-[var(--txt-sec)] bg-[var(--bg-sec)] px-3 py-1 rounded-full">
+                  {interest.trim()}
+                </span>
+              ))
             ) : (
-              <span className="text-xs text-gray-400 bg-gray-200 px-2 py-1 rounded-full inline-block">
+              <span className="text-xs text-[var(--txt-sec)] bg-[var(--bg-sec)] px-3 py-1 rounded-full">
                 No interests available
               </span>
             )}
