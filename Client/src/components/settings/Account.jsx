@@ -7,6 +7,8 @@ const Account = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanged, setHasChanged] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
 
   useEffect(() => {
     setHasChanged(email !== "" && password !== "");
@@ -15,7 +17,6 @@ const Account = () => {
   const handleUpdate = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // simulate async update
     setTimeout(() => {
       toast.success("Account updated");
       setIsLoading(false);
@@ -23,8 +24,6 @@ const Account = () => {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete your account?")) return;
-
     try {
       setIsLoading(true);
       const token = localStorage.getItem("token");
@@ -47,16 +46,16 @@ const Account = () => {
       if (!res.ok) throw new Error(data.error || "Failed to delete account");
 
       toast.success(data.message || "Account deleted successfully");
-
       localStorage.removeItem("token");
-      setTimeout(() => window.location.reload(), 1000);
+      setTimeout(() => (window.location.href = "/"), 1000);
     } catch (error) {
       toast.error(error.message);
     } finally {
       setIsLoading(false);
+      setShowDeleteModal(false);
+      setConfirmText("");
     }
   };
-
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -105,10 +104,10 @@ const Account = () => {
       <div className="mt-8 border-t border-gray-400/40 pt-6">
         <button
           type="button"
-          onClick={handleDelete}
+          onClick={() => setShowDeleteModal(true)}
           className="px-6 py-3 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700 transition-all shadow-md"
         >
-          Delete Account
+          Request Account Deletion
         </button>
       </div>
     </div>
