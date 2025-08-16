@@ -21,7 +21,7 @@ const CATEGORIES = [
   "Art/design",
 ];
 
-// Improved Skeleton with better background matching
+// Skeleton loader
 function RoomCardSkeleton() {
   return (
     <div className="bg-[var(--bg-secondary)] border border-gray-700/30 p-6 rounded-3xl shadow animate-pulse">
@@ -57,12 +57,18 @@ export default function OtherRoom({ otherRooms, isLoading = true }) {
 
   const filteredSessions = sessions.filter((room) => {
     const matchCategory =
-      selectedCategory === "All" || room.cateogery === selectedCategory;
-    const matchSearch = room.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+      selectedCategory === "All" ||
+      room.category?.toLowerCase() === selectedCategory.toLowerCase();
+
+    const query = searchQuery.toLowerCase();
+    const matchSearch =
+      room.name?.toLowerCase().includes(query) ||
+      room.category?.toLowerCase().includes(query) ||
+      room.description?.toLowerCase().includes(query);
+
     return matchCategory && matchSearch;
   });
+
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -86,10 +92,9 @@ export default function OtherRoom({ otherRooms, isLoading = true }) {
         <input
           type="text"
           placeholder="Search rooms..."
-          className="w-[270px] px-4 py-2 mb-3 border rounded-full bg-transparent text-white placeholder-gray-400 border-gray-600 "
+          className="w-[270px] px-4 py-2 mb-3 border rounded-full bg-transparent text-white placeholder-gray-400 border-gray-600"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          disabled={isLoading}
         />
       </div>
 
@@ -113,11 +118,10 @@ export default function OtherRoom({ otherRooms, isLoading = true }) {
             <button
               key={cat}
               onClick={() => !isLoading && setSelectedCategory(cat)}
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full border text-sm transition ${
-                selectedCategory === cat
-                  ? "btn text-white border-[var(--btn)]"
-                  : "bg-transparent txt border-gray-50/20 hover:bg-[var(--btn-hover)] hover:text-white"
-              } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`whitespace-nowrap px-4 py-1.5 rounded-full border text-sm transition ${selectedCategory === cat
+                ? "btn text-white border-[var(--btn)]"
+                : "bg-transparent txt border-gray-50/20 hover:bg-[var(--btn-hover)] hover:text-white"
+                } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
               disabled={isLoading}
             >
               {cat}
@@ -136,6 +140,7 @@ export default function OtherRoom({ otherRooms, isLoading = true }) {
         </div>
       </div>
 
+      {/* Rooms display */}
       {showSkeletons ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array(6)
