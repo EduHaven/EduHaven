@@ -41,7 +41,7 @@ const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
       refreshEvents();
     } catch (error) {
       console.error("Error updating event:", error);
-    }
+    } 
   };
 
   const handleDelete = async (eventId) => {
