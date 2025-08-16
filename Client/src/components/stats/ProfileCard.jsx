@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import {
   User,
   MessageCircle,
@@ -21,6 +22,24 @@ const ProfileCard = ({ isCurrentUser = false }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { userId } = useParams();
+  const [showLink, setShowLink] = useState(false);
+
+   // user part for share functionality
+   const profilelink = user?._id ? `${window.location.origin}/user/${user._id}` : "" ;
+
+   //Logic part for share functionality
+   const togglelink = () => setShowLink((prev) => !prev);
+
+   const copylink =()=>{
+     if(!profilelink) return;
+     navigator.clipboard.writeText(profilelink)
+     .then(() => {
+       toast.success("Copied ");
+       setShowLink(false);
+     })
+     .catch(()=> toast.error("Not Copied "));
+   };
+
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -115,7 +134,28 @@ const ProfileCard = ({ isCurrentUser = false }) => {
             <Edit3 className="h-6 w-6 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" />
           </Link>
         )}
-        <Share2 className="h-6 w-6 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" />
+        
+        {user?._id && (
+             <div className="relative inline-block">
+                <Share2
+                     className="h-6 w-6 text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                     onClick={togglelink}
+                />
+
+               {showLink && (
+                  <div className="absolute top-full right-0 mt-2 w-64 p-3 bg-white border border-gray-200 rounded-xl shadow-lg flex items-center justify-between gap-2 z-50">
+                         <span className="text-sm text-gray-700 truncate">  {profilelink} </span>
+                      <button
+                        className="px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                          onClick={copylink}
+                       >
+                          Copy
+                       </button>
+                   </div>
+               )}
+             </div>
+           )}
+
       </div>
 
       <div className="mx-4">
