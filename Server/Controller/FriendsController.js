@@ -91,6 +91,17 @@ export const incomingRequests = async (req, res) => {
   }
 };
 
+export const getFriendsCount = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const count = user.friends.length;
+    res.json({ count : count });
+  } catch (err) {
+    console.error("Error fetching friends count:", err);  
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export const acceptRequest = async (req, res) => {
   try {
     const userId = req.user._id;

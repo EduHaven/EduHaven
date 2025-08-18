@@ -43,7 +43,7 @@ function RoomCardSkeleton() {
   );
 }
 
-export default function OtherRoom({ otherRooms, isLoading = true }) {
+export default function OtherRoom({ otherRooms, isLoading = false }) {
   const [sessions, setSessions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -74,7 +74,7 @@ export default function OtherRoom({ otherRooms, isLoading = true }) {
     }
   };
 
-  const showSkeletons = isLoading && sessions.length === 0;
+  const showSkeletons = !isLoading && sessions.length === 0;
 
   return (
     <div>
@@ -86,7 +86,7 @@ export default function OtherRoom({ otherRooms, isLoading = true }) {
         <input
           type="text"
           placeholder="Search rooms..."
-          className="w-[270px] px-4 py-2 mb-3 border rounded-full bg-transparent text-white placeholder-gray-400 border-gray-600 "
+          className="w-[270px] px-4 py-2 mb-3 border rounded-full bg-transparent placeholder-gray-400 border-gray-600"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           disabled={isLoading}

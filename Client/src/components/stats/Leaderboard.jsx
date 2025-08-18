@@ -21,173 +21,186 @@ const Leaderboard = () => {
   const [friendsOnly, setFriendsOnly] = useState(false);
   const [leaderboard, setLeaderboard] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Theme state
-  const [theme, setTheme] = useState({
-    primary: "#ffffff",
-    secondary: "#f0f0f0",
-    tertiary: "#e0e0e0",
-    text: "#000000",
-    accent: "#000000",
-  });
-
-  // Load theme from localStorage
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme) {
-      try {
-        setTheme(JSON.parse(storedTheme));
-      } catch (err) {
-        console.error("Failed to parse theme from localStorage", err);
-      }
-    }
-  }, []);
-
-  const getCurrentUserIdFromToken = () => {
     const token = localStorage.getItem("token");
-    if (!token) return null;
-
+    if (!token) return;
     try {
-      const base64Payload = token.split(".")[1];
-      const payload = JSON.parse(atob(base64Payload));
-      return payload.id;
-    } catch (error) {
-      console.error("Invalid token", error);
-      return null;
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      setCurrentUserId(payload.id);
+    } catch (err) {
+      console.error("Invalid token", err);
     }
-  };
-
-  useEffect(() => {
-    const id = getCurrentUserIdFromToken();
-    setCurrentUserId(id);
   }, []);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
+      setLoading(true);
       try {
         const res = await axios.get(
           `${backendUrl}/leaderboard?period=${view}&friendsOnly=${friendsOnly}`,
           getAuthHeader()
         );
-        setLeaderboard(res.data);
+        setTimeout(() => {
+          setLeaderboard(res.data);
+          setLoading(false);
+        }, 300);
       } catch (error) {
         console.error("Failed to fetch leaderboard:", error);
+        setLoading(false);
       }
     };
 
     fetchLeaderboard();
   }, [friendsOnly, view]);
 
-  const handleDropdownClick = (viewType) => {
-    setView(viewType);
-  };
-
-  const handleFriendsOnlyToggle = () => {
-    setFriendsOnly((prev) => !prev);
-  };
+  const handleDropdownClick = (viewType) => setView(viewType);
+  const handleFriendsOnlyToggle = () => setFriendsOnly((prev) => !prev);
 
   const currentUser = leaderboard.find((user) => user.userId === currentUserId);
 
   const getBadge = (rank) => {
+    const baseBadgeStyle = `inline-flex items-center gap-1 rounded-full text-xs font-medium px-2 py-1`;
+
     switch (rank) {
       case 0:
-        return "🥇";
+        return (
+          <span className={`${baseBadgeStyle} bg-[var(--btn)] text-white`}>
+            🥇 <span>1st</span>
+          </span>
+        );
       case 1:
-        return "🥈";
+        return (
+          <span className={`${baseBadgeStyle} bg-[var(--bg-sec)] text-[var(--txt)]`}>
+            🥈 <span>2nd</span>
+          </span>
+        );
       case 2:
-        return "🥉";
+        return (
+          <span className={`${baseBadgeStyle} bg-[var(--bg-ter)] text-[var(--txt)]`}>
+            🥉 <span>3rd</span>
+          </span>
+        );
       default:
-        return `${rank + 1}.`;
+        return (
+          <span className="text-[var(--txt-dim)] font-medium text-sm">
+            {rank + 1}.
+          </span>
+        );
     }
   };
 
+  const formatDuration = (minutes) => {
+    const days = Math.floor(minutes / (60 * 24));
+    const hours = Math.floor((minutes % (60 * 24)) / 60);
+    const remainingMinutes = minutes % 60;
+
+    let result = "";
+    if (days > 0) result += `${days}d `;
+    if (hours > 0) result += `${hours}h `;
+    if (remainingMinutes > 0 || result === "") result += `${remainingMinutes}m`;
+    return result.trim();
+  };
+
   return (
-    <div
-      className="p-6 pl-0 rounded-3xl shadow-md text-center w-full bg-[var(--bg-sec)]"
-    >
-      <nav className="flex justify-between items-center pl-6">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <strong>Leaderboard</strong>
-        </h3>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="flex items-center gap-1">
-              {view.charAt(0).toUpperCase() + view.slice(1)}{" "}
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-[var(--bg-sec)]">
-            <DropdownMenuItem onSelect={() => handleDropdownClick("daily")}>
-              Daily
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleDropdownClick("weekly")}>
-              Weekly
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleDropdownClick("monthly")}>
-              Monthly
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </nav>
+    <div className="p-6 w-full bg-[var(--bg-sec)] mx-auto shadow-2xl rounded-3xl">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-3 ">
+        <h2 className="text-3xl font-bold text-[var(--txt)]">Leaderboard</h2>
 
-      {/* Friends Only Toggle */}
-      <div className="mt-4 flex pl-6 items-center gap-2">
-        <label className="text-sm" >
-          Friends Only
-        </label>
-        <Button
-          variant="outline"
-          onClick={handleFriendsOnlyToggle}
-          className="relative w-14 h-8 rounded-full px-0 border-2 transition-all duration-200"
-        >
-          <span
-            className="absolute top-0.5 left-0.5 w-6 h-6 rounded-full transition-transform duration-200"
-            style={{
-              backgroundColor: "var(--txt)",
-              transform: friendsOnly ? "translateX(24px)" : "translateX(0px)",
-            }}
-          ></span>
-        </Button>
-      </div>
-
-      {/* Leaderboard */}
-      <div className="mt-4">
-        <ul
-          className="rounded-lg overflow-hidden"
-          style={{ backgroundColor: theme.primary }}
-        >
-          {leaderboard.slice(0, 10).map((user, index) => {
-            const isCurrentUser = user.userId === currentUserId;
-
-            return (
-              <li
-                key={user.userId}
-                className="flex justify-between items-center py-3 px-5 transition-all duration-200"
-                style={{
-                  backgroundColor: isCurrentUser
-                    ? theme.accent
-                    : theme.secondary,
-                  color: isCurrentUser ? theme.tertiary : theme.text,
-                  fontWeight: isCurrentUser ? "600" : "normal",
-                }}
+        <div className="flex items-center gap-4">
+          {/* Timeframe Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="flex items-center gap-2 text-sm"
               >
-                <span className="flex items-center gap-2">
-                  <span className="w-6 text-right">{getBadge(index)}</span>
-                  <span>{user.username}</span>
-                </span>
-                <span className="text-sm">{user.totalDuration} minutes</span>
-              </li>
-            );
-          })}
-        </ul>
+                {view.charAt(0).toUpperCase() + view.slice(1)}{" "}
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-white shadow-lg">
+              {["daily", "weekly", "monthly"].map((period) => (
+                <DropdownMenuItem
+                  key={period}
+                  onSelect={() => handleDropdownClick(period)}
+                  className="cursor-pointer hover:bg-gray-100"
+                >
+                  {period.charAt(0).toUpperCase() + period.slice(1)}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Friends Only Toggle */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm">Friends Only</span>
+            <button
+              onClick={handleFriendsOnlyToggle}
+              className={`w-14 h-7 flex items-center rounded-full p-1 transition-colors duration-300 ${friendsOnly ? "bg-[var(--btn)]" : "bg-[var(--bg-ter)]"
+                }`}
+            >
+              <div
+                className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 ${friendsOnly ? "translate-x-7" : "translate-x-0"
+                  }`}
+              />
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Current User Position */}
-      {currentUserId && currentUser && (
-        <div className="mt-4 text-lg font-semibold">
+      {/* Column Headers */}
+      <div className="grid grid-cols-3 px-5 pb-2 text-sm font-semibold text-[var(--txt-dim)]">
+        <div>Rank</div>
+        <div className="text-center">Username</div>
+        <div className="text-right">Time</div>
+      </div>
+
+      {/* Leaderboard Content */}
+      <div
+        className={`space-y-3 transition-all duration-500 ${loading ? "opacity-0 -translate-y-2" : "opacity-100 translate-y-0"
+          } min-h-[500px]`}
+      >
+        {!loading && leaderboard.length === 0 ? (
+          <div className="flex items-center justify-center h-full text-[var(--txt-dim)] text-sm font-medium">
+            No records found for this timeframe.
+          </div>
+        ) : (
+          leaderboard.slice(0, 10).map((user, index) => {
+            const isCurrentUser = user.userId === currentUserId;
+            return (
+              <div
+                key={user.userId}
+                className={`grid grid-cols-3 items-center px-5 py-4 rounded-xl transition-all border text-sm ${isCurrentUser
+                    ? "bg-[var(--btn)] border-[var(--btn-hover)] text-white"
+                    : "bg-[var(--bg-primary)] hover:bg-[var(--bg-ter)] border-gray-200 text-[var(--txt)]"
+                  }`}
+              >
+                <div className="flex justify-start">{getBadge(index)}</div>
+
+                <div className="text-center font-semibold">{user.username}</div>
+
+                <div
+                  className={`text-right font-medium ${isCurrentUser ? "text-white" : "text-[var(--txt-dim)]"
+                    }`}
+                >
+                  {formatDuration(user.totalDuration)}
+                </div>
+
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Footer */}
+      {currentUser && leaderboard.length > 0 && (
+        <div className="mt-6 text-center text-lg font-semibold text-[var(--txt-dim)]">
           Your Position:{" "}
-          {leaderboard.findIndex((u) => u.userId === currentUserId) + 1} -{" "}
-          ({currentUser.totalDuration} minutes)
+          {leaderboard.findIndex((u) => u.userId === currentUserId) + 1} (
+          {formatDuration(currentUser.totalDuration)})
         </div>
       )}
     </div>

@@ -69,7 +69,7 @@ export const getEventById = async (req, res) => {
 export const createEvent = async (req, res) => {
     try {
         const { title, date, time } = req.body;
-
+        
         // Validation
         if (!title || !date || !time) {
             return res.status(400).json({ success: false, error: "Title, date, and time are required." });

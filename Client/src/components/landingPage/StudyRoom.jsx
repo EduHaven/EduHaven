@@ -2,7 +2,7 @@ import { MessageCircle, Video } from "lucide-react";
 
 function StudyRoom() {
   return (
-    <div className="max-w-7xl mx-auto mb-28 flex gap-4 xl:gap-24 items-center justify-center">
+    <div className="max-w-3xl xl:max-w-7xl mx-auto mb-28 flex gap-4 xl:gap-24 items-center justify-center">
       <div className="flex-1 max-w-[600px] relative rounded-3xl overflow-hidden shadow-2xl group">
         <div
           className="aspect-video relative bg-cover bg-center"
@@ -18,26 +18,26 @@ function StudyRoom() {
           </div>
 
           {/* Floating chat bubbles */}
-          <div className="absolute top-16 right-8 bg-white rounded-2xl p-3 shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
+          <div className="absolute top-[12%] right-8 bg-white rounded-lg xl:rounded-2xl p-1.5 xl:p-3 shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
             <div className="flex items-center space-x-2">
               <MessageCircle size={16} style={{ color: "var(--btn)" }} />
-              <span className="text-sm" style={{ color: "var(--txt)" }}>
+              <span className="text-xs" style={{ color: "var(--txt)" }}>
                 Need help with calculus?
               </span>
             </div>
           </div>
 
-          <div className="absolute bottom-16 left-8 bg-white rounded-2xl p-3 shadow-lg transform -rotate-2 hover:rotate-0 transition-transform duration-300">
+          <div className="absolute bottom-[12%] left-8 bg-white rounded-lg xl:rounded-2xl p-1.5 xl:p-3 shadow-lg transform -rotate-2 hover:rotate-0 transition-transform duration-300">
             <div className="flex items-center space-x-2">
               <Video size={16} style={{ color: "var(--btn)" }} />
-              <span className="text-sm" style={{ color: "var(--txt)" }}>
+              <span className="text-xs" style={{ color: "var(--txt)" }}>
                 Let's start a study group!
               </span>
             </div>
           </div>
         </div>
       </div>
-      <h1 className="flex-1 max-w-[400px] text-balance text-3xl font-poppins font-thin leading-[1.5] min-h-[calc(1.5em*4)]">
+      <h1 className="flex-1 max-w-[400px] text-balance text-2xl xl:text-3xl font-poppins font-thin leading-[1.5] min-h-[calc(1.5em*4)]">
         Connect with like-minded people, share knowledge build connections
       </h1>
     </div>

@@ -59,6 +59,22 @@ const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
 
   const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
 
+  const convertTo12HourFormat = (timeString)=>{
+
+    const [hourString, minutes] = timeString.split(":"); 
+    
+    let hour = parseInt(hourString) ;; 
+    
+    const ampm = hour >=12 ? "PM" : "AM" ; 
+    if(hour === 0 ){
+      hour = 12 ;  //12 AM 
+    }else if (hour > 12){
+      hour = hour -  12  ; 
+    }
+
+    return `${hour}:${minutes} ${ampm}` ; 
+
+  }
   return (
     <AnimatePresence>
       <motion.div
@@ -90,7 +106,11 @@ const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
           >
             {sortedEvents.length > 0 ? (
               sortedEvents.map((event) => {
+
+                
+                const eventTime =  convertTo12HourFormat(event.time);
                 const eventDate = new Date(event.date);
+                
                 const isToday = eventDate.toDateString() === new Date().toDateString();
                 
                 return (
@@ -155,11 +175,7 @@ const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
                             )}
                           </div>
                           <div className="text-sm txt-dim mb-1">
-                            {eventDate.toLocaleTimeString("en-US", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            })}
+                            {eventTime}
                           </div>
                           <span className="block txt font-medium">{event.title}</span>
                         </div>

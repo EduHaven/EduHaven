@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useState, useEffect, useRef } from "react";
+
 import {
   User,
   MessageCircle,
@@ -11,16 +12,25 @@ import {
   Earth,
   DraftingCompass,
   Puzzle,
+  X
 } from "lucide-react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Link, useParams } from "react-router-dom";
-
+import { set } from "date-fns";
 const backendUrl = import.meta.env.VITE_API_URL;
 
-const ProfileCard = ({ isCurrentUser = false }) => {
+const ProfileCard = ({isCurrentUser = false}) => {
+  const getAuthHeader = () => {
+    const token = localStorage.getItem("token");
+    return { headers: { Authorization: `Bearer ${token}` } };
+  };
+
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [friendsCount, setFriendsCount] = useState(0);
+  const [showPopup, setShowPopup] = useState(false);
+  const [friendsList, setFriendsList] = useState([]);
   const { userId } = useParams();
   const [showLink, setShowLink] = useState(false);
 
@@ -40,6 +50,35 @@ const ProfileCard = ({ isCurrentUser = false }) => {
      .catch(()=> toast.error("Not Copied "));
    };
 
+
+  const popupRef = useRef(null);
+
+  useEffect(() => {
+      const fetchFriendsCount = async() => {
+        try {
+          const response = await axios.get(`${backendUrl}/friends/count`, getAuthHeader());
+          setFriendsCount(response.data.count);
+          console.log("Friends count is:", response.data.count);
+        } catch (error) {
+          console.error("Error fetching friends count:", error);
+        }
+      };
+
+      const fetchFriendsList = async () => {
+        try {
+          const response = await axios.get(
+            `${backendUrl}/friends`,
+            getAuthHeader()
+          );
+          setFriendsList(response.data);
+        } catch (error) {
+          console.error("Error fetching friends list:", error);
+        }
+      };
+
+      fetchFriendsCount();
+      fetchFriendsList();
+    }, []);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -68,13 +107,27 @@ const ProfileCard = ({ isCurrentUser = false }) => {
         setIsLoading(false);
       }
     };
-
     fetchUserProfile();
   }, [isCurrentUser, userId]);
 
+  useEffect(() => {
+    if (showPopup) {
+      const handleClickOutside = (event) => {
+        if (popupRef.current && !popupRef.current.contains(event.target)) {
+          setShowPopup(false);
+        }
+      };
+
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [showPopup]);
+
   if (isLoading || !user) {
     return (
-      <div className="overflow-hidden bg-gradient-to-br from-indigo-500/50 to-purple-500/5 rounded-3xl shadow-2xl pt-6 w-full h-fit relative">
+      <div className="rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-500/50 to-purple-500/5 rounded-3xl shadow-2xl pt-6 w-full h-fit relative overflow-hidden">
         {/* Skeleton nav */}
         <div className="flex justify-end gap-6 px-4">
           {isCurrentUser && <div className="w-6 h-6 rounded-full bg-gray-400/30"></div>}
@@ -186,14 +239,78 @@ const ProfileCard = ({ isCurrentUser = false }) => {
             </span>
             <span className="text-sm text-[var(--text-secondary)]">Kudos</span>
           </div>
-          <div className="text-center flex-1">
+          <div 
+            onClick={() => setShowPopup(!showPopup)} 
+            className="text-center flex-1 cursor-pointer hover:bg-white/20 rounded-lg p-2 transition-colors"
+            ref={popupRef}
+          >
             <span className="block text-2xl font-bold text-[var(--text-primary)]">
-              56
+              {friendsCount}
             </span>
             <span className="text-sm text-[var(--text-secondary)]">
               Friends
             </span>
           </div>
+
+          {/* Updated Popup */}
+          {showPopup && (
+            <div className="fixed bg-transparent/50 inset-0 flex items-center justify-center z-50 p-4 sm:p-4">
+              <div 
+                ref={popupRef}
+                className="w-full max-w-80  sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl h-2/5 sm:h-96 md:h-[28rem] lg:h-[32rem] bg-ter rounded-2xl shadow-2xl flex flex-col "
+              >
+                {/* Header */}
+                <div className="bg-gray-800 border-b border-gray-600 p-4 flex items-center justify-between flex-shrink-0">
+                  <h2 className="text-2xl font-bold text-white-100">Friends List</h2>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-400 bg-gray-900 px-3 py-1 rounded-full">
+                      {friendsCount} friends
+                    </span>
+                    <button
+                      onClick={() => setShowPopup(false)}
+                      className="text-white hover:text-indigo-200 transition-colors p-1"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Scrollable Friends List */}
+                <div className="flex-1 overflow-y-auto bg-gray-900 pt-4">
+                  <div className="bg-gray-900">
+                    {friendsList.map((friend) => (
+                      <div 
+                        key={friend._id}
+                        className="flex items-center gap-3 p-4 cursor-pointer"
+                      >
+                        <div className="w-10 h-10 rounded-full flex-shrink-0">
+                          {friend.ProfilePicture ? (
+                            <img
+                              src={friend.ProfilePicture}
+                              className="w-full h-full object-cover"
+                              alt={`${friend.FirstName}'s profile`}
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                              <User className="w-5 h-5 text-white-100" />
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white-100 font-bold text-xl truncate">
+                            {friend.FirstName
+                              ? `${friend.FirstName} ${friend.LastName || ""}`
+                              : "old-user"}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* User Info */}

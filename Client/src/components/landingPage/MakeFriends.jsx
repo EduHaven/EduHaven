@@ -1,7 +1,7 @@
 function MakeFriends() {
   return (
-    <div className="max-w-7xl mx-auto mb-28 flex gap-4 xl:gap-24 items-center justify-center">
-      <h1 className="flex-1 text-right max-w-[400px] text-3xl font-poppins font-thin leading-[1.5] min-h-[calc(1.5em*4)] text-balance">
+    <div className="max-w-3xl xl:max-w-7xl  mx-auto mb-28 flex gap-4 xl:gap-24 items-center justify-center">
+      <h1 className="flex-1 text-right max-w-[400px] text-2xl xl:text-3xl font-poppins font-thin leading-[1.5] min-h-[calc(1.5em*4)] text-balance">
         Add friends, create study groups, track insights and progress together.
       </h1>
 

@@ -364,7 +364,9 @@ export default function BasicInfo() {
                 className="w-full px-4 py-3 bg-[var(--bg-sec)] border border-transparent rounded-lg text-[var(--txt)] focus:outline-none focus:ring-2 focus:ring-[var(--btn)] focus:border-transparent transition-all pr-10"
                 disabled={isProfileUpdateLoading}
               >
-                <option value="">Select Gender</option>
+                <option value="" disabled hidden>
+                  Select Gender
+                </option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>

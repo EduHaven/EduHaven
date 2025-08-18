@@ -1,8 +1,31 @@
 {
   "manifest_version": 3,
-  "name": "EduHeaven - study rooms & focus",
+  "name": "EduHaven - study rooms & focus",
   "version": "1.0.0",
   "description": "EduHaven is a productivity platform designed to enhance focus",
+  "icons": [
+    {
+      "src": "/Logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
   "permissions": ["storage"],
   "chrome_url_overrides": {
     "newtab": "index.html"
@@ -15,6 +38,10 @@
     ]
   },
   "background": {
-    "service_worker": "background.js"
-  }
+    "service_worker": "sw.js"
+  },
+  "theme_color": "#7f23ca",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
 }

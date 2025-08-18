@@ -1,5 +1,9 @@
 import Task from "../Model/ToDoModel.js";
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
+import { 
+  startOfDay, endOfDay,
+  startOfWeek, endOfWeek,
+  startOfMonth, endOfMonth 
+} from 'date-fns';
 
 export const getAllTodos = async (req, res) => {
   try {
@@ -7,20 +11,19 @@ export const getAllTodos = async (req, res) => {
       return res.status(401).json({ success: false, error: 'Unauthorized. User ID missing.' });
     }
 
-    const view = req.query.view || "all"; 
+    const view = req.query.view || "all";
     const now = new Date();
     let startDate, endDate;
 
-    // Determine date range
     if (view === "daily") {
-      startDate = startOfWeek(now, { weekStartsOn: 1 }); // Monday
+      startDate = startOfDay(now);
       endDate = endOfDay(now);
     } else if (view === "weekly") {
+      startDate = startOfWeek(now, { weekStartsOn: 1 });
+      endDate = endOfWeek(now, { weekStartsOn: 1 });
+    } else if (view === "monthly") {
       startDate = startOfMonth(now);
       endDate = endOfMonth(now);
-    } else if (view === "monthly") {
-      startDate = new Date(now.getFullYear(), 0, 1); 
-      endDate = new Date(now.getFullYear(), 11, 31); 
     }
 
     const query = { user: req.user.id };
@@ -30,19 +33,18 @@ export const getAllTodos = async (req, res) => {
 
     const tasks = await Task.find(query).sort({ createdAt: -1 });
 
-    // Group by view
+    // ===== Group for chart =====
     const grouped = {};
-
     tasks.forEach((task) => {
       const createdAt = new Date(task.createdAt);
       let key;
 
       if (view === "daily") {
-        key = createdAt.toLocaleDateString("en-US", { weekday: "short" }); 
+        key = createdAt.toLocaleDateString("en-US", { weekday: "short" });
       } else if (view === "weekly") {
         key = `Week ${Math.ceil(createdAt.getDate() / 7)}`;
       } else if (view === "monthly") {
-        key = createdAt.toLocaleDateString("en-US", { month: "short" }); 
+        key = createdAt.toLocaleDateString("en-US", { month: "short" });
       }
 
       if (!grouped[key]) grouped[key] = { name: key, completed: 0, pending: 0 };
@@ -50,9 +52,7 @@ export const getAllTodos = async (req, res) => {
       else grouped[key].pending += 1;
     });
 
-    // Fill in missing labels for chart continuity
     const finalData = [];
-
     if (view === "daily") {
       const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
       days.forEach((day) => {
@@ -70,13 +70,16 @@ export const getAllTodos = async (req, res) => {
       });
     }
 
+    // Return both tasks and chart data
     res.status(200).json({
       success: true,
-      data: finalData,
+      data: tasks,        // This is what your frontend's `setTodos` needs
+      chartData: finalData,
       total: tasks.length,
       completed: tasks.filter((t) => t.completed).length,
     });
   } catch (error) {
+    console.error("Error in getAllTodos:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };

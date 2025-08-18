@@ -41,33 +41,14 @@ const GoalsComponent = () => {
   const fetchTodos = async () => {
     try {
       const { data } = await axios.get(`${backendUrl}/todo`, getAuthHeader());
-      setTodos(data.data);
+      console.log("Fetched todos:", data.data);
+      setTodos(data.data); // ✅ Will now be the actual Task documents
     } catch (error) {
       console.error("Error fetching todos:", error.message);
-      if (error.response?.status === 401) {
-        // window.location.href = "/login";
-      }
     }
   };
 
-  // Recreate daily habits on component mount
-  const recreateDailyHabits = async () => {
-    try {
-      await axios.post(
-        `${backendUrl}/todo/recreate-daily-habits`,
-        {},
-        getAuthHeader()
-      );
-      fetchTodos(); // Refresh the list
-    } catch (error) {
-      console.error("Error recreating daily habits:", error.message);
-    }
-  };
 
-  useEffect(() => {
-    recreateDailyHabits(); // First recreate habits
-    fetchTodos(); // Then fetch all todos
-  }, []);
 
   // Organize todos into sections
   const organizeTodos = () => {
@@ -297,9 +278,8 @@ const GoalsComponent = () => {
       ) : (
         <div className="flex-grow">
           <span
-            className={`text-lg ${
-              todo.completed ? "line-through txt-dim" : "txt-dim"
-            }`}
+            className={`text-lg ${todo.completed ? "line-through txt-dim" : "txt-dim"
+              }`}
           >
             {todo.title}
           </span>
@@ -338,11 +318,10 @@ const GoalsComponent = () => {
             {/* Repeat Toggle */}
             <button
               onClick={() => handleToggleRepeat(todo._id)}
-              className={`p-1 rounded ${
-                todo.repeatEnabled
-                  ? "text-blue-500 bg-blue-100/10"
-                  : "txt-dim hover:text-blue-500"
-              } transition-colors`}
+              className={`p-1 rounded ${todo.repeatEnabled
+                ? "text-blue-500 bg-blue-100/10"
+                : "txt-dim hover:text-blue-500"
+                } transition-colors`}
               title={todo.repeatEnabled ? "Disable repeat" : "Enable repeat"}
             >
               <Repeat className="h-4 w-4" />
@@ -434,14 +413,7 @@ const GoalsComponent = () => {
             <span className="txt-dim">●</span>
             <span>{closedCount} Closed</span>
           </div>
-          <motion.button
-          whileTap={{rotate:180}}
-            onClick={recreateDailyHabits}
-            className="p-1 rounded hover:bg-ter txt-dim hover:txt transition-colors"
-            title="Recreate daily habits"
-          >
-            <RefreshCw className="h-4 w-4" />
-          </motion.button>
+
         </div>
       </div>
 

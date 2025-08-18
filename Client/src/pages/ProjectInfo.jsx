@@ -312,6 +312,17 @@ export default function Info() {
                 Size: {isLoading ? <TextSkeleton width="16" /> : `${repoData?.size} KB`}
               </li>
             </ul>
+
+ <div className="mt-6 text-center space-y-2">
+              <a
+                href="/privacy"
+                className="text-blue-400 hover:underline text-sm"
+              >
+                Privacy Policy
+              </a>
+              <p className="text-xs txt-dim">© 2025 EduHaven</p>
+            </div>
+
           </motion.div>
           <motion.div
             className="w-72 mt-8 space-y-4"
