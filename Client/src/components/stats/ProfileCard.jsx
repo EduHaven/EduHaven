@@ -143,10 +143,16 @@ const ProfileCard = ({ isCurrentUser = false }) => {
                 />
 
                {showLink && (
-                  <div className="absolute top-full right-0 mt-2 w-64 p-3 bg-white border border-gray-200 rounded-xl shadow-lg flex items-center justify-between gap-2 z-50">
-                         <span className="text-sm text-gray-700 truncate">  {profilelink} </span>
+                  <div className="absolute top-full mt-2 right-0 flex items-center bg-[#1f2937] rounded-lg px-3 py-2 shadow-md border border-gray-700 w-64 z-20" >
+                          <input
+                               type="text"
+                              value={profilelink}
+                               readOnly
+                               title={profilelink}
+                              className="flex-1 bg-transparent text-sm text-white outline-none truncate"
+                          />
                       <button
-                        className="px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                        className="ml-2 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm font-medium text-white transition"
                           onClick={copylink}
                        >
                           Copy
