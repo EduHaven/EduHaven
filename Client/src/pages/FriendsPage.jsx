@@ -3,6 +3,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import TabNavigation from "../components/friendsPage/TabNavigation";
 import MainContent from "../components/friendsPage/MainContent";
+import NotLogedInPage from "@/components/NotLogedInPage";
+import { jwtDecode } from "jwt-decode";
 
 const backendUrl = import.meta.env.VITE_API_URL;
 
@@ -139,6 +141,20 @@ function FriendsPage() {
     }
   };
 
+
+  const token = localStorage.getItem("token");
+  let decodedUser = null;
+
+  try {
+    if (token) {
+      decodedUser = jwtDecode(token);
+    }
+  } catch (error) {
+    console.error("Invalid token", error);
+  }
+  if (!decodedUser) {
+    return <NotLogedInPage />;
+  }
   return (
     <div className="flex">
       <TabNavigation selectedTab={selectedTab} onTabClick={setSelectedTab} />

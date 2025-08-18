@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import UpdateButton from "./UpdateButton";
+import { useNavigate } from "react-router-dom";
 
 const Account = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -22,9 +24,8 @@ const Account = () => {
     }, 1000);
   };
 
-  const handleDelete = () => {
-    // Add real deletion logic here
-    toast.warn("Delete account action triggered");
+  const handleRequestDeletion = () => {
+    navigate("/delete-account");
   };
 
   return (
@@ -74,10 +75,9 @@ const Account = () => {
       <div className="mt-8 border-t border-gray-400/40 pt-6">
         <button
           type="button"
-          onClick={handleDelete}
+          onClick={handleRequestDeletion}
           className="px-6 py-3 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700 transition-all shadow-md"
-        >
-          Delete Account
+        >Request Account Deletion
         </button>
       </div>
     </div>

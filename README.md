@@ -1,5 +1,5 @@
 [![join our group on discord](./Client/public/joinDiscordIcon.png)
-](https://discord.gg/r55948xy)
+](https://discord.gg/yMBMNdmC)
 
 # EduHaven
 
@@ -105,13 +105,20 @@ We welcome contributions to make **EduHaven** better for students everywhere! He
    git checkout -b feature-name
    ```
 3. Make your changes and test them thoroughly.
+- For frontend changes, also run:
+  ```bash
+  npm run build
+  ```
+  and verify there are no build errors. 
+
 4. Commit and push your changes:
    ```bash
    git add .
    git commit -m "Add a brief description of your changes"
    git push origin feature-name
    ```
-5. Create a Pull Request (PR) with a detailed explanation of your changes.
+5. Before pushing frontend changes, **run** `npm run build` locally to ensure the project builds successfully. Catch & solve any potential deployment issues early, if any.
+6. Create a Pull Request (PR) with a detailed explanation of your changes.
 
 ## Roadmap
 
@@ -130,5 +137,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Inspired by productivity tools and online collaborative platforms.
 
 ---
+
+
+## Preventing Backend Cold Starts
+The backend is hosted on Render Free Tier and may go to sleep after short inactivity.  
+We have implemented a keep-alive solution using [cron-job.org](https://cron-job.org/) to ping the backend every 1 minute:
+
+- URL: https://eduhaven-backend.onrender.com/
+- Interval: Every 1 minute
+- Purpose: Prevents backend cold starts for faster response times.
+
+For full details, see [`KEEP_ALIVE.md`](KEEP_ALIVE.md).
+
 
 For any further queries, feel free to reach out on our whatsApp group. Let’s make learning fun and productive!

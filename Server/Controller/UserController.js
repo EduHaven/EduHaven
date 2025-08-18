@@ -4,6 +4,11 @@ import generateAuthToken from "../utils/GenerateAuthToken.js";
 import cloudinary from "cloudinary";
 import jwt from "jsonwebtoken";
 import sendMail from "../utils/sendMail.js";
+import Event from "../Model/EventModel.js";
+import Note from "../Model/NoteModel.js";
+import TimerSession from "../Model/StudySession.js";
+import SessionRoom from "../Model/SessionModel.js";
+import Task from "../Model/ToDoModel.js";
 
 // Configure Cloudinary
 cloudinary.config({
@@ -12,11 +17,6 @@ cloudinary.config({
   api_secret:
     process.env.CLOUDINARY_API_SECRET || "BXpWyZHYKbAexc3conUG88t6TVM",
 });
-
-
-
-
-
 
 export const signup = async (req, res) => {
   try {
@@ -60,7 +60,7 @@ export const signup = async (req, res) => {
       }
     );
 
-    await sendMail(Email,FirstName,otp);
+    await sendMail(Email, FirstName, otp);
 
     const token = generateAuthToken(user);
 
@@ -197,6 +197,40 @@ export const updateProfile = async (req, res) => {
     return res
       .status(500)
       .json({ error: "Failed to update profile", details: error.message });
+  }
+};
+
+// controllers/userController.js
+
+export const deleteAccount = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const userId = req.user._id;
+
+    // 1. Remove user from other users' friend lists
+    await User.updateMany({ friends: userId }, { $pull: { friends: userId } });
+
+    // 2. Delete all related data
+    await Promise.all([
+      Note.deleteMany({ user: userId }),
+      Event.deleteMany({ createdBy: userId }),
+      TimerSession.deleteMany({ userId }),
+      SessionRoom.deleteMany({ host: userId }),
+      Task.deleteMany({ user: userId }),
+    ]);
+
+    // 3. Delete user account
+    await User.findByIdAndDelete(userId);
+
+    return res
+      .status(200)
+      .json({ message: "Account and related data deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    return res.status(500).json({ error: "Failed to delete account" });
   }
 };
 

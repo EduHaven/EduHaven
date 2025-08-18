@@ -16,9 +16,24 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
       rollupOptions: {
         input: path.resolve(__dirname, "index.html"),
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            animations: ['framer-motion'],
+          },
+        },
       },
+      // Enable source maps for production debugging
+      sourcemap: true,
+      // Optimize chunk size
+      chunkSizeWarningLimit: 1000,
+      // Minify CSS
+      cssMinify: true,
     },
-    // dev server only—no need for historyApiFallback here
+    // Performance optimizations
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'framer-motion'],
+    },
   };
 });
 

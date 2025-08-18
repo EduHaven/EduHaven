@@ -1,6 +1,6 @@
 function GoalsAndEvents() {
   return (
-    <div className="max-w-7xl mx-auto mb-28 flex gap-4 xl:gap-24 items-center justify-center">
+    <div className="max-w-3xl xl:max-w-7xl mx-auto mb-28 flex gap-4 xl:gap-24 items-center justify-center">
       <div className="flex-1 max-w-[600px] relative">
         <img
           src="/Page1LightScreenshot.png"
@@ -11,7 +11,7 @@ function GoalsAndEvents() {
           }}
         />
       </div>
-      <h1 className="flex-1 max-w-[400px] text-balance text-3xl font-poppins font-thin leading-[1.5] min-h-[calc(1.5em*4)]">
+      <h1 className="flex-1 max-w-[400px] text-balance text-2xl xl:text-3xl font-poppins font-thin leading-[1.5] min-h-[calc(1.5em*4)]">
         Set achievable goals and track important academic events seamlessly.
       </h1>
     </div>

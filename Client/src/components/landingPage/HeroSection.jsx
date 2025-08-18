@@ -8,7 +8,7 @@ const profiles = [
     id: 1,
     name: "Sarah Chen",
     avatar:
-      "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+      "https://cdnapp.giz.ai/api/inference/images?baseModel=sdxl&prompt=Psychologist%20Dr.%20Sarah%20Chen%2C%20perfectly%20straight-on%20headshot%2C%20close-up%2C%20face%20filling%20frame%2C%20perfectly%20symmetrical%2C%20photorealistic&thumbnail&thumbnailWidth=512&thumbnailHeight=512",
     role: "UI Designer",
     color: "from-purple-400 to-pink-400",
   },
@@ -190,7 +190,7 @@ function HeroSection() {
 
   return (
     <motion.div
-      className="relative h-[calc(100vh-50px)] mx-auto overflow-hidden"
+      className="relative h-[calc(100vh-50px)] mx-auto overflow-hidden pt-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}

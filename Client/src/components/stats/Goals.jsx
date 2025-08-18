@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import axios from "axios";
 
-
 const backendUrl = import.meta.env.VITE_API_URL;
 
 const getAuthHeader = () => {
@@ -34,10 +33,12 @@ const Goals = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get(`${backendUrl}/todo?view=${view}`,getAuthHeader());
-        const tasks = response.data.data;
+        const response = await axios.get(
+          `${backendUrl}/todo?view=${view}`,
+          getAuthHeader()
+        );
 
-        setChartData((prev) => ({ ...prev, [view]: tasks }));
+        setChartData((prev) => ({ ...prev, [view]: response.data.chartData }));
         setTotalStats({
           completed: response.data.completed,
           total: response.data.total,
@@ -50,7 +51,6 @@ const Goals = () => {
     fetchTasks();
   }, [view]);
 
-
   const handleDropdownClick = (viewType) => {
     setView(viewType);
     setIsOpen(false);
@@ -60,33 +60,29 @@ const Goals = () => {
     <div className="bg-[var(--bg-sec)] p-6 pl-0 rounded-3xl shadow-md text-center w-full">
       <nav className="flex justify-between items-center pl-6">
         <h3 className="text-lg font-semibold flex items-center gap-2">
-          <CheckCircle className="w-5 h-5" /> <strong>{totalStats.completed}</strong>/
+          <CheckCircle className="w-5 h-5" />{" "}
+          <strong>{totalStats.completed}</strong>/
           <strong>{totalStats.total}</strong>
           Goals done
         </h3>
-        <DropdownMenu>
+        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
-            <Button
-              className="flex items-center gap-1 hover:bg-gray-700"
-              onClick={() => setIsOpen(!isOpen)}
-            >
+            <Button className="flex items-center gap-1 hover:bg-gray-700">
               {view.charAt(0).toUpperCase() + view.slice(1)}
               <ChevronDown className="w-4 h-4" />
             </Button>
           </DropdownMenuTrigger>
-          {isOpen && (
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleDropdownClick("daily")}>
-                Daily
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDropdownClick("weekly")}>
-                Weekly
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDropdownClick("monthly")}>
-                Monthly
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          )}
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => handleDropdownClick("daily")}>
+              Daily
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDropdownClick("weekly")}>
+              Weekly
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDropdownClick("monthly")}>
+              Monthly
+            </DropdownMenuItem>
+          </DropdownMenuContent>
         </DropdownMenu>
       </nav>
 

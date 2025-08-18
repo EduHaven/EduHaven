@@ -8,6 +8,23 @@ const CalendarDayTooltip = ({
   onMouseEnter,
   onMouseLeave,
 }) => {
+
+  const convertTo12HourFormat = (timeString)=>{
+
+    const [hourString, minutes] = timeString.split(":"); 
+    
+    let hour = parseInt(hourString) ;; 
+    
+    const ampm = hour >=12 ? "PM" : "AM" ; 
+    if(hour === 0 ){
+      hour = 12 ;  //12 AM 
+    }else if (hour > 12){
+      hour = hour -  12  ; 
+    }
+
+    return `${hour}:${minutes} ${ampm}` ; 
+
+  }
   return (
     <AnimatePresence>
       {date && (
@@ -30,6 +47,7 @@ const CalendarDayTooltip = ({
             <div className="overflow-y-scroll max-h-[120px] pr-2">
               <motion.ul className="txt space-y-6 pl-2 pr-3 overflow-x-scroll max-h-[120px]">
                 {events.map((event) => {
+                  const eventTime  = convertTo12HourFormat(event.time); 
                   const eventDate = new Date(event.date);
                   return (
                     <motion.li
@@ -45,11 +63,7 @@ const CalendarDayTooltip = ({
                           {eventDate.toLocaleDateString()}
                         </div>
                         <div className="text-xs txt-dim">
-                          {eventDate.toLocaleTimeString("en-US", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: true,
-                          })}
+                          {eventTime}
                         </div>
                       </div>
                       <span className="block mt-1">{event.title}</span>

@@ -178,113 +178,118 @@ function handleKeyDown(e) {
   }, [highScore]);
 
   return (
-  <div className={styles.game2048}>
-
-    {/* Navbar */}
-    <nav className="w-full bg-[var(--bg-sec)] shadow-lg border-b border-[rgba(var(--shadow-rgb),0.08)] px-9 sm:px-7 py-1 flex items-center justify-between sticky top-1 z-20">
+  <div className={styles.gameContainer}>
+    {/* Navbar - Fixed to properly align with sidebar */}
+    <nav className="bg-[var(--bg-sec)] shadow-lg border-b border-[rgba(var(--shadow-rgb),0.08)] px-6 sm:px-7 py-1 flex items-center justify-between fixed top-0 z-20" 
+      style={{
+        width: '94%',
+        left: '80px'
+      }}>
       {/* Back Button - Left */}
       <button
         onClick={() => window.history.back()}
-        className="flex items-center gap-2 px-4 py-2 text-[var(--txt-dim)] bg-[var(--bg-ter)] rounded-lg cursor-pointer transition-all duration-200 text-base font-medium hover:bg-ter hover:text-[var(--txt)] shadow-sm"
+        className="flex items-center gap-2 px-3 py-2 text-[var(--txt-dim)] bg-[var(--bg-ter)] rounded-lg cursor-pointer transition-all duration-200 text-base font-medium hover:bg-ter hover:text-[var(--txt)] shadow-sm"
       >
-        <ArrowLeft size={22} />
+        <ArrowLeft size={20} />
         <span className="hidden sm:inline">Back</span>
       </button>
 
       {/* Title */}
-      <h1 className="text-5xl font-bold txt tracking-wide drop-shadow-sm">
+      <h1 className="text-4xl sm:text-5xl font-bold txt tracking-wide drop-shadow-sm">
         2048
       </h1>
 
       {/* How to Play - Right */}
       <button
         onClick={() => setShowHowToPlay(true)}
-        className="px-4 py-2 text-[var(--txt-dim)] bg-[var(--bg-ter)] rounded-lg cursor-pointer transition-all duration-200 text-base font-medium hover:bg-ter hover:text-[var(--txt)] shadow-sm"
+        className="px-3 py-2 text-[var(--txt-dim)] bg-[var(--bg-ter)] rounded-lg cursor-pointer transition-all duration-200 text-sm sm:text-base font-medium hover:bg-ter hover:text-[var(--txt)] shadow-sm whitespace-nowrap"
       >
         How to Play
       </button>
     </nav>
 
-    {/* How to Play Modal */}
-    {showHowToPlay && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-        <div className="bg-[var(--bg-primary)] rounded-xl shadow-lg p-8 max-w-md w-full relative">
-          <button
-            className="absolute top-2 right-2 px-2 py-1 text-[var(--txt-dim)] bg-sec rounded-lg cursor-pointer hover:bg-ter"
-            onClick={() => setShowHowToPlay(false)}
-          >
-            Close
-          </button>
-          <h2 className="text-xl font-bold mb-2">How to Play 2048</h2>
-          <ul className="list-disc pl-5 space-y-2 text-base">
-            <li>Use your arrow keys to move the tiles.</li>
-            <li>When two tiles with the same number touch, they merge into one.</li>
-            <li>Each merge increases your score by the value of the new tile.</li>
-            <li>Try to reach the 2048 tile!</li>
-            <li>The game ends when no moves are possible.</li>
-            <li>Your highest score is saved automatically.</li>
-          </ul>
-        </div>
-      </div>
-    )}
-
-    {/* Score Area */}
-    <div className={styles.header}>
-  <div className={styles.scoreContainer} style={{ flexDirection: 'row', gap: '0.5rem' }}>
-    <div className={styles.score}>Score: {score}</div>
-    <div
-      className={styles.score}
-      style={{ color: '#4f46e5', fontWeight: 'bold' }}
-    >
-      High Score: {highScore}
-    </div>
-  </div>
-</div>
-
-
-    {/* Board */}
-    <div className={styles.board}>
-      {board.map((row, i) => (
-        <div key={i} className={styles.row}>
-          {row.map((cell, j) => (
-            <div
-              key={`${i}-${j}`}
-              className={`${styles.cell} ${cell ? styles['tile' + cell] : ''}`}
-              style={{
-                boxShadow: cell ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
-                border: cell ? '2px solid #edc22e' : '2px solid #eee4da',
-                color: cell >= 8 ? '#f9f6f2' : '#776e65',
-                fontWeight: cell >= 128 ? 'bold' : 'normal',
-                fontSize: cell >= 1024 ? '1.1rem' : '1.3rem',
-                background: cell ? undefined : '#faf8ef',
-                transition: 'all 0.2s',
-              }}
+    {/* Game content */}
+    <div className={styles.game2048}>
+      {/* How to Play Modal */}
+      {showHowToPlay && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-[var(--bg-primary)] rounded-xl shadow-lg p-8 max-w-md w-full relative">
+            <button
+              className="absolute top-2 right-2 px-2 py-1 text-[var(--txt-dim)] bg-sec rounded-lg cursor-pointer hover:bg-ter"
+              onClick={() => setShowHowToPlay(false)}
             >
-              {cell !== 0 && cell}
-            </div>
-          ))}
+              Close
+            </button>
+            <h2 className="text-xl font-bold mb-2">How to Play 2048</h2>
+            <ul className="list-disc pl-5 space-y-2 text-base">
+              <li>Use your arrow keys to move the tiles.</li>
+              <li>When two tiles with the same number touch, they merge into one.</li>
+              <li>Each merge increases your score by the value of the new tile.</li>
+              <li>Try to reach the 2048 tile!</li>
+              <li>The game ends when no moves are possible.</li>
+              <li>Your highest score is saved automatically.</li>
+            </ul>
+          </div>
         </div>
-      ))}
-    </div>
+      )}
 
-    {/* New Game button at bottom */}
-    <div style={{ marginTop: "1rem" , textAlign: "center" , background: "var(--bg-ter)" , padding: "1rem", borderRadius: "8px" }}>
-      <button onClick={resetGame} className={styles.newGameButton}>
-        New Game
-      </button>
-    </div>
-
-    {/* Game Over Overlay */}
-    {gameOver && (
-      <div className={styles.gameOver}>
-        <div className={styles.gameOverContent}>
-          <h2>Game Over!</h2>
-          <p>Final Score: {score}</p>
-          <p>High Score: {highScore}</p>
-          <button onClick={resetGame}>Try Again</button>
+      {/* Score Area */}
+      <div className={styles.header}>
+        <div className={styles.scoreContainer} style={{ flexDirection: 'row', gap: '0.5rem' }}>
+          <div className={styles.score}>Score: {score}</div>
+          <div
+            className={styles.score}
+            style={{ color: '#4f46e5', fontWeight: 'bold' }}
+          >
+            High Score: {highScore}
+          </div>
         </div>
       </div>
-    )}
+
+      {/* Board */}
+      <div className={styles.board}>
+        {board.map((row, i) => (
+          <div key={i} className={styles.row}>
+            {row.map((cell, j) => (
+              <div
+                key={`${i}-${j}`}
+                className={`${styles.cell} ${cell ? styles['tile' + cell] : ''}`}
+                style={{
+                  boxShadow: cell ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                  border: cell ? '2px solid #edc22e' : '2px solid #eee4da',
+                  color: cell >= 8 ? '#f9f6f2' : '#776e65',
+                  fontWeight: cell >= 128 ? 'bold' : 'normal',
+                  fontSize: cell >= 1024 ? '1.1rem' : '1.3rem',
+                  background: cell ? undefined : '#faf8ef',
+                  transition: 'all 0.2s',
+                }}
+              >
+                {cell !== 0 && cell}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* New Game button at bottom */}
+      <div style={{ marginTop: "1rem", textAlign: "center", background: "var(--bg-ter)", padding: "1rem", borderRadius: "8px" }}>
+        <button onClick={resetGame} className={styles.newGameButton}>
+          New Game
+        </button>
+      </div>
+
+      {/* Game Over Overlay */}
+      {gameOver && (
+        <div className={styles.gameOver}>
+          <div className={styles.gameOverContent}>
+            <h2>Game Over!</h2>
+            <p>Final Score: {score}</p>
+            <p>High Score: {highScore}</p>
+            <button onClick={resetGame}>Try Again</button>
+          </div>
+        </div>
+      )}
+    </div>
   </div>
 );
 
