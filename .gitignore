@@ -1,6 +1,42 @@
+<<<<<<< HEAD
 Server/node_modules/
 Client/node_modules/
 package-lock.json
 node_modules
 .vscode
 bun.lock
+=======
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules/
+dist
+dist-ssr
+*.local
+package-lock.json
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment files
+.env
+*/ENV
+.env.*
+# Ignore uploaded files from multer
+/backend/uploads
+
+>>>>>>> 71fe6a6a68a86e1cd8d4e6e71de3b146182f9a80

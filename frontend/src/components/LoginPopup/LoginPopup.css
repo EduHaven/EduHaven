@@ -1,0 +1,146 @@
+.LoginPopup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  background-color: #00000090;
+  display: grid;
+}
+
+
+.login-popup-container {
+  place-self: center;
+  width: max(23vw, 330px);
+  color: #808080;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 25px 30px;
+  border-radius: 8px;
+  font-size: 14px;
+  animation: FadeIn 1.3s;
+}
+
+.login-popup-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: black;
+}
+
+.login-popup-title img {
+  width: 16px;
+  cursor: pointer;
+}
+
+.login-popup-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-popup-inputs input {
+  outline: none;
+  border: 1px solid #c9c9c9;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.login-popup-container button {
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  color: white;
+  background-color: tomato;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* Forgot Password Buttons */
+.resend-otp-btn {
+  background-color: #f08080;
+  margin-top: -10px;
+  font-size: 13px;
+  padding: 8px;
+}
+
+.login-popup-condition {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+  margin-top: -15px;
+}
+
+.login-popup-condition input {
+  margin-top: 5px;
+}
+
+.LoginPopup p span {
+  color: tomato;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.forgot-password-link {
+  font-weight: 500;
+  margin-top: -15px;
+  text-align: right;
+  font-size: 14px;
+  color: tomato;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.otp-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.otp-container input {
+  width: 35px;
+  height: 40px;
+  text-align: center;
+  font-size: 18px;
+  border: 1px solid #c9c9c9;
+  border-radius: 4px;
+}
+
+.resend-otp-btn {
+  background-color: #f08080;
+  font-size: 14px;
+  padding: 8px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+.resend-otp-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.password-strength-checker p {
+  font-size: 0.9em;
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+}
+
+.password-strength-checker .valid {
+  color: green;
+}
+
+.password-strength-checker .invalid {
+  color: red;
+}
+
+.password-checker-box {
+  background-color: #f7f7f7; /* Light gray background */
+  border: 1px solid #ddd;    /* Light gray border */
+  border-radius: 8px;        /* Rounded corners */
+  padding: 10px;             /* Spacing inside the box */
+  margin-top: 3px;          /* Space between input and box */
+}

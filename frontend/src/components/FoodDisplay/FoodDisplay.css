@@ -1,0 +1,106 @@
+/* === Food Display Wrapper === */
+.food-display {
+  margin: 50px;
+  margin-top: 30px;
+}
+
+/* Remove margin on smaller screens */
+@media (max-width: 768px) {
+  .food-display {
+    margin: 20px;
+  }
+}
+
+/* === Heading === */
+.food-display h2 {
+  font-size: max(2vw, 24px);
+  font-weight: 600;
+  margin: 30px;
+  color: var(--title-color, #fff); /* Use theme variable for color */
+}
+
+/* === Grid Layout === */
+.food-display-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  row-gap: 50px;
+  margin-top: 30px;
+}
+
+/* === Filter Buttons === */
+.filter-toggle {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-toggle button {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-left: 23px;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.filter-toggle button:hover {
+  background-color: #f0f0f0;
+}
+
+.filter-toggle button.active {
+  background-color: #e63946; /* Tomato red with good contrast */
+  color: white;
+  border-color: #e63946;
+}
+
+/* === Food Item Card === */
+.food-item {
+  background-color: #ffffff;
+  color: #222222;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+.food-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.food-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* === Text Inside Card === */
+.food-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 10px;
+  color: #1a1a1a;
+}
+
+.food-description {
+  font-size: 0.95rem;
+  margin: 8px 0;
+  color: #444444;
+  text-align: center;
+}
+
+.food-price {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #e63946;
+  margin-top: auto;
+}

@@ -1,0 +1,69 @@
+/* List.css */
+
+.list.add.flex-col {
+    width: 70%;
+    margin-left: max(5vw, 25px);
+    margin-top: 50px;
+    color: #6d6d6d;
+    font-size: 16px;
+}
+
+.list-table-format {
+    display: grid;
+    /* Defines the columns for your table layout */
+    /* Adjust fractions (fr) as needed: Image, Name, Category, Price, Action */
+    grid-template-columns: 0.5fr 2fr 1fr 1fr 0.5fr;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    border: 1px solid #cacaca;
+    font-size: 13px;
+}
+
+.list-table-format.title {
+    background-color: #f9f9f9;
+    font-weight: bold; /* Overwrites the <b> tag for consistency */
+}
+
+.list-table-format img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* --- Button Styling --- */
+
+/* This is the new style for your remove button */
+.remove-btn {
+    width: 20px;
+    height: 20px;
+    border: none;
+    background-color: #e74c3c; /* A nice, clear red for deletion */
+    color: rgb(22, 1, 1);
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-btn:hover {
+    background-color: #c0392b; /* A darker red for the hover effect */
+}
+
+/* --- Media query for smaller screens --- */
+@media (max-width: 600px) {
+    .list-table-format {
+        /* On small screens, make Name column smaller and hide Category */
+        grid-template-columns: 1fr 3fr 1fr;
+        gap: 15px;
+    }
+    .list-table-format.title {
+        /* Hide elements that won't fit */
+        display: none;
+    }
+}

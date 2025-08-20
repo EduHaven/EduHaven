@@ -1,0 +1,218 @@
+/* Base container */
+.about-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Light Theme */
+.about-container.light {
+  background-color: #ffffff;
+  color: #333;
+}
+
+/* Dark Theme */
+.about-container.dark {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+/* Hero Section */
+.hero-section {
+  text-align: center;
+  padding: 60px 20px;
+  border-radius: 20px;
+  margin-bottom: 40px;
+  color: white;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, #efae4e 0%, #e78207 100%);
+}
+
+.about-container.dark .hero-section {
+  background: linear-gradient(135deg, #ff8c00 0%, #cc5500 100%);
+}
+
+.about-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+  min-height: 90px;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+  color: rgb(244, 231, 134);
+}
+
+/* Marquee */
+.marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  background: linear-gradient(90deg, #ff6b6b, #ffa726, #66bb6a, #42a5f5);
+  padding: 15px 0;
+  margin-bottom: 40px;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.marquee-text {
+  display: inline-block;
+  animation: marquee 20s linear infinite;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: white;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Sections */
+.section {
+  padding: 40px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  transition: background 0.3s, border 0.3s;
+}
+
+.about-container.light .section {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  box-shadow: 0 10px 30px rgba(108, 107, 107, 0.08);
+}
+
+.about-container.dark .section {
+  background: #1e1e1e;
+  border: 1px solid #444;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.section-title {
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 2px;
+}
+
+.about-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Categories */
+.categories-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.category-card {
+  padding: 30px 20px;
+  border-radius: 15px;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-size: 1.1rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* keeps readable over gradients */
+}
+
+.about-container.light .category-card {
+  color: #222; /* dark text for light theme */
+}
+
+.about-container.dark .category-card {
+  color: #fff; /* white text for dark theme */
+}
+
+.category-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+}
+
+/* Flow Diagram */
+.flow-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 20px;
+}
+
+.flow-step {
+  padding: 20px 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 50px;
+  text-align: center;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  transition: transform 0.3s ease;
+  min-width: 140px;
+}
+
+.flow-step:hover {
+  transform: scale(1.05);
+}
+
+.flow-arrow {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #667eea;
+}
+
+/* Payment Section */
+.payment-section {
+  text-align: center;
+}
+
+.payment-text {
+  font-size: 1.2rem;
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px dashed #667eea;
+}
+
+.about-container.light .payment-text {
+  background: #f8f9fa;
+  color: #555;
+}
+
+.about-container.dark .payment-text {
+  background: #2c2c2c;
+  color: #ddd;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .about-title { font-size: 2rem; }
+  .section { padding: 25px; }
+  .categories-list { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+}

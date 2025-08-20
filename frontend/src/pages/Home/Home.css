@@ -1,0 +1,28 @@
+/* Home.css */
+
+.home-page {
+  position: relative;
+  padding-bottom: 60px; /* room for floating elements */
+  background-color: var(--bg-color, #ffffff);
+}
+
+/* Floating back-to-top button */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 25px;
+  background-color: #ff4f4f;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+    font-size: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.back-to-top:hover {
+  background-color: #d43f3f;
+}

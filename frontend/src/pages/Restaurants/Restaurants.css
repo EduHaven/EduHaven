@@ -1,0 +1,237 @@
+.restaurant-card:hover .restaurant-details,
+.restaurant-card:hover .detail-item,
+.restaurant-card:hover .detail-item span {
+  color: #111 !important;
+}
+.restaurant-card:hover .restaurant-details,
+.restaurant-card:hover .detail-item {
+  color: #222 !important;
+}
+.restaurants-page {
+  padding: 20px;
+  max-width: 100%; /* remove fixed container width */
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: var(--bg-color, #fff);
+  color: var(--text-color, #111);
+}
+
+.restaurants-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 20px 0;
+}
+
+.restaurants-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--title-color, #111);
+  margin-bottom: 10px;
+}
+
+.restaurants-header p {
+  font-size: 1.1rem;
+  color: #676767;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.restaurants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* fluid grid */
+  gap: 20px;
+  width: 100%;
+}
+
+.restaurant-card {
+  width: 100%;
+  max-width: 100%; /* remove 400px restriction */
+  border-radius: 15px;
+  box-shadow: 0px 0px 10px #00000015;
+  transition: box-shadow 0.4s cubic-bezier(.4,0,.2,1), background-color 0.3s, color 0.3s;
+  animation: FadeIn 0.8s ease;
+  background-color: var(--bg-color, #fff);
+  color: var(--text-color, #111);
+  overflow: hidden;
+}
+
+.restaurant-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+  background-color: #f9f6f2;
+  color: #d35400;
+}
+
+.restaurant-card:hover .restaurant-name {
+  color: #d35400;
+  transition: color 0.3s;
+}
+
+.restaurant-card:hover .discount-badge {
+  background-color: #e67e22;
+  transition: background-color 0.3s;
+}
+
+.restaurant-card:hover .order-now-btn {
+  background-color: #d35400;
+  color: #fff;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.restaurant-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.restaurant-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+.restaurant-image:hover {
+  transform: scale(1.05);
+}
+
+.discount-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: #ff6347;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 2;
+}
+
+.restaurant-info {
+  padding: 20px;
+}
+
+.restaurant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.restaurant-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--title-color, #111);
+  margin: 0;
+  flex: 1;
+  margin-right: 10px;
+}
+
+.rating-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.rating-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--title-color, #333); /* Use theme variable for color */
+}
+.restaurant-details {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #676767;
+}
+
+.restaurant-cuisine {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ff6347;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.restaurant-description {
+  color: #676767;
+  font-size: 13px;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.order-now-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: #ff6347;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  font-size: 14px;
+}
+
+
+.order-now-btn:hover {
+  background-color: #e5533d;
+}
+
+@keyframes FadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .restaurants-page {
+    padding: 15px;
+  }
+  
+  .restaurants-header h1 {
+    font-size: 2rem;
+  }
+  
+  .restaurants-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .restaurant-card {
+    max-width: 100%;
+  }
+  
+  .restaurant-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .restaurant-name {
+    margin-right: 0;
+  }
+  
+  .restaurant-details {
+    flex-direction: column;
+    gap: 8px;
+  }
+} 

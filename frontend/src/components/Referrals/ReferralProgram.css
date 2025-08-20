@@ -1,0 +1,249 @@
+.referral-container {
+  max-width: 1000px;
+  margin: 3rem auto;
+  padding: 2.5rem;
+  background: var(--bg-color);
+  color: var(--text-color);
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 25px var(--box-shadow);
+  transition: background 0.4s ease, color 0.4s ease;
+  text-align: center;
+}
+
+/* Header */
+.referral-container h2 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: var(--title-color);
+  letter-spacing: -0.5px;
+}
+
+.referral-container p {
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 700px;
+  margin: 0 auto 2.5rem;
+  color: var(--text-color);
+}
+
+/* Referral Code Box */
+.referral-code-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--glass-bg, rgba(255,255,255,0.05));
+  border: 1px dashed var(--border-color);
+  padding: 1.2rem 2rem;
+  border-radius: 14px;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 15px var(--box-shadow);
+  transition: all 0.3s ease;
+}
+
+.referral-code-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--hover-box-shadow);
+}
+
+.referral-code {
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--title-color);
+  letter-spacing: 2px;
+}
+
+.copy-btn {
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--primary-orange, #ff6b35), var(--secondary-yellow, #ffd23f));
+  color: #fff;
+  transition: transform 0.2s ease, opacity 0.3s ease;
+}
+
+.copy-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-3px) scale(1.05);
+}
+
+/* Stats Section */
+.referral-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  margin-top: 50px;
+}
+
+.stat-card {
+  flex: 1 1 250px;
+  padding: 1.8rem;
+  background: var(--glass-bg, rgba(255,255,255,0.05));
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 4px 12px var(--box-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px var(--hover-box-shadow);
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--title-color);
+}
+
+.stat-label {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+/* Referral History */
+.referral-history {
+  margin-top: 3rem;
+  text-align: left;
+}
+
+.referral-history h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--title-color);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.referral-history table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-color);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px var(--box-shadow);
+}
+
+.referral-history th,
+.referral-history td {
+  padding: 1rem 1.2rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+.referral-history th {
+  font-weight: 700;
+  color: var(--title-color);
+  background: var(--glass-bg, rgba(255,255,255,0.05));
+}
+
+.referral-history tr:last-child td {
+  border-bottom: none;
+}
+
+/* Status Badges */
+.status {
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.status.completed {
+  background: #22c55e;
+  color: #fff;
+}
+
+.status.pending {
+  background: #facc15;
+  color: #111;
+}
+
+/* How It Works */
+.how-it-works {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.how-it-works h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--title-color);
+  margin-bottom: 1rem;
+}
+
+.how-it-works ol {
+  margin: 0 auto;
+  max-width: 600px;
+  text-align: left;
+  color: var(--text-color);
+}
+
+.how-it-works li {
+  margin: 0.8rem 0;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .referral-stats {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .referral-code-box {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .referral-history table {
+    font-size: 0.85rem;
+  }
+}
+.share-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.share-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.share-btn.twitter {
+  background: #1da1f2;
+  box-shadow: 0 4px 10px rgba(29, 161, 242, 0.4);
+}
+
+.share-btn.twitter:hover {
+  background: #0d8ddb;
+  transform: translateY(-2px);
+}
+
+.share-btn.whatsapp {
+  background: #25d366;
+  box-shadow: 0 4px 10px rgba(37, 211, 102, 0.4);
+}
+
+.share-btn.whatsapp:hover {
+  background: #1da851;
+  transform: translateY(-2px);
+}

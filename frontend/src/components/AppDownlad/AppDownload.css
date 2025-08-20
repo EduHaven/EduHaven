@@ -1,0 +1,31 @@
+.appdownload {
+  margin: auto auto;
+  padding: 80px;
+  font-size: max(3vw, 20px);
+  text-align: center;
+  font-weight: 500;
+  background-color: var(--bg-color); /* dynamic */
+}
+
+.appdownload p {
+  color: var(--text-color); /* dynamic */
+}
+
+.app-download-platforms {
+  display: flex;
+  justify-content: center;
+  gap: max(2vw, 10px);
+}
+
+.app-download-platforms img {
+  margin-top: 2vw;
+  width: max(30vw, 120px);
+  max-width: 180px;
+  transition: 0.5s;
+  cursor: pointer;
+}
+
+.app-download-platforms img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px var(--hover-box-shadow); /* dynamic */
+}

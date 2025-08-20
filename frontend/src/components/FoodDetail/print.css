@@ -1,0 +1,44 @@
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .food-detail-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 10mm !important;
+    box-shadow: none !important;
+  }
+
+  body {
+    font-family: Arial, sans-serif !important;
+    color: #000 !important;
+    background: #fff !important;
+  }
+
+  .food-detail-image img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 8px;
+  }
+
+  .add-to-cart {
+    display: none !important;
+  }
+
+  .food-detail-info,
+  .info-section {
+    page-break-inside: avoid;
+  }
+
+  .print-header {
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10mm;
+  }
+}

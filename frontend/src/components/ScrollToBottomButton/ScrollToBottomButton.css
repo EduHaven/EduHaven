@@ -1,0 +1,25 @@
+.scroll-to-bottom-btn {
+  position: fixed;
+  bottom: 80px; /* above the scroll-to-top button */
+  left: 20px;
+  z-index: 999;
+  background-color: #fc4b32;
+  color: white;
+  border-radius: 50%;
+  width: 40px;height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 0 10px #00000040;
+  transition: transform 0.2s ease;
+}
+
+.scroll-to-bottom-btn:hover {
+  transform: scale(1.1);
+}
+@media screen and (max-width:750px) {
+  .scroll-to-top-btn{
+    bottom: 135px;
+  }
+}

@@ -1,0 +1,125 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+html, body {
+  background-color: var(--bg-color) !important;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Outfit", sans-serif;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-color, #ffffff) !important;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.app {
+  width: 100%;
+  margin-top: 60px;
+  height: 100%;
+}
+
+/* Typewriter caret */
+@keyframes blink {
+  0%,
+  100% {
+    border-color: transparent;
+  }
+  50% {
+    border-color: black;
+  }
+}
+
+.animate-pulse {
+  animation: blink 1s step-end infinite;
+}
+
+/* Scooter animation */
+@keyframes scooterMove {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(110%);
+  }
+}
+
+.animate-scooter {
+  animation: scooterMove 5s linear infinite;
+}
+
+/* Optional FadeIn (if needed) */
+@keyframes FadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Theme support */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #111111;
+  --title-color: #111111;
+  --border-color: #d1d5db;
+  --box-shadow: #00000015;
+  --hover-box-shadow: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --text-color: #eeeeee;
+  --title-color: #ffffff;
+  --border-color: #374151;
+  --box-shadow: #ffffff12;
+  --hover-box-shadow: hsla(0, 0%, 90%, 0.2);
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+span,
+li {
+  color: var(--text-color);
+}
+
+html, body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  transition: background 0.3s ease, color 0.3s ease;
+  font-family: "Inter", sans-serif;
+}
+
+/* Text defaults */
+h1, h2, h3, h4, h5, h6, p, a, span, li {
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}

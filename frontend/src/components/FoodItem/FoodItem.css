@@ -1,0 +1,206 @@
+.food-item {
+  width: 90%;
+  max-width: 350px;
+  margin: auto;
+  border-radius: 15px;
+  box-shadow: 0px 0px 10px var(--box-shadow);
+  transition: 0.4s ease-in-out;
+  animation: FadeIn 0.8s ease;
+  background-color: var(--bg-color, #fff);
+  color: var(--text-color, #111);
+  border: 2px solid var(--border-color, #e2e8f0);
+  position: relative;
+}
+
+.food-item:hover {
+  box-shadow: 0 4px 16px var(--hover-box-shadow);
+  transform: translateY(-5px);
+}
+
+.food-item-img-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.food-item-image {
+  width: 100%;
+  border-radius: 15px 15px 0px 0px;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+.food-item-image:hover {
+  transform: scale(1.05);
+}
+
+.food-item-info {
+  padding: 20px;
+}
+
+/* ✅ Header: Name + Wishlist button inline */
+.food-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.food-item-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--title-color, #111);
+}
+
+/* ✅ Wishlist button inline */
+.wishlist-inline-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.wishlist-inline-btn.active svg {
+  color: #ff4d6d;
+  fill: #ff4d6d;
+}
+
+/* ✅ Rating stars below name */
+.food-item-rating {
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
+
+.food-item-desc {
+  color: var(--gray-text);
+  font-size: 13px;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.food-item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.food-item-price {
+  color: tomato;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.view-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #ff6347;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 50px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.view-btn:hover {
+  background-color: #e5533d;
+}
+
+/* ✅ Buttons at bottom */
+.action-buttons {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+/* ✅ Common style for both buttons */
+.wishlist-btn,
+.cart-btn {
+  background-color: white;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.wishlist-btn:hover,
+.cart-btn:hover {
+  transform: scale(1.05);
+  background-color: #f9f9f9;
+}
+
+/* ✅ Wishlist Active State */
+.wishlist-btn.active {
+  background-color: #ffebef;
+  border-color: #ff6384;
+}
+
+/* ✅ Cart Counter */
+.food-item-counter {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 50px;
+  background-color: white;
+  padding: 6px 12px;
+  box-shadow: 0px 0px 8px #00000030;
+}
+
+.food-item-counter button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  color: tomato;
+  cursor: pointer;
+}
+
+.food-item-counter p {
+  font-weight: 500;
+  color: #111;
+}
+
+/* ✅ Shared wishlist item style */
+.food-item.shared {
+  border: 2px solid #f093fb;
+  position: relative;
+}
+
+.food-item.shared::before {
+  content: "🔗 Shared";
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 500;
+  z-index: 3;
+}
+
+@keyframes FadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}

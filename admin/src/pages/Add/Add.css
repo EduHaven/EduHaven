@@ -1,0 +1,63 @@
+/* Add.css */
+
+.add {
+    width: 70%;
+    margin-left: max(5vw, 25px);
+    margin-top: 50px;
+    color: #6d6d6d;
+    font-size: 16px;
+}
+
+/* This adds vertical space between all form elements */
+.add form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* This will now work correctly */
+}
+
+.add-img-upload img {
+    width: 120px;
+    cursor: pointer;
+}
+
+.add-product-name, .add-product-description {
+    width: max(40%, 280px);
+}
+
+.add-product-name input, .add-product-description textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* This is the new rule to place category and price side-by-side */
+.add-category-price {
+    display: flex;
+    flex-direction: row; /* Aligns children horizontally */
+    gap: 30px; /* Adds space between category and price */
+    align-items: flex-start;
+}
+
+.add-category select, .add-price input {
+    max-width: 120px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.add-btn {
+    max-width: 120px;
+    border: none;
+    padding: 10px;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Optional: if your flex-col class is not defined elsewhere */
+.flex-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

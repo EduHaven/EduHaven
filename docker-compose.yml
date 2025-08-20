@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6-alpine
+    container_name: foodie-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: foodie
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - foodie-network
+
+  # Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: foodie-backend
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/foodie?authSource=admin
+      - JWT_SECRET=your-jwt-secret-key
+      - PORT=4000
+    volumes:
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      - mongodb
+    networks:
+      - foodie-network
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: foodie-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:4000
+    depends_on:
+      - backend
+    networks:
+      - foodie-network
+
+  # Admin Panel Service
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: foodie-admin
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:4000
+    depends_on:
+      - backend
+    networks:
+      - foodie-network
+
+# Named volumes for data persistence
+volumes:
+  mongodb_data:
+    driver: local
+
+# Custom network for service communication
+networks:
+  foodie-network:
+    driver: bridge

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## Description
 <!-- A clear and concise description of what this PR does. -->
 
@@ -21,3 +22,60 @@ Fixes #<issue_number>
 
 ## Additional Notes
 <!-- Add any other relevant information or context. -->
+=======
+## 📌 Pull Request Summary
+
+`A short description of the changes you're making.
+Example: 
+Fixed a bug where the food items can be deleted.`
+
+
+## 🛠️ Type of Change
+
+Please select options that are relevant to your pull request
+
+- [ ] 🐛 Bug fix  
+- [ ] ✨ New feature  
+- [ ] 🧹 Code refactor  
+- [ ] 🧪 Tests added/updated  
+- [ ] 📄 Documentation update  
+- [ ] 🚀 Performance improvement  
+- [ ] 🔧 Other (please describe):
+
+## 🔗 Related Issue
+
+Closes #[issue-number]  
+<!-- Example: Closes #12 -->
+
+
+
+## ✅ Checklist
+
+Please confirm the following before submitting:
+
+- [ ] I have **tested** my changes locally
+- [ ] I have run `npm run dev` or similar to check code style
+- [ ] I have updated documentation (if necessary)
+- [ ] My code follows the project’s coding conventions
+- [ ] I have merged the latest `main` or `dev` branch
+- [ ] I have performed a **self-review** of my own code.
+- [ ] My changes **generate** no new warnings or errors.
+- [ ] I have **commented** my code, especially in hard-to-understand areas
+-  [ ] I have **linked the related issue**
+
+
+
+## 📸 Screenshots (if applicable)
+
+
+* Add before/after screenshots or UI changes.
+
+
+
+---
+## 🧠 Additional Notes
+
+- Anything else you want the reviewer to know.
+
+
+>>>>>>> 71fe6a6a68a86e1cd8d4e6e71de3b146182f9a80

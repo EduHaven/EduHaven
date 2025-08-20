@@ -1,0 +1,82 @@
+.place-order{
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 50px;
+    margin-top: 100px;
+    margin: 100px;
+}
+@media (max-width: 768px) {
+  .place-order {
+    margin: 20px;
+  }
+}
+
+.place-order-left{
+    width: 100%;
+    max-width: max(30%, 500px);
+
+}
+
+.place-order-left .title{
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 50px;
+}
+
+.place-order-left input{
+    margin-bottom: 15px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #c5c5c5;
+    border-radius: 4px;
+    outline-color: tomato;
+}
+
+.place-order-left .mutli-fields{
+    display: flex;
+    gap: 10px;
+}
+
+.place-order-right{
+    margin-top: 30px;
+}
+
+.place-order .cart-total button{
+    margin-top: 30px;
+}
+
+/* for location purpose */
+
+/* Add this to your existing PlaceOrder.css file */
+
+
+.select-location-btn {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 15px;
+  background: linear-gradient(135deg, tomato, #d26634);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}
+
+.select-location-btn:hover {
+  background: linear-gradient(135deg, #f19162, #cf832b);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.select-location-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}

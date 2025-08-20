@@ -1,0 +1,258 @@
+/* Location Popup Overlay */
+.location-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal Container */
+.location-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Header */
+.location-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  background-color: #d2d0cd;
+}
+
+.location-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 30px;
+  color: #121111;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.close-btn:hover {
+  background-color: #e9ecef;
+  color: #333;
+}
+
+/* Content */
+.location-content {
+  padding: 20px;
+  overflow-y: auto; /* enables vertical scroll */
+  max-height: calc(80vh - 60px); 
+}
+
+/* Loading State */
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: #3c3a3a;
+}
+
+.loading p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Map Container */
+.map-container {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.map {
+  height: 300px;
+  width: 100%;
+}
+
+/* Location Details */
+.location-details {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #e9ecef;
+}
+
+.location-details p {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.location-details p:last-child {
+  margin-bottom: 0;
+}
+
+.address-text {
+  color: #4c4b4b;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Action Buttons */
+.location-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+}
+
+.confirm-btn,
+.cancel-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.confirm-btn {
+  background-color: tomato;
+  color: white;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background-color: #218838;
+  transform: translateY(-1px);
+}
+
+.confirm-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+/* Error Message */
+.error-message {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.error-message p {
+  color: #dc3545;
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+.error-message button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.error-message button:hover {
+  background-color: #c82333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .location-modal {
+    width: 95%;
+    margin: 20px;
+    max-height: 90vh;
+  }
+  
+  .location-header {
+    padding: 15px;
+  }
+  
+  .location-content {
+    padding: 15px;
+  }
+  
+  .map {
+    height: 250px;
+  }
+  
+  .location-actions {
+    flex-direction: column;
+  }
+  
+  .confirm-btn,
+  .cancel-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .location-modal {
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  
+}
+.map {
+  width: 100%;
+  height: 300px;
+  background-color: #f0f0f0; 
+}
+
