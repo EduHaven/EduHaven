@@ -289,10 +289,7 @@ function PinnedLinks() {
                     duration: 0.4,
                     ease: [0.25, 0.46, 0.45, 0.94]
                   }}
-                  whileHover={{
-                    x: 4,
-                    transition: { duration: 0.2 }
-                  }}
+                  whileHover={{ scale: 1.02 }}
                   className="flex items-center justify-between px-4 py-2 txt hover:bg-ter rounded-md transition-colors duration-200"
                 >
                   <motion.div
@@ -373,7 +370,7 @@ function PinnedLinks() {
                           <motion.button
                             onClick={() => handleEditLink(item.id)}
                             className="block w-full text-left px-2 py-1 hover:bg-sec txt rounded-sm transition-colors duration-150"
-                            whileHover={{ x: 2 }}
+                            whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                           >
                             Edit
@@ -381,7 +378,7 @@ function PinnedLinks() {
                           <motion.button
                             onClick={() => handleDeleteLink(item.id)}
                             className="block w-full text-left px-2 py-1 hover:bg-sec txt rounded-sm transition-colors duration-150"
-                            whileHover={{ x: 2 }}
+                            whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                           >
                             Delete
@@ -408,10 +405,8 @@ function PinnedLinks() {
                   delay: 0.3 + (pinnedLinks.length * 0.05),
                   duration: 0.4
                 }}
-                whileHover={{
-                  x: 4,
-                  transition: { duration: 0.2 }
-                }}
+                whileHover={{ scale: 1.02 }}
+
                 whileTap={{ scale: 0.98 }}
               >
                 <motion.div
