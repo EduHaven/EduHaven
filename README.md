@@ -150,4 +150,4 @@ We have implemented a keep-alive solution using [cron-job.org](https://cron-job.
 For full details, see [`KEEP_ALIVE.md`](KEEP_ALIVE.md).
 
 
-For any further queries, feel free to reach out on our whatsApp group. Let’s make learning fun and productive!
+For any further queries, feel free to reach out on our [`discord community`](https://discord.gg/yMBMNdmC/). Let’s make learning fun and productive!
