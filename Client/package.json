@@ -9,7 +9,8 @@
     "build-extension_old": "vite build extension",
     "build-extension": "vite build --mode extension",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format" : "npx prettier --config ../.prettierrc.json --write ."
   },
   "dependencies": {
     "@headlessui/react": "^2.2.7",

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { toast } from "react-toastify";
 const backendUrl = import.meta.env.VITE_API_URL;
 
 const EventPopup = ({ date, onClose, refreshEvents }) => {
@@ -29,7 +30,7 @@ const EventPopup = ({ date, onClose, refreshEvents }) => {
         }
 
         const response = await axios.get(
-          `${backendUrl}/events/-by-date?date=${date}`,
+          `${backendUrl}/events/by-date?date=${date}`,
           {
             headers: getAuthHeaders()
           }
@@ -66,6 +67,11 @@ const EventPopup = ({ date, onClose, refreshEvents }) => {
   }, [date]);
 
   const handleCreateOrUpdate = async () => {
+    if (!title.trim()) {
+      toast.error("Title cannot be empty");
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
       

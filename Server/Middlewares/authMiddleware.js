@@ -1,10 +1,12 @@
-import jwt from 'jsonwebtoken';
-import User from '../Model/UserModel.js';
+import jwt from "jsonwebtoken";
+import User from "../Model/UserModel.js";
 
 const authMiddleware = async (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+  const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ success: false, error: 'Unauthorized: No token provided.' });
+    return res
+      .status(401)
+      .json({ success: false, error: "Unauthorized: No token provided." });
   }
 
   try {
@@ -22,7 +24,16 @@ const authMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
-    res.status(401).json({ success: false, error: 'Unauthorized: Invalid token' });
+    
+    if (error.name === "TokenExpiredError") {
+      return res
+        .status(401)
+        .json({ success: false, error: "Unauthorized: Token expired" });
+    }
+
+    res
+      .status(401)
+      .json({ success: false, error: "Unauthorized: Invalid token" });
   }
 };
 

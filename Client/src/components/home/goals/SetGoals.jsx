@@ -120,8 +120,14 @@ const Setgoals = ({ onGoalCreated}) => {
           >
             <div className="flex-1">
               <div className="mb-4 [@container(max-width:420px)]:flex gap-12 items-center">
-                <label className="block font-semibold mb-1">Repeat:</label>
+                <label
+                  htmlFor="repeat-select"
+                  className="block font-semibold mb-1"
+                >
+                  Repeat:
+                </label>
                 <select
+                  id="repeat-select"
                   className="bg-ter rounded-lg p-2 w-full txt border border-txt-dim"
                   value={repeat}
                   onChange={(e) => setRepeat(e.target.value)}
@@ -138,13 +144,17 @@ const Setgoals = ({ onGoalCreated}) => {
 
               {/* Updated Time Input */}
               <div className="mb-4 [@container(max-width:420px)]:flex gap-16 items-center">
-                <label className="block font-semibold mb-1">
+                <label
+                  htmlFor="time-input"
+                  className="block font-semibold mb-1"
+                >
                   Time{" "}
                   <span className="text-xs text-txt-dim ml-1">
                     ({is24 ? "24-hour" : "12-hour"})
                   </span>
                 </label>
                 <input
+                  id="time-input"
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
@@ -154,8 +164,14 @@ const Setgoals = ({ onGoalCreated}) => {
               </div>
 
               <div className="[@container(max-width:420px)]:flex gap-7 items-center">
-                <label className="block font-semibold mb-1">Reminder:</label>
+                <label
+                  htmlFor="reminder-select"
+                  className="block font-semibold mb-1"
+                >
+                  Reminder:
+                </label>
                 <select
+                  id="reminder-select"
                   className="bg-ter rounded-lg p-2 w-full txt border border-txt-dim"
                   value={reminder}
                   onChange={(e) => setReminder(e.target.value)}

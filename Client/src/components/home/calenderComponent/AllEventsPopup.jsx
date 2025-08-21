@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Edit, Trash2, Plus } from "lucide-react";
 import axios from "axios";
+import { AnimatePresence, motion } from "framer-motion";
+import { Edit, Trash2, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 const backendUrl = import.meta.env.VITE_API_URL;
 
 const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
@@ -31,12 +32,26 @@ const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
   };
 
   const handleSave = async () => {
+    if (!editTitle || !editTitle.trim() || !editTime || !editDate) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
     try {
-      await axios.put(`${backendUrl}/events/${editingEvent}`, {
-        title: editTitle,
-        time: editTime,
-        date: editDate
-      });
+      await axios.put(
+        `${backendUrl}/events/${editingEvent}`,
+        {
+          title: editTitle,
+          time: editTime,
+          date: editDate,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setEditingEvent(null);
       refreshEvents();
     } catch (error) {
@@ -46,7 +61,12 @@ const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
 
   const handleDelete = async (eventId) => {
     try {
-      await axios.delete(`${backendUrl}/events/${eventId}`);
+      await axios.delete(`${backendUrl}/events/${eventId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
       refreshEvents();
     } catch (error) {
       console.error("Error deleting event:", error);
