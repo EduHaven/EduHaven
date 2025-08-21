@@ -9,10 +9,19 @@ const authMiddleware = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log('Decoded JWT:', decoded);
-    req.user = await User.findById(decoded.id).select('-password');
+    console.log('Decoded JWT:', decoded);
+    
+    const user = await User.findById(decoded.id).select('-password');
+    if (!user) {
+      console.log('User not found in database for ID:', decoded.id);
+      return res.status(401).json({ success: false, error: 'Unauthorized: User not found.' });
+    }
+    
+    req.user = user;
+    console.log('User authenticated:', user._id);
     next();
   } catch (error) {
+    console.error('Auth middleware error:', error);
     res.status(401).json({ success: false, error: 'Unauthorized: Invalid token' });
   }
 };

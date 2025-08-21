@@ -1,4 +1,5 @@
-import { UserPlus } from "lucide-react";
+import { UserPlus, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function UserCard({
   user,
@@ -9,6 +10,12 @@ function UserCard({
   onRejectRequest,
   onRemoveFriend,
 }) {
+  const navigate = useNavigate();
+
+  const handleViewProfile = (userId) => {
+    navigate(`/user/${userId}`);
+  };
+
   return (
     <div className="bg-[var(--bg-ter)] p-4 rounded-xl shadow-md">
       {/* {console.log(user)} */}
@@ -34,6 +41,17 @@ function UserCard({
             )}
           </div>
         </div>
+      </div>
+
+      {/* Profile Button - Always visible */}
+      <div className="mt-3 mb-2">
+        <button
+          onClick={() => handleViewProfile(user._id)}
+          className="w-full bg-[var(--bg-sec)] text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--bg-ter)] txt border border-[var(--border-color)]"
+        >
+          <User className="w-4 h-4" />
+          View Profile
+        </button>
       </div>
 
       <div className="mt-3">

@@ -7,7 +7,7 @@ import {
 
 export const getAllTodos = async (req, res) => {
   try {
-    if (!req.user || !req.user.id) {
+    if (!req.user || !req.user._id) {
       return res.status(401).json({ success: false, error: 'Unauthorized. User ID missing.' });
     }
 
@@ -26,7 +26,7 @@ export const getAllTodos = async (req, res) => {
       endDate = endOfMonth(now);
     }
 
-    const query = { user: req.user.id };
+    const query = { user: req.user._id };
     if (view !== "all") {
       query.createdAt = { $gte: startDate, $lte: endDate };
     }

@@ -91,59 +91,56 @@ function SuggestedFriends({ onViewSentRequests }) {
         </div>
       </div>
       <div className="space-y-2">
-        {limitedFriends
-          .slice() 
-          .reverse()
-          .map((user) => (
-            <div key={user._id} className=" relative group py-1 bg-slate-400">
-              <div className="flex items-center">
-                {user.ProfilePicture ? (
-                  <img
-                    src={user.ProfilePicture}
-                    className="w-11 h-11 rounded-full"
-                    alt="Profile"
-                  />
-                ) : (
-                  <div className="p-2 bg-ter rounded-full">
-                    <User className="w-7 h-7" />
-                  </div>
-                )}
-                <div className="ml-4 flex-1 overflow-hidden">
-                  <h4 className="text-lg font-medium line-clamp-1 txt">
-                    {user.FirstName
-                      ? `${user.FirstName} ${user.LastName || ""}`
-                      : "old-user"}
-                  </h4>
-                  <p className="text-sm txt-dim line-clamp-1">{user.Bio}</p>
+        {limitedFriends.map((user) => (
+          <div key={user._id} className=" relative group py-1">
+            <div className="flex items-center">
+              {user.ProfilePicture ? (
+                <img
+                  src={user.ProfilePicture}
+                  className="w-11 h-11 rounded-full"
+                  alt="Profile"
+                />
+              ) : (
+                <div className="p-2 bg-ter rounded-full">
+                  <User className="w-7 h-7" />
                 </div>
-              </div>
-              <div className="absolute top-[8%] right-0 bg-sec p-1.5 px-2 transition-all opacity-0 group-hover:opacity-100 flex gap-2">
-                <button
-                  onClick={() => handleViewProfile(user._id)}
-                  className="bg-ter text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--btn-hover)] txt"
-                >
-                  <User className="w-4 h-4" />
-                  Profile
-                </button>
-                {user.requestSent ? (
-                  <button
-                    disabled
-                    className="border border-gray-500/50 text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition bg-sec txt"
-                  >
-                    Request Sent
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => sendRequest(user._id)}
-                    className="bg-ter text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--btn-hover)] txt"
-                  >
-                    <UserPlus className="w-4 h-4" />
-                    Add
-                  </button>
-                )}
+              )}
+              <div className="ml-4 flex-1 overflow-hidden">
+                <h4 className="text-lg font-medium line-clamp-1 txt">
+                  {user.FirstName
+                    ? `${user.FirstName} ${user.LastName || ""}`
+                    : "old-user"}
+                </h4>
+                <p className="text-sm txt-dim line-clamp-1">{user.Bio}</p>
               </div>
             </div>
-          ))}
+            <div className="absolute top-[8%] right-0 p-1.5 px-2 transition-all flex gap-2">
+              <button
+                onClick={() => handleViewProfile(user._id)}
+                className="bg-ter text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--btn-hover)] txt"
+              >
+                <User className="w-4 h-4" />
+                Profile
+              </button>
+              {user.requestSent ? (
+                <button
+                  disabled
+                  className="border border-gray-500/50 text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition bg-sec txt"
+                >
+                  Request Sent
+                </button>
+              ) : (
+                <button
+                  onClick={() => sendRequest(user._id)}
+                  className="bg-ter text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--btn-hover)] txt"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Add
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
       {/* Find More Users Link */}
       {suggestedFriends.length > 15 && (
