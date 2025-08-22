@@ -2,7 +2,7 @@ import Note from "../Model/NoteModel.js";
 
 export const getAllNotes = async (req, res) => {
     try {
-      const notes = await Note.find({ user: req.user._id });  
+      const notes = await Note.find({ user: req.user.id });  
       res.status(200).json({ success: true, data: notes });
     } catch (error) {
       res.status(500).json({ success: false, error: error.message });
