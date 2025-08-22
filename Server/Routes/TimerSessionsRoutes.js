@@ -11,9 +11,9 @@ import mongoose from "mongoose";
 router.post("/timer", auth, async (req, res) => {
   try {
     const { startTime, endTime, duration } = req.body;
-    if (duration > 10) updateStreaks(req.user._id);
+    if (duration > 10) updateStreaks(req.user.id);
     const session = new StudySession({
-      user: req.user._id,
+      user: req.user.id,
       startTime,
       endTime,
       duration,
@@ -34,7 +34,7 @@ router.get("/timerstats", auth, async (req, res) => {
     if (!validPeriods.includes(period)) {
       return res.status(400).json("Invalid period");
     }
-    const stats = await calculateStats(req.user._id, period);
+    const stats = await calculateStats(req.user.id, period);
     res.json(stats);
   } catch (error) {
     res.status(500).json(error.message);
@@ -44,14 +44,7 @@ router.get("/timerstats", auth, async (req, res) => {
 // Get comprehensive study statistics for current user
 router.get("/user-stats", auth, async (req, res) => {
   try {
-    // Safety check - ensure user exists
-    if (!req.user || !req.user._id) {
-      console.error('User object missing in user-stats route:', req.user);
-      return res.status(401).json({ error: 'User not authenticated properly' });
-    }
-    
-    const userId = req.user._id;
-    console.log('Processing user-stats for user:', userId);
+    const userId = req.user.id;
     
     // Get user's streak information
     const user = await User.findById(userId).select("streaks");
