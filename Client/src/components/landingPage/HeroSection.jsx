@@ -82,7 +82,7 @@ function FloatingProfile({ profile, delay = 0, area = "bottom" }) {
         ease: [0.4, 0, 0.2, 1],
       }}
       whileHover={{ opacity: 1, scale: 1.1 }}
-      className="absolute cursor-pointer group"
+      className="absolute cursor-pointer group hidden lg:block"
       style={{
         left: `${basePosition.x}%`,
         top: `${basePosition.y}%`,
@@ -190,7 +190,7 @@ function HeroSection() {
 
   return (
     <motion.div
-      className="relative h-[calc(100vh-50px)] mx-auto overflow-hidden pt-8"
+      className="relative h-[calc(100vh-50px)] mx-auto overflow-hidden pt-[30px] sm:pt-5 px-4 sm:px-0"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
@@ -225,28 +225,28 @@ function HeroSection() {
 
       {/* Screenshot */}
       <motion.div
-        className="w-fit mx-auto mb-16 relative overflow-hidden group"
+        className="w-fit mx-auto mb-8 sm:mb-12 lg:mb-16 relative overflow-hidden group"
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 1, delay: 0, ease: [0.4, 0, 0.2, 1] }}
       >
         <div
-          className="h-[50vh] aspect-[2/1] bg-cover bg-center"
+          className="h-[33vh] sm:h-[40vh] lg:h-[50vh] aspect-[2/1] bg-cover bg-center rounded-lg sm:rounded-none lg:mt-0 mt-5"
           style={{ backgroundImage: "url('/Page1LightScreenshot.png')" }}
         >
-          <div className="absolute bottom-0 left-0 w-full h-[45vh] bg-gradient-to-t from-[var(--bg-primary)] to-transparent"></div>
+          <div className="absolute bottom-0 left-0 w-full h-[25vh] sm:h-[35vh] lg:h-[45vh] bg-gradient-to-t from-[var(--bg-primary)] to-transparent"></div>
         </div>
       </motion.div>
 
       {/* Text content */}
       <motion.div
-        className="absolute top-[40%] left-0 z-20 w-full flex flex-col items-center justify-center text-center"
+        className="absolute top-[35%] sm:top-[40%] left-0 z-20 w-full flex flex-col items-center justify-center text-center px-4"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0 }}
       >
         <motion.h2
-          className="text-[4vw] font-light txt bg-clip-text font-poppins"
+          className="text-[8vw] sm:text-[6vw] lg:text-[4vw] font-light txt bg-clip-text font-poppins"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.4 }}
@@ -254,7 +254,7 @@ function HeroSection() {
           Everything you need in one place
         </motion.h2>
         <motion.h2
-          className="text-[2.5vw] font-light txt-dim bg-clip-text font-poppins mb-16"
+          className="text-[5vw] sm:text-[4vw] lg:text-[2.5vw] font-light txt-dim bg-clip-text font-poppins  mb-8 sm:mb-12 lg:mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.5 }}
@@ -281,7 +281,7 @@ function HeroSection() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0 }}
       >
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500 rounded-full opacity-10 blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/4 left-1/4 sm:w-32 h-24 sm:h-32 bg-blue-500 rounded-full opacity-10 blur-3xl animate-pulse"></div>
         <div
           className="absolute bottom-1/3 right-1/4 w-40 h-40 bg-purple-500 rounded-full opacity-10 blur-3xl animate-pulse"
           style={{ animationDelay: "2s" }}

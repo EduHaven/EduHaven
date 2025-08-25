@@ -43,7 +43,7 @@ function NotesSection() {
   };
 
   return (
-    <div className="w-1/2 relative flex flex-col border border-gray-300 rounded-md p-6 bg-amber-50 shadow-md select-text">
+    <div className="w-1/2 relative flex flex-col border min-w-[300px] border-gray-300 rounded-md p-6 bg-amber-50 shadow-md select-text mb-3 md:mb-0">
       {/* Handwritten toggle top-right */}
       <div className="absolute top-4 right-6 flex items-center space-x-2">
         <label
@@ -156,13 +156,13 @@ export default function NoteNest() {
       <h2 className="text-center font-bold text-5xl mb-2 text-red-400">
         NoteNest
       </h2>
-      <div className="flex w-full h-[calc(100vh)] rounded-lg   bg-transparent p-4 gap-6">
+      <div className="md:flex w-full h-[calc(100vh)] rounded-lg bg-transparent p-4 gap-6">
         {/* LEFT SIDE */}
 
         <NotesSection />
 
         {/* RIGHT SIDE - Tools */}
-        <div className="w-1/2 flex flex-col rounded-md p-4 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] shadow-lg text-white border text-center">
+        <div className="w-1/2 flex flex-col rounded-md p-4 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] shadow-lg text-white border text-center min-w-[300px]">
           <h2 className="text-2xl font-bold mb-5 text-cyan-400 tracking-wide">
             NoteNest
           </h2>

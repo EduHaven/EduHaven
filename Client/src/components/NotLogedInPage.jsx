@@ -2,7 +2,7 @@ function NotLogedInPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[84vh] h-[100%]">
-      <div className=" w-[450px] flex flex-col items-center">
+      <div className=" md:w-[450px] w-[300px] flex flex-col items-center">
         <h1 className="mb-4 text-4xl text-[var(--txt)] text-center">
           You are not logged-in.
         </h1>

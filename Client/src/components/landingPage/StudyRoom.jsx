@@ -2,8 +2,12 @@ import { MessageCircle, Video } from "lucide-react";
 
 function StudyRoom() {
   return (
-    <div className="max-w-3xl xl:max-w-7xl mx-auto mb-28 flex gap-4 xl:gap-24 items-center justify-center">
-      <div className="flex-1 max-w-[600px] relative rounded-3xl overflow-hidden shadow-2xl group">
+    <div className="max-w-3xl xl:max-w-7xl mx-auto mb-28 md:flex gap-4 xl:gap-24 items-center justify-center">
+      <div className="flex-1 md:max-w-[600px] w-[85%] relative rounded-3xl overflow-hidden shadow-2xl group w-full md:ms-0 ms-[32px] md:mb-0 mb-[50px]"
+      style={{
+            animation: "floatMobile 3s ease-in-out infinite",
+          }}
+          >
         <div
           className="aspect-video relative bg-cover bg-center"
           style={{
@@ -35,9 +39,20 @@ function StudyRoom() {
               </span>
             </div>
           </div>
+          <style jsx>{`
+        @media (min-width: 1280px) {
+          div {
+            animation: none !important;
+          }
+        }
+        @keyframes floatMobile {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
+      `}</style>
         </div>
       </div>
-      <h1 className="flex-1 max-w-[400px] text-balance text-2xl xl:text-3xl font-poppins font-thin leading-[1.5] min-h-[calc(1.5em*4)]">
+      <h1 className="flex-1 max-w-[400px] text-balance text-xl sm:text-2xl xl:text-3xl font-poppins font-thin leading-[1.5] min-h-[calc(1.5em*4)] text-center xl:text-left">
         Connect with like-minded people, share knowledge build connections
       </h1>
     </div>
