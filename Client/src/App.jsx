@@ -22,6 +22,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NoteNest from "./pages/NoteNest";
 import Delete from "./components/settings/Delete";
+import Footer from "./pages/Footer";
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </RouterSelector>
+        <Footer />
         <ToastContainer
           position="top-right"
           autoClose={5000}
