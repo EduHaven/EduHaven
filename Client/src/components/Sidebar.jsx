@@ -101,6 +101,7 @@ function Sidebar() {
             isActive={location.pathname === "/friends"}
             ref={(el) => (linkRefs.current["/friends"] = el)}
           />
+          
           <SidebarLink
             to="/notenest"
             IconComponent={Wrench}  
@@ -108,6 +109,14 @@ function Sidebar() {
             isActive={location.pathname === "/notenest"}
             ref={(el) => (linkRefs.current["/notenest"] = el)}
           />        
+          <SidebarLink
+            to="/planner"
+            IconComponent={Edit3}
+            label="Planner"
+            isActive={location.pathname === "/planner"}
+            ref={(el) => (linkRefs.current["/planner"] = el)}
+         />
+
           <SidebarLink
             to="/games"
             IconComponent={GamepadIcon}

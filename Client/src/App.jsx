@@ -22,6 +22,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NoteNest from "./pages/NoteNest";
 import Delete from "./components/settings/Delete";
+import Planner from "./pages/Planner";
+
 
 function App() {
   return (
@@ -39,6 +41,7 @@ function App() {
               />
               <Route path="games/*" element={<GameRoom />} />
               <Route path="notenest" element={<NoteNest />} />
+               <Route path="planner" element={<Planner />} />
               <Route path="project-details" element={<ProjectInfo />} />
               <Route path="settings/" element={<Settings />} />
               <Route path="friends" element={<FriendsPage />} />
