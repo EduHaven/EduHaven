@@ -12,12 +12,15 @@ import authMiddleware from "../Middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, createTodo);
-router.get("/", authMiddleware, getAllTodos);
-router.get("/:id", authMiddleware, getTodoById);
-router.get("/user/:id", authMiddleware, getTodoByUserId);
-router.put("/:id", authMiddleware, updateTodo);
-router.delete("/:id", authMiddleware, deleteTodo);
-router.post("/recreate-daily-habits", authMiddleware, recreateDailyHabits);
+// Apply authentication middleware to all event routes
+router.post(authMiddleware)
+
+router.post("/", createTodo);
+router.get("/", getAllTodos);
+router.get("/:id",  getTodoById);
+router.get("/user/:id", getTodoByUserId);
+router.put("/:id", updateTodo);
+router.delete("/:id", deleteTodo);
+router.post("/recreate-daily-habits", recreateDailyHabits);
 
 export default router;
