@@ -60,7 +60,7 @@ function FriendRequests() {
                   <User className="w-7 h-7" />
                 </div>
               )}
-              <div className="ml-4 min-w-[163px]">
+              <div className="ml-4 overflow-hidden">
                 <h4 className="text-lg font-medium line-clamp-1 txt">
                   {user.FirstName
                     ? `${user.FirstName} ${user.LastName || ""}`
