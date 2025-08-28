@@ -22,11 +22,7 @@ function FriendRequests() {
 
   const handleAccept = (friendId) => {
     axios
-      .post(
-        `${backendUrl}/friends/accept/${friendId}`,
-        null,
-        getAuthHeader()
-      )
+      .post(`${backendUrl}/friends/accept/${friendId}`, null, getAuthHeader())
       .then((res) => {
         console.log(res.data);
         setRequests((prev) => prev.filter((user) => user._id !== friendId));
@@ -36,11 +32,7 @@ function FriendRequests() {
 
   const handleReject = (friendId) => {
     axios
-      .post(
-        `${backendUrl}/friends/reject/${friendId}`,
-        null,
-        getAuthHeader()
-      )
+      .post(`${backendUrl}/friends/reject/${friendId}`, null, getAuthHeader())
       .then((res) => {
         console.log(res.data);
         setRequests((prev) => prev.filter((user) => user._id !== friendId));
@@ -68,7 +60,7 @@ function FriendRequests() {
                   <User className="w-7 h-7" />
                 </div>
               )}
-              <div className="ml-4">
+              <div className="ml-4 min-w-[163px]">
                 <h4 className="text-lg font-medium line-clamp-1 txt">
                   {user.FirstName
                     ? `${user.FirstName} ${user.LastName || ""}`
