@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import axiosInstance from "@/utils/axios";
+import { useStudyStats } from "@/contexts/StudyStatsContext";
 
 // ──────────────────────────────────────────────────────────────
 // Helper functions for date formatting
@@ -167,8 +168,8 @@ const computeSummary = (data) => {
 const StudyStats = ({ stats: streakStats = {} }) => {
   const [view, setView] = useState("daily");
   const [isOpen, setIsOpen] = useState(false);
-  const [rank, setRank] = useState(0);
   const [chartStats, setChartStats] = useState([]);
+  const { studyStats } = useStudyStats();
 
   useEffect(() => {
     const handleGetStats = async () => {
@@ -207,18 +208,7 @@ const StudyStats = ({ stats: streakStats = {} }) => {
     handleGetStats();
   }, [view]);
 
-  useEffect(() => {
-    const handleGetRank = async () => {
-      try {
-        const response = await axiosInstance.get("/study-sessions/user-stats");
-        // console.log("Rank-----", response.data.rank);
-        setRank(response.data.rank);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    handleGetRank();
-  }, []);
+
 
   const summary = computeSummary(chartStats);
 
@@ -322,15 +312,15 @@ const StudyStats = ({ stats: streakStats = {} }) => {
       </div>
       <div className="text-sm p-6 mt-auto text-left w-fit">
         Rank:
-        <div className="text-4xl mb-8 font-bold text-blue-500">{rank}</div>
+        <div className="text-4xl mb-8 font-bold text-blue-500">{studyStats?.rank || 0}</div>
         Current Streak:
         <div className="text-4xl mb-8 font-bold text-yellow-500">
-          {streakStats.currentStreak ?? 0}{" "}
+          {studyStats?.streak ?? 0}{" "}
           <span className="text-lg font-normal">days</span>
         </div>
         Max Streak:
         <div className="text-4xl mb-8 font-bold text-green-500">
-          {streakStats.maxStreak ?? 0}{" "}
+          {studyStats?.maxStreak ?? 0}{" "}
           <span className="text-lg font-normal">days</span>
         </div>
       </div>

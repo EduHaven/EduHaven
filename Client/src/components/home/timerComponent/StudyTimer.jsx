@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Clock12, PlayCircle, RotateCcw } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
 import axiosInstance from "@/utils/axios";
+import { useStudyStats } from "@/contexts/StudyStatsContext";
 
 function StudyTimer() {
   const [time, setTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
@@ -11,6 +12,7 @@ function StudyTimer() {
   const [lastUpdate, setLastUpdate] = useState(new Date().toISOString());
   const [hasPosted, setHasPosted] = useState(false);
   const [lastSavedSeconds, setLastSavedSeconds] = useState(0);
+  const { refreshStatsAfterSession } = useStudyStats();
 
   // Refs to access current state in event handlers
   const isRunningRef = useRef(false);
@@ -133,6 +135,8 @@ function StudyTimer() {
         const result = await res.data;
         setHasPosted(true);
         setLastSavedSeconds(getTotalSeconds(time));
+        // Refresh study stats after successful session creation
+        refreshStatsAfterSession();
         return true;
       } catch (err) {
         console.error("Failed to save session:", err);
@@ -190,6 +194,8 @@ function StudyTimer() {
         if (res.status === 200) {
           console.log("Saved progress before leaving");
           localStorage.removeItem("studyTimer");
+          // Refresh study stats after successful session creation
+          refreshStatsAfterSession();
         }
       } catch (err) {
         console.error("Failed to save on exit:", err);

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useUserProfile, fetchUserStats } from "@/contexts/UserProfileContext";
+import { useStudyStats } from "@/contexts/StudyStatsContext";
 import NotLogedInPage from "@/components/NotLogedInPage";
 import ProfileCard from "../components/stats/ProfileCard";
 import MonthlyLevel from "../components/stats/MonthlyLevel";
@@ -15,6 +16,7 @@ import AdCard from "@/components/AdCard";
 const Stats = ({ isCurrentUser = false }) => {
   const { userId } = useParams();
   const { user: currentUser, fetchUserDetails } = useUserProfile();
+  const { studyStats } = useStudyStats();
   const [userStats, setUserStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,13 +34,13 @@ const Stats = ({ isCurrentUser = false }) => {
             name: `${currentUser?.FirstName ?? ""} ${currentUser?.LastName ?? ""}`.trim(),
             bio: currentUser?.Bio ?? "",
             profilePicture: currentUser?.ProfilePicture ?? "",
-            studyStats: {
-              totalSessions: currentUser?.StudyStats?.totalSessions ?? 0,
-              totalHours: currentUser?.StudyStats?.totalHours ?? 0,
-              currentStreak: currentUser?.streaks?.current ?? 0,
-              maxStreak: currentUser?.streaks?.max ?? 0,
-              lastActive: currentUser?.streaks?.lastStudyDate ?? null,
-            },
+                         studyStats: {
+               totalSessions: currentUser?.StudyStats?.totalSessions ?? 0,
+               totalHours: currentUser?.StudyStats?.totalHours ?? 0,
+               currentStreak: studyStats?.streak ?? 0,
+               maxStreak: studyStats?.maxStreak ?? 0,
+               lastActive: currentUser?.streaks?.lastStudyDate ?? null,
+             },
             monthlyLevel: currentUser?.MonthlyLevel ?? {},
             badges: currentUser?.Badges ?? [],
             goals: currentUser?.Goals ?? [],
@@ -51,13 +53,13 @@ const Stats = ({ isCurrentUser = false }) => {
             name: `${res.userInfo?.firstName ?? ""} ${res.userInfo?.lastName ?? ""}`.trim(),
             bio: res.userInfo?.bio ?? "",
             profilePicture: res.userInfo?.profilePicture ?? "",
-            studyStats: {
-              totalSessions: res.stats?.totalSessions ?? 0,
-              totalHours: res.stats?.totalHours ?? 0,
-              currentStreak: res.stats?.streaks?.current ?? 0,
-              maxStreak: res.stats?.streaks?.max ?? 0,
-              lastActive: res.stats?.streaks?.lastStudyDate ?? null,
-            },
+                         studyStats: {
+               totalSessions: res.stats?.totalSessions ?? 0,
+               totalHours: res.stats?.totalHours ?? 0,
+               currentStreak: studyStats?.streak ?? 0,
+               maxStreak: studyStats?.maxStreak ?? 0,
+               lastActive: res.stats?.streaks?.lastStudyDate ?? null,
+             },
             monthlyLevel: res.stats?.monthlyLevel ?? {},
             badges: res.stats?.badges ?? [],
             goals: res.stats?.goals ?? [],
@@ -73,7 +75,7 @@ const Stats = ({ isCurrentUser = false }) => {
     };
 
     fetchStats();
-  }, [isCurrentUser, userId, currentUser, fetchUserDetails]);
+  }, [isCurrentUser, userId, currentUser, fetchUserDetails, studyStats]);
 
   if (isCurrentUser  && !currentUser) {
     return <NotLogedInPage />;

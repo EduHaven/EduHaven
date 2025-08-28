@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Clock4, Flame, BarChart2 } from "lucide-react";
-import axiosInstance from "@/utils/axios";
+import { useStudyStats } from "@/contexts/StudyStatsContext";
 
 // Variants for dropdown buttons (using custom variable for hover bg)
 const dropdownButtonVariants = {
@@ -12,62 +12,26 @@ const dropdownButtonVariants = {
 function StatsSummary() {
   const [selectedTime, setSelectedTime] = useState("Today");
   const [isOpen, setIsOpen] = useState(false);
-  const [studyData, setStudyData] = useState({
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { studyStats, loading, error, refreshStats } = useStudyStats();
+
+  // Prepare study data from context
+  const studyData = studyStats ? {
+    Today: `${studyStats.timePeriods.today} h`,
+    "This week": `${studyStats.timePeriods.thisWeek} h`,
+    "This month": `${studyStats.timePeriods.thisMonth} h`,
+    "All time": `${studyStats.timePeriods.allTime} h`,
+  } : {
     Today: "0.0 h",
     "This week": "0.0 h",
     "This month": "0.0 h",
     "All time": "0.0 h",
-  });
-  const [userStats, setUserStats] = useState({
-    rank: 0,
-    totalUsers: 0,
-    streak: 0,
-    level: {
-      name: "Beginner",
-      progress: 0,
-      hoursToNextLevel: "2.0",
-    },
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const fetchUserStats = async () => {
-    try {
-      setError(null);
-
-      const response = await axiosInstance.get(`/study-sessions/user-stats`);
-      const stats = response.data;
-
-      // Update study data with real values
-      setStudyData({
-        Today: `${stats.timePeriods.today} h`,
-        "This week": `${stats.timePeriods.thisWeek} h`,
-        "This month": `${stats.timePeriods.thisMonth} h`,
-        "All time": `${stats.timePeriods.allTime} h`,
-      });
-
-      // Update user stats
-      setUserStats({
-        rank: stats.rank,
-        totalUsers: stats.totalUsers,
-        streak: stats.streak,
-        level: stats.level,
-      });
-
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching user stats:", error);
-      setError("Failed to load statistics");
-      setLoading(false);
-    }
   };
 
-  useEffect(() => {
-    fetchUserStats();
-  }, []);
-
-  const handleRefresh = () => {
-    fetchUserStats(true);
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refreshStats();
+    setIsRefreshing(false);
   };
 
   if (loading) {
@@ -118,9 +82,10 @@ function StatsSummary() {
           <p className="text-red-400 text-sm">{error}</p>
           <button
             onClick={handleRefresh}
-            className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors"
+            disabled={isRefreshing}
+            className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors disabled:opacity-50"
           >
-            Retry
+            {isRefreshing ? "Refreshing..." : "Retry"}
           </button>
         </div>
       </motion.div>
@@ -200,7 +165,7 @@ function StatsSummary() {
       >
         <BarChart2 className="h-12 w-12 p-2.5 bg-blue-400/70 rounded-full text-gray-100" />
         <p className="text-2xl font-bold text-blue-400">
-          #{userStats.rank || 0}
+          #{studyStats?.rank || 0}
         </p>
       </motion.div>
 
@@ -212,7 +177,7 @@ function StatsSummary() {
       >
         <Flame className="h-12 w-12 p-2.5 bg-yellow-400/70 rounded-full text-gray-100" />
         <p className="text-2xl font-bold text-yellow-400">
-          {userStats.streak || 0} days
+          {studyStats?.streak || 0} days
         </p>
       </motion.div>
 
@@ -222,8 +187,8 @@ function StatsSummary() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.4 }}
       >
-        {userStats.level.name} ({userStats.level.current || 1}-
-        {userStats.level.current + 1 || 2}h)
+        {studyStats?.level?.name || "Beginner"} ({studyStats?.level?.current || 1}-
+        {(studyStats?.level?.current || 1) + 1}h)
       </motion.p>
 
       <div className="relative w-full bg-ter h-5 rounded-2xl mt-2">
@@ -233,12 +198,12 @@ function StatsSummary() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.5 }}
         >
-          {userStats.level.hoursToNextLevel}h left
+          {studyStats?.level?.hoursToNextLevel || "2.0"}h left
         </motion.p>
         <motion.div
           className="bg-purple-500 h-5 rounded-2xl"
           initial={{ width: 0 }}
-          animate={{ width: `${userStats.level.progress || 0}%` }}
+          animate={{ width: `${studyStats?.level?.progress || 0}%` }}
           transition={{ duration: 0.5, delay: 0.5 }}
         ></motion.div>
       </div>

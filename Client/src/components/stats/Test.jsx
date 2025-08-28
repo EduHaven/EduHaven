@@ -1,11 +1,13 @@
 import axiosInstance from "@/utils/axios";
 import { useState } from "react";
+import { useStudyStats } from "@/contexts/StudyStatsContext";
 function App() {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [duration, setDuration] = useState("");
   const [period, setPeriod] = useState("");
   const [stats, setStats] = useState(null);
+  const { refreshStatsAfterSession } = useStudyStats();
 
   // Handle POST request to log session
   const handlePostSession = async (e) => {
@@ -17,6 +19,8 @@ function App() {
 
       const result = await response.data;
       console.log("Session logged:", result);
+      // Refresh study stats after successful session creation
+      refreshStatsAfterSession();
     } catch (error) {
       console.error("Error logging session:", error);
     }
