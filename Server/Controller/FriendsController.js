@@ -14,20 +14,44 @@ export const friendList = async (req, res) => {
 
 export const userList = async (req, res) => {
   try {
+    const { page = 1, limit = 20, all = false } = req.query;
     const currentUser = await User.findById(req.user._id);
 
-    const users = await User.find({
+    if (all) {
+      const users = await User.find({
+        $and: [
+          { _id: { $ne: currentUser._id } },
+          { _id: { $nin: currentUser.friends || [] } },
+          { _id: { $nin: currentUser.sentRequests || [] } },
+          { _id: { $nin: currentUser.friendRequests || [] } },
+        ],
+      })
+        .sort({ createdAt: -1 }) 
+        .select("FirstName LastName ProfilePicture Bio OtherDetails");
+
+      return res.json(users);
+    }
+
+    const query = {
       $and: [
         { _id: { $ne: currentUser._id } },
         { _id: { $nin: currentUser.friends || [] } },
         { _id: { $nin: currentUser.sentRequests || [] } },
         { _id: { $nin: currentUser.friendRequests || [] } },
       ],
-    })
-      .sort({ createdAt: -1 }) //  newest users first
-      .select("FirstName LastName ProfilePicture Bio OtherDetails");
+    };
 
-    res.json(users);
+    const totalUsers = await User.countDocuments(query);
+
+    const users = await User.find(query)
+      .sort({ createdAt: -1 })
+      .select("FirstName LastName ProfilePicture Bio OtherDetails")
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+
+    const hasMore = page * limit < totalUsers; // true if more users remain
+
+    res.json({ users, hasMore });
   } catch (err) {
     console.error("Error in userList:", err);
     res.status(500).json({ error: err.message });
@@ -101,9 +125,9 @@ export const getFriendsCount = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     const count = user.friends.length;
-    res.json({ count : count });
+    res.json({ count: count });
   } catch (err) {
-    console.error("Error fetching friends count:", err);  
+    console.error("Error fetching friends count:", err);
     res.status(500).json({ error: err.message });
   }
 };

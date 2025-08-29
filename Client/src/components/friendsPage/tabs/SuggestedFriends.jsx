@@ -13,7 +13,7 @@ export default function SuggestedFriends() {
   const fetchSuggestions = async () => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get("/friends/friend-suggestions");
+      const res = await axiosInstance.get("/friends/friend-suggestions?all=true");
       setUsers(res.data || []);
     } catch (err) {
       console.error("Fetch suggestions error:", err);
