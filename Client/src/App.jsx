@@ -13,6 +13,7 @@ import StudyRoom from "./pages/SessionRoom";
 import OtpInput from "./Auth/Verifyotp.jsx";
 import Settings from "./pages/Settings";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
+import { StudyStatsProvider } from "@/contexts/StudyStatsContext";
 import GoogleRedirect from "./Auth/GoogleRedirect";
 import Auth from "./Auth/Auth";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -26,8 +27,9 @@ import Delete from "./components/settings/Delete";
 function App() {
   return (
     <UserProfileProvider>
-      <SocketProvider>
-        <RouterSelector>
+      <StudyStatsProvider>
+        <SocketProvider>
+          <RouterSelector>
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
@@ -64,6 +66,7 @@ function App() {
           theme="light"
         />
       </SocketProvider>
+      </StudyStatsProvider>
     </UserProfileProvider>
   );
 }
