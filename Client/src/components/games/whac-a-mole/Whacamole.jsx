@@ -26,6 +26,8 @@ const Whacamole = () => {
   const [playBonk] = useSound(bonkSfx, { volume: 0.5, interrupt: true, html5: true });
   const [playMiss] = useSound(missSfx, { volume: 0.5, interrupt: true, html5: true });
 
+  const [showInstructions, setShowInstructions] = useState(false);
+
   const timerRef = useRef(null);
   const spawnRef = useRef(null);
 
@@ -146,6 +148,12 @@ const endGame = useCallback(() => {
             <div>TIME: {timeLeft}</div>
             <div>HIGH SCORE: {hiScore}</div>
           </div>
+          <button
+            onClick={() => setShowInstructions(true)}
+            className="px-6 py-2 bg-yellow-500 text-white font-semibold rounded-full shadow-md hover:opacity-90 transition"
+          >
+            How to Play
+          </button>
         </div>
 
         {/* Grid */}
@@ -194,6 +202,30 @@ const endGame = useCallback(() => {
                 <ArrowLeft size={20} /> Exit
               </Link>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Instructions Overlay */}
+      {showInstructions && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-30">
+          <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl max-w-md text-center">
+            <h2 className="text-3xl font-bold text-white mb-4">How to Play</h2>
+            <p className="text-white mb-4">
+              Whac-A-Mole is a fast-paced reflex game! 🐹 - Tap the{" "}
+              <span className="font-bold">Moles</span> to earn points (+10).{" "}
+              Avoid clicking on the{" "}
+              <span className="font-bold text-red-400">Evil Plants</span> {" "}
+              hitting one ends the game instantly. - If you miss a Mole, you
+              lose 5 points. - The game lasts 30 seconds. Try to beat your High
+              Score!
+            </p>
+            <button
+              onClick={() => setShowInstructions(false)}
+              className="px-6 py-2 bg-green-500 text-white font-semibold rounded-full shadow-md hover:opacity-90 transition"
+            >
+              Got it!
+            </button>
           </div>
         </div>
       )}
