@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 import axiosInstance from "@/utils/axios";
@@ -26,7 +26,7 @@ function Login() {
   const onSubmit = async (data) => {
     console.log("Form submitted:", data);
     try {
-      const url = `${backendUrl}/auth/login`;
+      const url = `/auth/login`;
       const response = await axiosInstance.post(url, data);
       console.log(response.data);
       reset();
@@ -139,12 +139,12 @@ function Login() {
             )}
           </div>
           <div className="text-right mt-2 mb-4">
-            <a
-              href="#"
+             <Link
+              to="/forgot-password"
               className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
             >
               Forgot password?
-            </a>
+            </Link>
           </div>
         </div>
 

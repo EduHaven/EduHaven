@@ -1,8 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { CheckCircle, Mail, ArrowLeft, RefreshCw } from "lucide-react";
+import { toast } from "react-toastify";
 import bgImg from "../assets/LoginBackground.jpg";
 
 const backendUrl = import.meta.env.VITE_API_URL;
@@ -12,8 +13,40 @@ const OtpInput = () => {
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [email, setEmail] = useState("");
+
+  const [verificationType, setVerificationType] = useState("signup");
   const inputRefs = useRef([]);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Determine verification type based on current route or state
+    const isPasswordReset =
+      location.pathname === "/verify-reset-otp" ||
+      location.state?.type === "password-reset";
+
+    setVerificationType(isPasswordReset ? "reset" : "signup");
+
+    if (isPasswordReset) {
+      // For password reset flow
+      const resetEmail = localStorage.getItem("resetEmail");
+      const resetToken = localStorage.getItem("resetToken");
+
+      if (!resetEmail || !resetToken) {
+        toast.error("Please start the password reset process again.");
+        navigate("/forgot-password");
+        return;
+      }
+      setEmail(resetEmail);
+    } else {
+      // For signup flow - you might get email from localStorage or props
+      const signupEmail = localStorage.getItem("signupEmail"); // You may need to store this during signup
+      if (signupEmail) {
+        setEmail(signupEmail);
+      }
+    }
+  }, [navigate, location]);
 
   const handleChange = (index, value) => {
     if (!/^\d?$/.test(value)) return;
@@ -57,27 +90,70 @@ const OtpInput = () => {
     setError("");
 
     try {
-      const activationToken = localStorage.getItem("activationToken");
+      if (verificationType === "reset") {
+        // Password reset OTP verification
+        const resetToken = localStorage.getItem("resetToken");
 
-      const response = await fetch(`${backendUrl}/auth/verify`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${activationToken}`,
-        },
-        body: JSON.stringify({ otp: otpString }),
-      });
+        const response = await fetch(`${backendUrl}/auth/verify-reset-otp`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${resetToken}`,
+          },
+          body: JSON.stringify({
+            otp: otpString,
+            email: email,
+          }),
+        });
 
-      if (response.ok) {
-        setSuccess(true);
-        setTimeout(() => {
-          navigate("/authenticate");
-        }, 1500);
+        if (response.ok) {
+          const data = await response.json();
+          setSuccess(true);
+          toast.success("OTP verified successfully!");
+
+          // Store the new verified token for password reset
+          const { verifiedResetToken } = data;
+          localStorage.setItem("resetToken", verifiedResetToken);
+          localStorage.setItem("otpVerified", "true");
+
+          setTimeout(() => {
+             
+            navigate("/reset-password");
+          }, 1500);
+        } else {
+          const error = await response.json();
+          setError(
+            error.message ||
+              error.error ||
+              "Verification failed. Please try again."
+          );
+          setOtp(["", "", "", "", "", ""]);
+          inputRefs.current[0]?.focus();
+        }
       } else {
-        const error = await response.json();
-        setError(error.message || "Verification failed. Please try again.");
-        setOtp(["", "", "", "", "", ""]);
-        inputRefs.current[0]?.focus();
+        // Signup OTP verification (original logic)
+        const activationToken = localStorage.getItem("activationToken");
+
+        const response = await fetch(`${backendUrl}/auth/verify`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${activationToken}`,
+          },
+          body: JSON.stringify({ otp: otpString }),
+        });
+
+        if (response.ok) {
+          setSuccess(true);
+          setTimeout(() => {
+            navigate("/authenticate");
+          }, 1500);
+        } else {
+          const error = await response.json();
+          setError(error.message || "Verification failed. Please try again.");
+          setOtp(["", "", "", "", "", ""]);
+          inputRefs.current[0]?.focus();
+        }
       }
     } catch {
       setError("Network error. Please check your connection and try again.");
@@ -89,9 +165,60 @@ const OtpInput = () => {
   };
 
   const handleGoBack = () => {
-    navigate(-1);
+    if (verificationType === "reset") {
+      navigate("/forgot-password");
+    } else {
+      navigate(-1);
+    }
   };
 
+  const handleResendOtp = async () => {
+    try {
+      if (verificationType === "reset") {
+        const response = await fetch(`${backendUrl}/auth/forgot-password`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ Email: email }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const { resetToken } = data;
+          if (resetToken) {
+            localStorage.setItem("resetToken", resetToken);
+            toast.success("OTP sent to your email again!");
+          }
+        } else {
+          toast.error("Failed to resend OTP. Please try again.");
+        }
+      } else {
+        // Handle signup OTP resend if you have that endpoint
+        toast.info("Please restart the signup process for a new OTP.");
+      }
+    } catch (error) {
+      toast.error("Failed to resend OTP. Please try again.");
+    }
+  };
+
+  const getTitle = () => {
+    return verificationType === "reset"
+      ? "Verify Reset OTP"
+      : "Verify Your Email";
+  };
+
+  const getDescription = () => {
+    return verificationType === "reset"
+      ? `We've sent a 6-digit verification code to ${email}. Please enter it below to continue with password reset.`
+      : "We've sent a 6-digit verification code to your email address. Please enter it below to continue.";
+  };
+
+  const getSuccessMessage = () => {
+    return verificationType === "reset"
+      ? "OTP verified successfully! Redirecting to reset password..."
+      : "Verification Successful! Redirecting you to login...";
+  };
   if (success) {
     return (
       <div
@@ -105,10 +232,10 @@ const OtpInput = () => {
         <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-8 rounded-3xl shadow-2xl max-w-md w-full text-center transition-colors">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4 animate-bounce" />
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-            Verification Successful!
+            {verificationType === "reset" ? "OTP Verified Successfully!" : "Verification Successful!"}
           </h2>
           <p className="text-gray-600 dark:text-gray-300">
-            Redirecting you to login...
+            {getSuccessMessage()}
           </p>
           <div className="mt-6 w-full bg-green-100 dark:bg-green-900 rounded-full h-2 overflow-hidden">
             <div
@@ -145,11 +272,10 @@ const OtpInput = () => {
             <Mail className="w-8 h-8 text-white dark:text-gray-900" />
           </div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-            Verify Your Email
+            {getTitle()}
           </h1>
           <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-            We've sent a 6-digit verification code to your email address.
-            Please enter it below to continue.
+             {getDescription()}
           </p>
         </div>
 
@@ -166,9 +292,10 @@ const OtpInput = () => {
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 maxLength="1"
                 className={`w-12 h-12 text-center text-xl font-bold border-2 rounded-xl transition-all duration-200
-                  ${digit
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200"
-                    : error
+                  ${
+                    digit
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200"
+                      : error
                       ? "border-red-300 bg-red-50 dark:bg-red-900"
                       : "border-gray-300 dark:border-gray-600 hover:border-blue-300 focus:border-blue-500"
                   } focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800`}
@@ -199,10 +326,24 @@ const OtpInput = () => {
           )}
         </Button>
 
+        {/* Resend OTP */}
+
+        <div className="text-center mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Didn't receive the code?{" "}
+            <button
+              onClick={handleResendOtp}
+              className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+            >
+              Resend OTP
+            </button>
+          </p>
+        </div>
         {/* Tip */}
         <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-800">
           <p className="text-blue-700 dark:text-blue-200 text-xs text-center">
-            💡 <strong>Tip:</strong> You can paste the entire OTP at once using Ctrl+V
+            💡 <strong>Tip:</strong> You can paste the entire OTP at once using
+            Ctrl+V
           </p>
         </div>
       </div>

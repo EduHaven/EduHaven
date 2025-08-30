@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import axiosInstance from "@/utils/axios";
 import { toast } from "react-toastify";
-const backendUrl = import.meta.env.VITE_API_URL;
 
 
 const Signout = () => {
@@ -12,7 +11,7 @@ const Signout = () => {
     const handleSignOut = async () => {
       try {
         await axiosInstance.post(
-          `${backendUrl}/auth/logout`,
+          `/auth/logout`,
           {},
           { withCredentials: true }
         );

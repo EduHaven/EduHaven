@@ -25,7 +25,7 @@ function SignUp() {
   const onSubmit = async (data) => {
     console.log("Form submitted:", data);
     try {
-      const url = `${backendUrl}/auth/signup`;
+      const url = `/auth/signup`;
       if (!data.FirstName || !data.LastName) {
         throw new Error("First Name and Last Name are required");
       }

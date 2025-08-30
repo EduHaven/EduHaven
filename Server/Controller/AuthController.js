@@ -221,7 +221,7 @@ const signup = async (req, res) => {
       }
     );
 
-    await sendMail(Email, FirstName, otp);
+    await sendMail(Email, FirstName, otp,'signup');
 
     const token = generateAuthToken(user);
 
@@ -239,6 +239,196 @@ const signup = async (req, res) => {
     console.error("Error during signup:", error);
 
     return res.status(500).json({ error: error.message });
+  }
+};
+
+// Forgot Password - Send OTP
+const forgotPassword = async (req, res) => {
+  try {
+    const { Email } = req.body;
+
+    // Validate input
+    if (!Email) {
+      return res.status(422).json({ error: "Please provide your email address" });
+    }
+
+    // Check if user exists
+    const user = await User.findOne({ Email });
+    if (!user) {
+      return res.status(404).json({ error: "User not found with this email address" });
+    }
+
+    // Generate OTP
+    const otp = Math.floor(Math.random() * 1000000)
+      .toString()
+      .padStart(6, "0");
+   
+    // Create reset token with user email and OTP
+    const resetToken = jwt.sign(
+      {
+        email: Email,
+        otp,
+      },
+      process.env.Activation_Secret, 
+      {
+        expiresIn: "15m", 
+      }
+    );
+
+    // Send OTP via email
+    await sendMail(Email, user.FirstName, otp,'reset');
+    // Set cookie with reset token
+    res.cookie("resetToken", resetToken, {
+      expires: new Date(Date.now() + 900000), // 15 minutes
+      httpOnly: true,
+    });
+
+    return res.status(200).json({
+      message: "Password reset OTP sent to your email.",
+      resetToken,
+    });
+  } catch (error) {
+    console.error("Error during forgot password:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+const verifyResetOTP = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(400).json({
+        message: "Authorization header is required",
+      });
+    }
+
+    const resetToken = authHeader.split(" ")[1];
+    const { otp, email } = req.body;
+
+    // Validate input
+    if (!resetToken) {
+      return res.status(400).json({
+        message: "Reset token is required",
+      });
+    }
+
+    if (!otp) {
+      return res.status(422).json({ 
+        error: "Please provide the OTP" 
+      });
+    }
+
+    // Verify reset token
+    let verify;
+    try {
+      verify = jwt.verify(resetToken, process.env.Activation_Secret);
+    } catch (error) {
+      console.error("JWT verification error:", error.message);
+      return res.status(400).json({
+        message: "Invalid or expired reset token",
+      });
+    }
+
+    // Verify OTP
+    if (verify.otp.toString() !== otp.toString()) {
+      return res.status(400).json({
+        message: "Incorrect OTP",
+      });
+    }
+
+    // Verify email matches
+    if (verify.email !== email) {
+      return res.status(400).json({
+        message: "Email mismatch",
+      });
+    }
+
+    // Create a verified token that can be used for password reset
+    const verifiedResetToken = jwt.sign(
+      {
+        email: verify.email,
+        otpVerified: true,
+      },
+      process.env.Activation_Secret,
+      {
+        expiresIn: "10m", // 10 minutes to reset password after OTP verification
+      }
+    );
+
+    return res.status(200).json({ 
+      message: "OTP verified successfully",
+      verifiedResetToken
+    });
+  } catch (error) {
+    console.error("Error verifying reset OTP:", error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+// Reset Password 
+const resetPassword = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(400).json({
+        message: "Authorization header is required",
+      });
+    }
+
+    const resetToken = authHeader.split(" ")[1];
+    const { newPassword } = req.body;
+
+    // Validate input
+    if (!resetToken) {
+      return res.status(400).json({
+        message: "Reset token is required",
+      });
+    }
+
+    if ( !newPassword) {
+      return res.status(422).json({ 
+        error: "Please provide new password" 
+      });
+    }
+
+    // Verify reset token
+    let verify;
+    try {
+      verify = jwt.verify(resetToken, process.env.Activation_Secret);
+    } catch (error) {
+      console.error("JWT verification error:", error.message);
+      return res.status(400).json({
+        message: "Invalid or expired reset token",
+      });
+    }
+
+  
+
+    // Find user by email
+    const user = await User.findOne({ Email: verify.email });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    // Update user password
+    await User.findByIdAndUpdate(user._id, { Password: hashedPassword });
+
+    // Clear reset token cookie
+    res.clearCookie("resetToken");
+
+    return res.status(200).json({ 
+      message: "Password reset successfully. Please login with your new password." 
+    });
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
   }
 };
 
@@ -317,9 +507,12 @@ export {
   googleAuth,
   googleCallback,
   login,
+  forgotPassword,
+  resetPassword,
   logout,
   refreshAccessToken,
   signup,
-  verifyUser
+  verifyUser,
+  verifyResetOTP
 };
 

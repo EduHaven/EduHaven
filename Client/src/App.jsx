@@ -15,6 +15,8 @@ import Settings from "./pages/Settings";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import GoogleRedirect from "./Auth/GoogleRedirect";
 import Auth from "./Auth/Auth";
+import ForgotPassword from "./Auth/ForgotPassword";
+import ResetPassword from "./Auth/ResetPassword";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { SocketProvider } from "./context/SocketContext";
 import FriendsPage from "./pages/FriendsPage.jsx";
@@ -49,6 +51,9 @@ function App() {
             <Route path="/signout" element={<Signout />} />
             <Route path="/verify" element={<OtpInput />} />
             <Route path="/authenticate" element={<Auth />} />
+             <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/verify-reset-otp" element={<OtpInput />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/auth/google/callback" element={<GoogleRedirect />} />
             <Route path="/delete-account" element={<Delete />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />

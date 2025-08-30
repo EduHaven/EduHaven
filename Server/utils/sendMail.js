@@ -11,17 +11,37 @@ global.Response = Response;
 dotenv.config();
 const resend = new Resend(process.env.RESEND_KEY);
 
-const sendEmail = async (Email, FirstName, otp) => {
+const sendEmail = async (Email, FirstName, otp,emailType) => {
   try {
+    // different email content based on signupor reset
+    const emailContent = {
+      signup: {
+        subject: "Confirm your Email Address – Eduhaven",
+        greeting: `Hello ${FirstName},`,
+        message: `Thanks for signing up for <strong>Eduhaven</strong>! To verify your email address, please use the OTP below:`,
+        footer: `Welcome aboard, <br/>The Eduhaven Team`,
+        disclaimer: `You received this email because you signed up for Eduhaven. If this wasn't you, please disregard this message.`
+      },
+      reset: {
+        subject: "Password Reset Request – Eduhaven",
+        greeting: `Hello ${FirstName},`,
+        message: `We received a request to reset your password for your <strong>Eduhaven</strong> account. Please use the OTP below to continue:`,
+        footer: `If you didn't request this password reset, please ignore this email. <br/>The Eduhaven Team`,
+        disclaimer: `You received this email because a password reset was requested for your Eduhaven account. If this wasn't you, please disregard this message and consider changing your password.`
+      }
+    };
+
+    const content = emailContent[emailType] || emailContent.signup;
+
     const response = await resend.emails.send({
       from: "Eduahaven <noreply@eduhaven.online>",
       to:Email,
-      subject: "Confirm your Email Address – Eduahaven",
+      subject: content.subject,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #ffffff;">
-          <h2 style="color: #4A90E2;">Hello ${FirstName},</h2>
+          <h2 style="color: #4A90E2;">${content.greeting}</h2>
           <p style="font-size: 16px; color: #333333;">
-            Thanks for signing up for <strong>Eduahaven</strong>! To verify your email address, please use the OTP below:
+            ${content.message}
           </p>
 
           <div style="text-align: center; margin: 30px 0;">
@@ -31,23 +51,23 @@ const sendEmail = async (Email, FirstName, otp) => {
           </div>
 
           <p style="font-size: 14px; color: #777777;">
-            This code will expire in 10 minutes. If you didn’t request this email, you can safely ignore it.
+           This code will expire in ${emailType === 'reset' ? '15' : '10'} minutes. If you didn't request this email, you can safely ignore it.
           </p>
 
-          <p style="font-size: 16px; color: #333333;">Welcome aboard, <br/>The Eduahaven Team</p>
+          <p style="font-size: 16px; color: #333333;">${content.footer}</p>
 
           <hr style="margin: 40px 0; border: none; border-top: 1px solid #eeeeee;" />
 
           <p style="font-size: 12px; color: #999999; text-align: center;">
-            You received this email because you signed up for Eduahaven. If this wasn't you, please disregard this message.
+            ${content.disclaimer}
           </p>
         </div>
       `,
     });
 
-    console.log("Email sent!", response);
+    console.log(`${emailType} email sent!`, response);
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error(`Error sending ${emailType} email: `, error);
   }
 };
 
