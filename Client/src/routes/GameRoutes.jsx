@@ -6,6 +6,7 @@ import SpaceType from "../components/games/space-type/SpaceType";
 import Whacamole from "@/components/games/whac-a-mole/Whacamole";
 import Sudoku from "@/components/games/sudoku/Sudoku";
 import Game2048 from "@/components/games/2048/Game2048";
+import NQueensGame from "@/components/games/N-Queens/NQueensGame";
 
 const GameRoutes = () => {
   return (
@@ -17,6 +18,7 @@ const GameRoutes = () => {
       <Route path="space-type" element={<SpaceType />} />
       <Route path="whac-a-mole" element={<Whacamole />} />
       <Route path="2048" element={<Game2048 />} />
+      <Route path="n-queens" element={<NQueensGame />} />
     </Routes>
   );
 };

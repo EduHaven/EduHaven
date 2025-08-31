@@ -7,7 +7,7 @@ import TicTacToeIcon from "../../assets/icon/TicTacToeIcon";
 import WacAMole from "@/assets/icon/WacAMole";
 import SudokuIcon from "../../assets/icon/SudokuIcon.jsx"; 
 import Game2048Icon from "@/assets/icon/Game2048Icon";
-
+import NQueensIcon from "../games/N-Queens/util/NQueensIcon";
 function GameRoom() {
   const games = [
     {
@@ -39,6 +39,11 @@ function GameRoom() {
       name: "Sudoku",
       path: "sudoku",
       Icon: SudokuIcon, 
+    },
+    {
+      name: "N-Queens",
+      path: "n-queens",
+      Icon: NQueensIcon, 
     },
   ];
 
