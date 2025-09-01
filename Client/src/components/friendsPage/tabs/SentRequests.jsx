@@ -3,17 +3,21 @@ import axiosInstance from "@/utils/axios";
 import { toast } from "react-toastify";
 import UserCard from "../UserCard";
 import SearchBar from "../SearchBar";
+import { FriendsListSkeleton } from "../skeletons/UserCardSkeleton";
 
 export default function SentRequests() {
   const [sent, setSent] = useState([]);
   const [filteredSent, setFilteredSent] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Changed to true initially
 
   const fetchSent = async () => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get(`/friends/sent-requests`);
+      const [res] = await Promise.all([
+        axiosInstance.get(`/friends/sent-requests`),
+        new Promise(resolve => setTimeout(resolve, 2000)) // 2 seconds delay
+      ]);
       setSent(res.data || []);
     } catch (err) {
       console.error(err);
@@ -80,7 +84,7 @@ export default function SentRequests() {
   }, [sent]);
 
   if (loading)
-    return <div className="text-center text-gray-500">Loading...</div>;
+    return <FriendsListSkeleton showSearch={true} cardCount={12} />;
   if (!sent.length)
     return <div className="text-center text-gray-500">No sent requests</div>;
 

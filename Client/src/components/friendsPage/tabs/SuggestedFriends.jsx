@@ -3,19 +3,22 @@ import axiosInstance from "@/utils/axios";
 import { toast } from "react-toastify";
 import UserCard from "../UserCard";
 import SearchBar from "../SearchBar";
+import { FriendsListSkeleton } from "../skeletons/UserCardSkeleton";
 
 export default function SuggestedFriends() {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Changed to true initially
 
   const fetchSuggestions = async () => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get(
-        "/friends/friend-suggestions?all=true"
-      );
+      // Add minimum loading time for testing
+      const [res] = await Promise.all([
+        axiosInstance.get("/friends/friend-suggestions?all=true"),
+        new Promise(resolve => setTimeout(resolve, 2000)) // 2 seconds delay
+      ]);
       setUsers(res.data || []);
     } catch (err) {
       console.error("Fetch suggestions error:", err);
@@ -87,11 +90,15 @@ export default function SuggestedFriends() {
     setFilteredUsers(users);
   }, [users]);
 
-  if (loading)
-    return <div className="text-center text-gray-500">Loading...</div>;
-
-  if (!users.length)
+  // Show skeleton while loading
+  if (loading) {
+    return <FriendsListSkeleton showSearch={true} cardCount={12} />;
+  }
+  
+  // Show no suggestions message
+  if (!users.length) {
     return <div className="text-center text-gray-500">No suggestions</div>;
+  }
 
   return (
     <div>

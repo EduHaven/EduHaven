@@ -3,17 +3,21 @@ import axiosInstance from "@/utils/axios";
 import { toast } from "react-toastify";
 import UserCard from "../UserCard";
 import SearchBar from "../SearchBar";
+import { FriendsListSkeleton } from "../skeletons/UserCardSkeleton";
 
 export default function AllFriends() {
   const [friends, setFriends] = useState([]);
   const [filteredFriends, setFilteredFriends] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Changed to true initially
 
   const fetchFriends = async () => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get(`/friends`);
+      const [res] = await Promise.all([
+        axiosInstance.get(`/friends`),
+        new Promise(resolve => setTimeout(resolve, 2000)) // 2 seconds delay
+      ]);
       setFriends(res.data || []);
     } catch (err) {
       console.error(err);
@@ -80,7 +84,7 @@ export default function AllFriends() {
   }, [friends]);
 
   if (loading)
-    return <div className="text-center text-gray-500">Loading...</div>;
+    return <FriendsListSkeleton showSearch={true} cardCount={12} />;
   if (!friends.length)
     return <div className="text-center text-gray-500">No friends yet</div>;
 
