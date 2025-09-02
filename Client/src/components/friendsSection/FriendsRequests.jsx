@@ -1,7 +1,7 @@
 import axiosInstance from "@/utils/axios";
-import { User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import defaultPic from "../../assets/profilePic.avif";
 
 function FriendRequests() {
   const [friendRequests, setRequests] = useState([]);
@@ -37,7 +37,7 @@ function FriendRequests() {
 
   const showSkeletons = friendRequests.length === 0;
 
- if (showSkeletons) {
+  if (showSkeletons) {
     return (
       <div className="bg-[var(--bg-secondary)] border border-gray-700/30 p-4 space-y-4 rounded-3xl shadow animate-pulse">
         <div className="bg-gray-500/20 h-6 rounded-md"></div>
@@ -61,40 +61,36 @@ function FriendRequests() {
     );
   }
 
-
-
   return (
     <section className="bg-sec rounded-3xl p-3 2xl:p-4">
       <h3 className="text-xl font-semibold txt">Friend Requests</h3>
       <div className="space-y-4">
         {friendRequests.map((user) => (
           <div key={user.id} className="!mt-7">
-            <div className="flex items-center">
-              <Link to={`/user/${user._id}`}>
-                {user.ProfilePicture ? (
-                  <img
-                    src={user.ProfilePicture}
-                    className="w-12 h-12 rounded-full transition hover:brightness-75 cursor-pointer"
-                    alt="Profile"
-                  />
-                ) : (
-                  <div className="p-2.5 bg-ter rounded-full">
-                    <User className="w-7 h-7" />
-                  </div>
-                )}
-              </Link>
-              <div className="ml-4">
-                <Link
-                  to={`/user/${user._id}`}
-                  className="text-lg font-medium line-clamp-1 txt hover:underline"
+            {/* Avtar and Bio */}
+
+            <Link to={`/user/${user._id}`}>
+              <div className="flex items-start space-x-2">
+                <img
+                  src={user.ProfilePicture || defaultPic}
+                  className="w-12 h-12 rounded-full transition hover:brightness-75 cursor-pointer"
+                  alt="Profile"
+                />
+                <div
+                  className="txt
+                    hover:underline"
                 >
-                  {user.FirstName
-                    ? `${user.FirstName} ${user.LastName || ""}`
-                    : "old-user"}
-                </Link>
-                <p className="text-sm txt-dim line-clamp-1">{user.Bio}</p>
+                  <h1 className=" text-lg font-medium line-clamp-1 ">
+                    {user.FirstName
+                      ? `${user.FirstName} ${user.LastName || ""}`
+                      : "old-user"}
+                  </h1>
+                  <p className="text-sm txt-dim line-clamp-1">{user.Bio}</p>
+                </div>
               </div>
-            </div>
+            </Link>
+
+            {/* Buttons */}
             <div className="m-4 flex space-x-3">
               <button
                 onClick={() => handleReject(user._id)}
