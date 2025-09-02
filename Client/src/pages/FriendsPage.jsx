@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import TabNavigation from "../components/friendsPage/TabNavigation";
 import MainContent from "../components/friendsPage/MainContent";
 import NotLogedInPage from "@/components/NotLogedInPage";
@@ -21,12 +21,13 @@ function FriendsPage() {
 
   const token = localStorage.getItem("token");
   let decodedUser = null;
+  
   try {
     if (token) decodedUser = jwtDecode(token);
   } catch (err) {
     console.error("Invalid token", err);
   }
-
+  
   if (!decodedUser) return <NotLogedInPage />;
 
   return (
