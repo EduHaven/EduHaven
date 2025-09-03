@@ -2,6 +2,7 @@ import axiosInstance from "@/utils/axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { User } from "lucide-react";
+import Avatar from "./Avatar";
 
 function FriendRequests() {
   const [friendRequests, setRequests] = useState([]);
@@ -71,17 +72,7 @@ function FriendRequests() {
 
             <Link to={`/user/${user._id}`}>
               <div className="flex items-center space-x-2">
-                {user?.ProfilePicture ? (
-                  <div className="p-2.5 bg-ter rounded-full transition hover:brightness-75 cursor-pointer">
-                    <User className="w-7 h-7" />
-                  </div>
-                ) : (
-                  <img
-                    src={user.ProfilePicture}
-                    className="w-12 aspect-square rounded-full transition hover:brightness-75 cursor-pointer"
-                    alt="Profile"
-                  />
-                )}
+                <Avatar src={user.ProfilePicture} alt="Profile" />
                 <div
                   className="txt
                     hover:underline flex-[0_0_60%]"
