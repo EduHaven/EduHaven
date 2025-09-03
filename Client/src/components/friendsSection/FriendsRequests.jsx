@@ -1,7 +1,7 @@
 import axiosInstance from "@/utils/axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import defaultPic from "../../assets/profilePic.avif";
+import { User } from "lucide-react";
 
 function FriendRequests() {
   const [friendRequests, setRequests] = useState([]);
@@ -70,15 +70,21 @@ function FriendRequests() {
             {/* Avtar and Bio */}
 
             <Link to={`/user/${user._id}`}>
-              <div className="flex items-start space-x-2">
-                <img
-                  src={user.ProfilePicture || defaultPic}
-                  className="w-12 h-12 rounded-full transition hover:brightness-75 cursor-pointer"
-                  alt="Profile"
-                />
+              <div className="flex items-center space-x-2">
+                {user?.ProfilePicture ? (
+                  <div className="p-2.5 bg-ter rounded-full transition hover:brightness-75 cursor-pointer">
+                    <User className="w-7 h-7" />
+                  </div>
+                ) : (
+                  <img
+                    src={user.ProfilePicture}
+                    className="w-12 aspect-square rounded-full transition hover:brightness-75 cursor-pointer"
+                    alt="Profile"
+                  />
+                )}
                 <div
                   className="txt
-                    hover:underline"
+                    hover:underline flex-[0_0_60%]"
                 >
                   <h1 className=" text-lg font-medium line-clamp-1 ">
                     {user.FirstName
