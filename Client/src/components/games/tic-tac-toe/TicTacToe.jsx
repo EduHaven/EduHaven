@@ -6,33 +6,31 @@ const tieSound = new Audio("/sounds/tie.mp3");
 import { useState, useEffect } from "react";
 import { Volume2, VolumeX, RotateCcw, ArrowLeft } from "lucide-react";
 
-// Game logic functions
+// Game logic functions (unchanged)
 const calculateWinner = (squares) => {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
-    [6, 7, 8], // Rows
+    [6, 7, 8],
     [0, 3, 6],
     [1, 4, 7],
-    [2, 5, 8], // Columns
+    [2, 5, 8],
     [0, 4, 8],
-    [2, 4, 6], // Diagonals
+    [2, 4, 6],
   ];
-
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       return { winner: squares[a], line: lines[i] };
     }
   }
-
   if (squares.every((square) => square)) {
     return { winner: "tie", line: null };
   }
-
   return { winner: null, line: null };
 };
 
+// Bot logic functions (unchanged)
 const getBotMove = (squares, difficulty) => {
   switch (difficulty) {
     case "easy":
@@ -50,19 +48,15 @@ const getRandomMove = (squares) => {
   const availableMoves = squares
     .map((square, index) => (!square ? index : null))
     .filter((move) => move !== null);
-
   return availableMoves[Math.floor(Math.random() * availableMoves.length)];
 };
 
 const getMediumMove = (squares) => {
   const winMove = findWinningMove(squares, "O");
   if (winMove !== null) return winMove;
-
   const blockMove = findWinningMove(squares, "X");
   if (blockMove !== null) return blockMove;
-
   if (!squares[4]) return 4;
-
   return getRandomMove(squares);
 };
 
@@ -77,7 +71,6 @@ const findWinningMove = (squares, player) => {
     [0, 4, 8],
     [2, 4, 6],
   ];
-
   for (let line of lines) {
     const [a, b, c] = line;
     const squaresCopy = [...squares];
@@ -100,37 +93,31 @@ const findWinningMove = (squares, player) => {
     )
       return c;
   }
-
   return null;
 };
 
 const getMinimaxMove = (squares) => {
   let bestScore = -Infinity;
   let bestMove = null;
-
   for (let i = 0; i < squares.length; i++) {
     if (!squares[i]) {
       squares[i] = "O";
       let score = minimax(squares, 0, false);
       squares[i] = null;
-
       if (score > bestScore) {
         bestScore = score;
         bestMove = i;
       }
     }
   }
-
   return bestMove;
 };
 
 const minimax = (squares, depth, isMaximizing) => {
   const result = calculateWinner(squares);
-
   if (result.winner === "O") return 10 - depth;
   if (result.winner === "X") return depth - 10;
   if (result.winner === "tie") return 0;
-
   if (isMaximizing) {
     let bestScore = -Infinity;
     for (let i = 0; i < squares.length; i++) {
@@ -158,10 +145,10 @@ const minimax = (squares, depth, isMaximizing) => {
 const Cell = ({ value, onClick, isWinning, index }) => {
   return (
     <div
-      className={`w-[90px] h-[90px] border border-[rgba(var(--shadow-rgb),0.1)] rounded-[calc(var(--radius)-0.125rem)] flex items-center justify-center cursor-pointer transition-all duration-200 ease-in-out relative overflow-hidden h hover:border-[rgba(var(--shadow-rgb),0.2)] hover:scale-102 active:scale-98 ${
+      className={`w-[90px] h-[90px] border border-[rgba(var(--shadow-rgb),0.2)] rounded-[calc(var(--radius)-0.125rem)] flex items-center justify-center cursor-pointer transition-all duration-200 ease-in-out relative overflow-hidden hover:border-[rgba(var(--shadow-rgb),0.3)] hover:scale-102 active:scale-98 ${
         isWinning
           ? "bg-[var(--btn)] !border-[var(--btn)]"
-          : "bg-[var(--bg-sec)] over:bg-[var(--bg-primary)]"
+          : "bg-[var(--bg-sec)]"
       }`}
       onClick={onClick}
       style={{
@@ -184,7 +171,7 @@ const Cell = ({ value, onClick, isWinning, index }) => {
 // Board Component
 const Board = ({ squares, onClick, winningLine }) => {
   return (
-    <div className="grid grid-cols-3 gap-2 mb-8 opacity-0 animate-[fadeInUp_0.6s_ease_0.2s_forwards]">
+    <div className="grid grid-cols-3 gap-0 mb-8 opacity-0 animate-[fadeInUp_0.6s_ease_0.2s_forwards] border border-[rgba(var(--shadow-rgb),0.2)]">
       {squares.map((square, i) => (
         <Cell
           key={i}
@@ -206,7 +193,6 @@ function TicTacToe() {
   const [xIsNext, setXIsNext] = useState(true);
   const [scores, setScores] = useState({ X: 0, O: 0 });
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
-
   const { winner, line } = calculateWinner(squares);
 
   const resetGame = () => {
@@ -244,26 +230,19 @@ function TicTacToe() {
 
   const handleMove = (i) => {
     if (squares[i] || winner) return;
-
     const newSquares = squares.slice();
     newSquares[i] = xIsNext ? "X" : "O";
     setSquares(newSquares);
     setXIsNext(!xIsNext);
-
-    // 🎵 Play move sound
     if (isSoundEnabled) moveSound.play();
-
     const result = calculateWinner(newSquares);
     if (result.winner && result.winner !== "tie") {
       setScores((prev) => ({
         ...prev,
         [result.winner]: prev[result.winner] + 1,
       }));
-
-      // 🎵 Play win sound
       if (isSoundEnabled) winSound.play();
     } else if (result.winner === "tie") {
-      // 🎵 Play tie sound
       if (isSoundEnabled) tieSound.play();
     }
   };
@@ -290,7 +269,6 @@ function TicTacToe() {
             transform: translateY(0);
           }
         }
-
         @keyframes fadeInUp {
           from {
             opacity: 0;
@@ -301,7 +279,6 @@ function TicTacToe() {
             transform: translateY(0);
           }
         }
-
         @keyframes scaleIn {
           from {
             transform: scale(0);
@@ -310,29 +287,26 @@ function TicTacToe() {
             transform: scale(1);
           }
         }
-
         .scale-102 {
           transform: scale(1.02);
         }
-
         .scale-98 {
           transform: scale(0.98);
         }
       `}</style>
 
-      {/* Navbar */}
-      <nav className="px-8 pt-4">
+      {/* Navbar: Updated to full width */}
+      <nav className="w-full px-4 md:px-8 pt-4">
         <div className="mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={() => window.history.back()}
-              className="flex items-center gap-2 px-4 py-1 text-[var(--txt-dim)] bg-sec rounded-lg cursor-pointer transition-all duration-200 text-sm font-medium hover:bg-ter "
+              className="flex items-center gap-2 px-4 py-1 text-[var(--txt-dim)] bg-sec rounded-lg cursor-pointer transition-all duration-200 text-sm font-medium hover:bg-ter"
             >
               <ArrowLeft size={24} />
             </button>
             <h1 className="text-2xl font-semibold txt">Tic Tac Toe</h1>
           </div>
-
           <div className="flex items-center gap-8">
             {/* Game Mode Toggle */}
             <div className="flex items-center gap-3">
@@ -359,7 +333,6 @@ function TicTacToe() {
                 </button>
               </div>
             </div>
-
             {/* Difficulty Selector */}
             <div
               className={`flex items-center gap-3 transition-all duration-300 overflow-hidden ${
@@ -401,7 +374,7 @@ function TicTacToe() {
       {/* Game Content */}
       <div className="max-w-2xl mx-auto px-8 py-12 flex flex-col items-center flex-1">
         <div className="flex gap-10 items-center my-auto pb-20">
-          {/* left secton */}
+          {/* Left Section */}
           <div className="flex-col flex items-center">
             {/* Game Status */}
             <div className="text-xl font-semibold text-[var(--txt)] mb-4 text-center opacity-0 animate-[fadeInDown_0.6s_ease_forwards]">
@@ -411,15 +384,14 @@ function TicTacToe() {
             {/* Game Controls */}
             <div className="flex gap-4 opacity-0 animate-[fadeInUp_0.6s_ease_0.3s_forwards]">
               <button
-                className="flex items-center gap-2 px-6 py-3 bg-[var(--btn)] text-white border-none rounded-[var(--radius)] cursor-pointer transition-all duration-200 font-medium text-sm hover:bg-[var(--btn-hover)] hover:-translate-y-0.5"
+                className="flex items-center gap-2 px-6 py-3 bg-[var(--btn)] text-white border-none rounded-[var(--radius)] cursor-pointer transition-all duration-200 font-medium text-sm hover:bg-[var(--btn-hover)]"
                 onClick={resetGame}
               >
                 <RotateCcw size={16} />
                 New Game
               </button>
-
               <button
-                className="px-6 py-3 bg-[var(--bg-sec)] text-[var(--txt)] border border-[rgba(var(--shadow-rgb),0.1)] rounded-[var(--radius)] cursor-pointer transition-all duration-200 font-medium text-sm hover:bg-[var(--bg-ter)] hover:border-[rgba(var(--shadow-rgb),0.2)] hover:-translate-y-0.5"
+                className="px-6 py-3 bg-[var(--bg-sec)] text-[var(--txt)] border border-[rgba(var(--shadow-rgb),0.1)] rounded-[var(--radius)] cursor-pointer transition-all duration-200 font-medium text-sm hover:bg-[var(--bg-ter)] hover:border-[rgba(var(--shadow-rgb),0.2)]"
                 onClick={() => {
                   resetGame();
                   setScores({ X: 0, O: 0 });
