@@ -246,6 +246,20 @@ const getLeaderboard = async (req, res) => {
         },
       },
     ]);
+
+    // Award leaderboard badges to top 3 users
+    const { awardBadge, BADGES } = await import("../utils/badgeSystem.js");
+    for (let i = 0; i < leaderboard.length && i < 3; i++) {
+      const userId = leaderboard[i].userId;
+      let badgeId;
+      if (i === 0) badgeId = "leaderboard_gold";
+      else if (i === 1) badgeId = "leaderboard_silver";
+      else if (i === 2) badgeId = "leaderboard_bronze";
+      if (badgeId && BADGES[badgeId]) {
+        await awardBadge(userId, badgeId);
+      }
+    }
+
     res.json(leaderboard);
   } catch (error) {
     console.error("Leaderboard error:", error);

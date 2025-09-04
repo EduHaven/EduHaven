@@ -31,6 +31,27 @@ export const BADGES = {
     icon: "/badges/Focus Enthusiast.png",
     category: "Focus",
   },
+  leaderboard_gold: {
+    id: "leaderboard_gold",
+    name: "Leaderboard Gold",
+    description: "Top 1 on the leaderboard",
+    icon: "/badges/Legendary Achiever.png",
+    category: "Leaderboard",
+  },
+  leaderboard_silver: {
+    id: "leaderboard_silver",
+    name: "Leaderboard Silver",
+    description: "Top 2 on the leaderboard",
+    icon: "/badges/Marathon Learner.png",
+    category: "Leaderboard",
+  },
+  leaderboard_bronze: {
+    id: "leaderboard_bronze",
+    name: "Leaderboard Bronze",
+    description: "Top 3 on the leaderboard",
+    icon: "/badges/Focus Enthusiast.png",
+    category: "Leaderboard",
+  },
 };
 
 // Function to check if user profile is complete
