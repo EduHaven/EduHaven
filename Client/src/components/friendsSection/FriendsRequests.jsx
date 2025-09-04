@@ -7,15 +7,21 @@ function FriendRequests() {
   const [friendRequests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+
+  async function fetchRequests() {
     setLoading(true);
-    axiosInstance
-      .get("/friends/requests")
-      .then((res) => {
-        setRequests(res.data);
-      })
-      .catch((err) => console.error(err.response.data))
-      .finally(() => setLoading(false));
+    try {
+      const res = await axiosInstance.get("/friends/requests");
+      setRequests(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchRequests();
   }, []);
 
   const handleAccept = (friendId) => {
@@ -62,12 +68,13 @@ function FriendRequests() {
     );
   }
 
+  if (friendRequests.length === 0) {
+    return null;
+  }
+
   return (
     <section className="bg-sec rounded-3xl p-3 2xl:p-4">
       <h3 className="text-xl font-semibold txt">Friend Requests</h3>
-      {friendRequests.length === 0 && (
-        <p className="text-red-700 text-sm mt-2">&#9733; No friend requests</p>
-      )}
       <div className="space-y-4">
         {friendRequests.map((user) => (
           <div key={user._id} className="!mt-7">
