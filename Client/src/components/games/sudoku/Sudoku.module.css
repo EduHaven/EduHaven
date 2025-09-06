@@ -4,23 +4,23 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: 1rem 1rem 4rem 1rem;
+  padding-top: 0; /* Set back to 0 or adjust as needed for overall layout */
   box-sizing: border-box;
 }
 
 /* === New Header Styles === */
 .gameHeader {
   width: 100%;
-  max-width: 900px;
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  background-color: var(--bg-sec);
-  border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(var(--shadow-rgb), 0.1);
-  box-sizing: border-box;
-  margin-bottom: 2rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #111827;
+  border-radius: 0; /* remove rounded corners */
+  box-shadow: 0 2px 10px rgba(var(--shadow-rgb), 0.3);
+  
+  
+  
 }
 
 .topBar,
@@ -49,6 +49,8 @@
   font-weight: 700;
   color: var(--txt);
   margin: 0;
+  text-shadow: 0 0 8px #e100ff;
+  margin-right: auto;
 }
 
 .iconButton {
@@ -57,15 +59,18 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  background-color: var(--bg-ter);
+  background: linear-gradient(135deg, #9333ea, #3b82f6); /* gradient */
   border: none;
-  border-radius: var(--radius);
-  color: var(--txt);
+  border-radius: 12px;
+  color: white;
   cursor: pointer;
-  transition: filter 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  
 }
 .iconButton:hover {
-  filter: brightness(1.1);
+  transform: scale(1.1);
+  box-shadow: 0 0 12px #9333ea, 0 0 20px #3b82f6;
 }
 .iconButton svg {
   width: 24px;
@@ -138,12 +143,12 @@
 .gameWrapper {
   width: 100%;
   max-width: 900px;
-  background-color: var(--bg-sec);
+  background-color: transparent; /* ✅ match Tic Tac Toe */
   border-radius: var(--radius);
-  box-shadow: 0 8px 32px rgba(var(--shadow-rgb), 0.15);
   padding: 1.5rem;
   box-sizing: border-box;
 }
+
 
 /* === New Action Button Styles === */
 .gameActions {
@@ -158,14 +163,18 @@
   font-weight: 600;
   border-radius: var(--radius);
   cursor: pointer;
+  border: 2px solid transparent;
   transition:
     transform 0.2s ease,
-    filter 0.2s ease;
-  border: 2px solid transparent;
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+
 }
 .btn:hover {
   transform: translateY(-2px);
-  filter: brightness(1.1);
+  filter: brightness(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 .btn:disabled {
   background-color: var(--bg-ter) !important;
@@ -177,18 +186,26 @@
 }
 
 .btnPrimary {
-  background-color: var(--btn);
+  background: linear-gradient(135deg, #06b6d4, #3b82f6);
+  border: none;
   color: white;
-  border-color: var(--btn);
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btnPrimary:hover {
+   transform: scale(1.05);
+  box-shadow: 0 0 12px #e100ff88;
 }
 
 .btnSecondary {
-  background-color: var(--bg-ter);
+  background: rgba(55, 65, 81, 0.6); /* semi-transparent gray */
   color: var(--txt);
-  border-color: var(--bg-ter);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(6px);
 }
 .btnSecondary:hover {
-  border-color: var(--btn);
+  background: rgba(75, 85, 99, 0.8);
+  border-color: #9333ea;
 }
 
 /* === Status & Modal (unchanged) === */
@@ -262,17 +279,23 @@
 
 /* === GLOBAL STYLES for Board/Cell === */
 :global(.sudoku-wrap) {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
+body {
+  background-color: var(--bg-primary); /* dark consistent background */
+  margin: 0;
+  padding: 0;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  border-radius: 16px;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
 }
 
 :global(.sudoku-board) {
-  display: grid;
-  grid-template-rows: repeat(9, 1fr);
-  border: 3px solid var(--txt-dim); /* Outer thick border */
-  border-radius: calc(var(--radius) + 4px);
-  overflow: hidden;
+ border: 4px dashed #22d3ee;
+  border-radius: 0;
+  box-shadow: inset 0 0 12px #22d3ee, 0 0 15px #22d3ee;
+  
 }
 
 :global(.sudoku-row) {
@@ -286,14 +309,14 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: clamp(1rem, 5vw, 1.5rem);
-  background: var(--bg-sec);
-  border: 1px solid var(--bg-ter); /* Inner thin border */
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
-  cursor: pointer;
-  color: var(--btn-hover);
+  font-size: clamp(1rem, 4vw, 1.4rem);
+  border: 1px solid #374151;
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.2s ease-in-out;
+  color: #e5e7eb;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: inset 0 -1px 2px rgba(0,0,0,0.5);
+  
 }
 
 /* Thicker borders for 3x3 blocks */
@@ -305,22 +328,25 @@
 }
 
 :global(.sudoku-cell.is-fixed) {
-  color: var(--txt);
+  background: #374151;
+  color: #60a5fa;
   font-weight: 700;
-  cursor: default;
 }
 
 :global(.sudoku-cell.is-related:not(.is-selected)) {
-  background: var(--bg-ter);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 :global(.sudoku-cell.is-selected) {
-  background-color: var(--btn);
-  color: white;
+background: linear-gradient(135deg, #7f00ff, #e100ff);
+  color: #fff;
+  box-shadow: 0 0 12px #e100ff88;
+  transform: scale(1.08);
 }
 
 /* Optional: hover effect for editable cells */
 :global(.sudoku-cell:not(.is-fixed):hover) {
-  background-color: var(--btn-light);
-  color: var(--btn);
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
 }
