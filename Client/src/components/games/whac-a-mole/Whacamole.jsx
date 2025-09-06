@@ -226,15 +226,22 @@ const Whacamole = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-30">
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl max-w-md text-center">
             <h2 className="text-3xl font-bold text-white mb-4">How to Play</h2>
-            <p className="text-white mb-4">
-              Whac-A-Mole is a fast-paced reflex game! 🐹 - Tap the{" "}
-              <span className="font-bold">Moles</span> to earn points (+10).{" "}
-              Avoid clicking on the{" "}
-              <span className="font-bold text-red-400">Evil Plants</span>{" "}
-              hitting one ends the game instantly. - If you miss a Mole, you
-              lose 5 points. - The game lasts 30 seconds. Try to beat your High
-              Score!
-            </p>
+            <ul className="text-white mb-4 list-disc list-inside text-left space-y-2">
+              <li>
+                Tap the <span className="font-bold">Moles </span>🦦 to earn points 
+                (<span className="font-bold text-green-600">+10</span>).
+              </li>
+              <li>
+                Avoid the <span className="font-bold text-red-400">Evil Plants🌱</span>- one hit ends the game.
+              </li>
+              <li>
+                Missing a <span className="font-bold">Mole </span>🦦 costs you 
+                <span className="font-bold text-red-400"> -5 points</span>.
+              </li>
+              <li>
+                The game lasts <span className="font-bold">30 seconds </span>⏱️- try to beat your High Score!
+              </li>
+            </ul>
             <button
               onClick={() => setShowInstructions(false)}
               className="px-6 py-2 bg-green-500 text-white font-semibold rounded-full shadow-md hover:opacity-90 transition"
