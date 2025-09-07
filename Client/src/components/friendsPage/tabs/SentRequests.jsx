@@ -63,7 +63,7 @@ export default function SentRequests() {
         />
       )}
 
-      <div className="flex flex-wrap gap-4 mt-4 justify-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 mt-4">
         {filteredSent?.map((user) => (
           <UserCard key={user._id} user={user} selectedTab="sentRequests" />
         ))}
