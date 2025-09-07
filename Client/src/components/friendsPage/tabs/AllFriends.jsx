@@ -30,7 +30,22 @@ export default function AllFriends() {
 
   // 3. Render skeleton loader while loading
   if (isLoading) {
-    return <FriendsSkeletonLoader />;
+    // Calculate number of rows to fill viewport height
+    const skeletonCardHeight = 200; // Approximate height of UserCardSkeleton including margin (adjust if needed)
+    const viewportHeight = window.innerHeight;
+    const rows = Math.ceil(viewportHeight / skeletonCardHeight);
+
+    // Determine columns based on window width (Tailwind breakpoints)
+    let columns = 3;
+    if (window.innerWidth < 768) {
+      columns = 1;
+    } else if (window.innerWidth >= 768 && window.innerWidth < 1024) {
+      columns = 2;
+    }
+
+    const count = rows * columns;
+
+    return <FriendsSkeletonLoader count={count} />;
   }
 
   if (friends.length === 0) {
@@ -44,7 +59,7 @@ export default function AllFriends() {
       )}
 
       {/* 4. Update container to use CSS Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+      <div className="flex flex-wrap gap-4 mt-4 justify-start">
         {filteredFriends.map((user) => (
           <UserCard key={user._id} user={user} selectedTab="allFriends" />
         ))}
