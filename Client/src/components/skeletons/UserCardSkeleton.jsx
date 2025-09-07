@@ -6,8 +6,8 @@ const UserCardSkeleton = () => {
     // Removed width constraints like `sm:max-w-[220px]` and `flex-grow`.
     // `w-full` ensures the card perfectly fills the grid column defined by the parent.
     <div
-      className="w-full p-4 border rounded-[var(--radius)] 
-                 bg-[var(--bg-sec)] border-[var(--bg-ter)]"
+      className="w-full p-4 rounded-[var(--radius)]
+                 bg-[var(--bg-sec)]"
     >
       <div className="animate-pulse flex flex-col items-center text-center">
         {/* Avatar Placeholder */}
