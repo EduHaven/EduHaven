@@ -14,12 +14,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run ESLint
-        run: npx eslint .
-        # If you want to automatically fix linting issues, use the following line instead:
-        # run: npx eslint . --fix 
-        # Note: Using --fix will modify files, which may not be desirable in a CI context.
+      - name: Run ESLint on client
+        run: npx eslint client --max-warnings=0
+
+      - name: Run ESLint on server
+        run: npx eslint server --max-warnings=0
