@@ -16,7 +16,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import axiosInstance from "@/utils/axios";
+import { useParams } from "react-router-dom";
+import { useConsolidatedStats } from "@/queries/timerQueries";
 
 // ──────────────────────────────────────────────────────────────
 // Helper functions for date formatting
@@ -167,66 +168,68 @@ const computeSummary = (data) => {
 const StudyStats = ({ stats: streakStats = {} }) => {
   const [view, setView] = useState("daily");
   const [isOpen, setIsOpen] = useState(false);
-  const [rank, setRank] = useState(0);
   const [chartStats, setChartStats] = useState([]);
+  const { userId } = useParams();
+
+  // Replace direct axios calls with consolidated data hook
+  const { data, isLoading, error } = useConsolidatedStats(userId, view);
 
   useEffect(() => {
-    const handleGetStats = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `/study-sessions/stats?period=${view}`
-        );
-        const result = await response.data;
-        let timeline = [];
+    if (!data || !data.periodStats) return;
 
-        if (view === "hourly") timeline = generateHourlyTimeline();
-        if (view === "daily") timeline = generateDailyTimeline();
-        if (view === "weekly") timeline = generateWeeklyTimeline();
-        if (view === "monthly") timeline = generateMonthlyTimeline();
+    let timeline = [];
+    if (view === "hourly") timeline = generateHourlyTimeline();
+    if (view === "daily") timeline = generateDailyTimeline();
+    if (view === "weekly") timeline = generateWeeklyTimeline();
+    if (view === "monthly") timeline = generateMonthlyTimeline();
 
-        result.periodData.forEach((item) => {
-          const found = timeline.find((entry) => entry.value === item._id);
-          if (found) {
-            found.totalHours = item.totalHours || 0;
-            found.studyRoomHours = item.studyRoomHours || 0;
-          }
-        });
+    // Map the data from consolidated endpoint to the timeline
+    if (data.periodStats.periodData) {
+      data.periodStats.periodData.forEach((item) => {
+        const found = timeline.find((entry) => entry.value === item._id);
+        if (found) {
+          found.totalHours = item.totalHours || 0;
+          found.studyRoomHours = item.studyRoomHours || 0;
+        }
+      });
+    }
 
-        setChartStats(
-          timeline.map((entry) => ({
-            name: entry.label,
-            totalHours: entry.totalHours,
-            studyRoomHours: entry.studyRoomHours,
-          }))
-        );
-      } catch (error) {
-        console.error("Error fetching stats:", error);
-      }
-    };
-
-    handleGetStats();
-  }, [view]);
-
-  useEffect(() => {
-    const handleGetRank = async () => {
-      try {
-        const response = await axiosInstance.get("/study-sessions/user-stats");
-        // console.log("Rank-----", response.data.rank);
-        setRank(response.data.rank);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    handleGetRank();
-  }, []);
+    setChartStats(
+      timeline.map((entry) => ({
+        name: entry.label,
+        totalHours: entry.totalHours,
+        studyRoomHours: entry.studyRoomHours,
+      }))
+    );
+  }, [view, data]);
 
   const summary = computeSummary(chartStats);
+  // Get rank from consolidated data instead of separate API call
+  const rank = data?.userStats?.rank || 0;
 
   const handleDropdownClick = (viewType) => {
     setView(viewType);
     setIsOpen(false);
   };
 
+  // Add loading and error states
+  if (isLoading) {
+    return (
+      <div className="flex bg-[var(--bg-ter)] shadow-md rounded-3xl text-center w-full overflow-hidden p-6">
+        <p>Loading study statistics...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex bg-[var(--bg-ter)] shadow-md rounded-3xl text-center w-full overflow-hidden p-6">
+        <p className="text-red-400">Error loading study statistics</p>
+      </div>
+    );
+  }
+
+  // Rest of the component remains the same
   return (
     <div className="flex bg-[var(--bg-ter)] shadow-md rounded-3xl text-center w-full overflow-hidden">
       {/* Chart showing Total Study Hours and Study-Room Hours */}
@@ -325,12 +328,12 @@ const StudyStats = ({ stats: streakStats = {} }) => {
         <div className="text-4xl mb-8 font-bold text-blue-500">{rank}</div>
         Current Streak:
         <div className="text-4xl mb-8 font-bold text-yellow-500">
-          {streakStats.currentStreak ?? 0}{" "}
+          {data?.userStats?.streak ?? 0}{" "}
           <span className="text-lg font-normal">days</span>
         </div>
         Max Streak:
         <div className="text-4xl mb-8 font-bold text-green-500">
-          {streakStats.maxStreak ?? 0}{" "}
+          {data?.userStats?.maxStreak ?? 0}{" "}
           <span className="text-lg font-normal">days</span>
         </div>
       </div>
