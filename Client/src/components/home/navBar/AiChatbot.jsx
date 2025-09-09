@@ -9,6 +9,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 const apikey = import.meta.env.VITE_GEMINI_KEY;
 
@@ -171,8 +172,10 @@ const Ai = () => {
   return (
     <div id="manishai">
       {/* Ask AI Button */}
-      <button
-        className="flex gap-3 btn shadow-[0_4px_100px_rgba(176,71,255,0.7)] px-5 py-2.5 font-semibold transition duration-200 transform hover:scale-105 hover:shadow-[0_4px_100px_rgba(176,71,255,1)]"
+      <Button
+        size="lg"
+        variant="default"
+        className="shadow-[0_4px_100px_rgba(176,71,255,0.7)] font-semibold hover:shadow-[0_4px_100px_rgba(176,71,255,1)]"
         onClick={() => {
           const modalEl = document.getElementById("my_modal_1");
           modalEl && modalEl.showModal();
@@ -180,7 +183,7 @@ const Ai = () => {
       >
         <BotMessageSquare />
         Ask AI
-      </button>
+      </Button>
 
       {/* Chat Panel: render into document.body via portal so close is reliable */}
       {ReactDOM.createPortal(

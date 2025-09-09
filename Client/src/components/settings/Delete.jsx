@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import bgImg from "../../assets/LoginBackground.jpg";
+import axiosInstance from "@/utils/axios";
 
 const Delete = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -16,7 +17,7 @@ const Delete = () => {
 
   const handleConfirmDelete = async () => {
     if (confirmText !== "delete my account") {
-      toast.error("Please type exactly 'delete my account' to continue");
+      toast.error(`Please type exactly "delete my account" to continue`);
       return;
     }
 
@@ -78,7 +79,8 @@ const Delete = () => {
         </div>
 
         <p className="text-sm text-center text-black/80 mb-6">
-          If you're facing issues, please contact support first before deleting.
+          If you are facing issues, please contact support first before
+          deleting.
         </p>
 
         {/* Buttons */}
@@ -119,7 +121,7 @@ const Delete = () => {
                 Final Confirmation
               </h3>
               <p className="text-gray-600 mb-4 text-center">
-                Please type <strong>"delete my account"</strong> to confirm:
+                Please type <strong>{"delete my account"}</strong> to confirm:
               </p>
               <input
                 type="text"

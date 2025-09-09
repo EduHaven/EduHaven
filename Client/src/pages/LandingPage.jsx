@@ -4,7 +4,7 @@ import StudyRoom from "@/components/landingPage/StudyRoom";
 import MakeFriends from "@/components/landingPage/MakeFriends";
 import GoalsAndEvents from "@/components/landingPage/GoalsAndEvents";
 import CTASection from "@/components/landingPage/CTASection";
-import Footer  from "@/components/landingPage/Footer";
+import Footer from "@/components/landingPage/Footer";
 
 const EduHavenLanding = () => {
   return (

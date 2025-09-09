@@ -16,7 +16,7 @@ import {
   fetchSuggestedUsers,
   rejectFriendRequest,
   removeFriend,
-  sendFriendRequest
+  sendFriendRequest,
 } from "../api/friendApi";
 
 export const useFriendRequests = () =>
@@ -64,10 +64,14 @@ export const useCancelRequest = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: cancelFriendRequest,
-    onSuccess: () => {
+    onSuccess: (_, userId) => {
       toast.info("Friend request canceled.");
+
+      qc.setQueryData(["friendSuggestions"], (old = []) =>
+        old.map((u) => (u._id === userId ? { ...u, requestSent: false } : u))
+      );
+
       qc.invalidateQueries({ queryKey: ["sentRequests"] });
-      qc.invalidateQueries({ queryKey: ["friendSuggestions"] });
     },
     onError: (err) => handleApiError(err, "Error canceling friend request!"),
   });
@@ -109,7 +113,7 @@ export const useUsersInfinite = (limit = 20) => {
 
 export const useAllSuggestedUsers = () => {
   return useQuery({
-    queryKey: ["users", "all"],
+    queryKey: ["friendSuggestions"],
     queryFn: fetchAllSuggestedUsers,
     staleTime: 1000 * 60,
     onError: (err) => handleApiError(err, "Error fetching suggested users"),
@@ -120,9 +124,13 @@ export const useSendRequest = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: sendFriendRequest,
-    onSuccess: () => {
+    onSuccess: (_, userId) => {
       toast.success("Friend request sent!");
-      qc.invalidateQueries({ queryKey: ["friendSuggestions"] });
+
+      qc.setQueryData(["friendSuggestions"], (old = []) =>
+        old.map((u) => (u._id === userId ? { ...u, requestSent: true } : u))
+      );
+
       qc.invalidateQueries({ queryKey: ["sentRequests"] });
     },
     onError: (err) => handleApiError(err, "Error sending friend request!"),

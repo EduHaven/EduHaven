@@ -169,19 +169,18 @@ const SpaceType = () => {
 
   // get the previous highscore
   useEffect(() => {
-    const prevScore = localStorage.getItem("spaceTypeHiScore");
+    const prevScore = localStorage.getItem("spaceTypeHighScore");
     if (prevScore) {
-      setHiScore(parseInt(prevScore));
+      setHighScore(parseInt(prevScore));
     }
   }, []);
 
   // when game ends highscore is saved.
   useEffect(() => {
     if (gameOver) {
-      playGameOver();
-      setHiScore((prevHighScore) => {
+      setHighScore((prevHighScore) => {
         if (score > prevHighScore) {
-          localStorage.setItem("spaceTypeHiScore", score);
+          localStorage.setItem("spaceTypeHighScore", score);
           return score;
         }
         return prevHighScore;
@@ -247,7 +246,7 @@ const SpaceType = () => {
       if (gameOver || isPaused) return;
 
       if (e.key === "Enter") {
-        useBomb();
+        triggerBomb();
         return;
       }
 
@@ -291,7 +290,7 @@ const SpaceType = () => {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [handleKeyPress]);
 
-  const useBomb = () => {
+  const triggerBomb = () => {
     if (bombs > 0) {
       setBombs((b) => b - 1);
       // Create explosion effects for all enemies
@@ -372,7 +371,7 @@ const SpaceType = () => {
             <Shield size={20} className="text-blue-400" /> {shields}
           </button>
           <button
-            onClick={useBomb}
+            onClick={triggerBomb}
             disabled={bombs === 0}
             className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 px-3 py-2 rounded-lg transition-colors"
           >

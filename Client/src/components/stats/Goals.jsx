@@ -73,7 +73,7 @@ const Goals = ({ isCurrentUser = false }) => {
         </h3>
         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
-            <Button className="flex items-center gap-1 hover:bg-gray-700">
+            <Button variant="transparent">
               {view.charAt(0).toUpperCase() + view.slice(1)}
               <ChevronDown className="w-4 h-4" />
             </Button>

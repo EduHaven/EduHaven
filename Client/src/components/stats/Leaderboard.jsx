@@ -128,7 +128,7 @@ const Leaderboard = () => {
           {/* Timeframe Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="text-sm">
+              <Button variant="transparent">
                 {view.charAt(0).toUpperCase() + view.slice(1)}{" "}
                 <ChevronDown className="w-4 h-4" />
               </Button>

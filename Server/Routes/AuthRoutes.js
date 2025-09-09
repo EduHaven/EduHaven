@@ -10,7 +10,7 @@ import {
   refreshAccessToken,
   signup,
   verifyUser,
-  verifyResetOTP
+  verifyResetOTP,
 } from "../Controller/AuthController.js";
 
 // these are added -> for security --
@@ -49,7 +49,6 @@ router.post(
 );
 
 router.post("/verify", verifyUser);
-
 
 // router.post("/login", login);
 router.post(

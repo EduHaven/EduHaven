@@ -1,7 +1,6 @@
 import NoteCard from "./NoteCard";
 
 const NotesList = ({
-  selectedNote,
   pinnedNotes,
   unpinnedNotes,
   filteredNotes,
@@ -18,15 +17,7 @@ const NotesList = ({
   getPlainTextPreview,
 }) => {
   return (
-    <div
-      className={`${selectedNote ? "w-80" : "w-full"} ${
-        selectedNote ? "border-r" : ""
-      } overflow-auto p-4`}
-      style={{
-        backgroundColor: "var(--bg-primary)",
-        borderColor: "var(--bg-sec)",
-      }}
-    >
+    <>
       {/* Pinned notes */}
       {pinnedNotes.length > 0 && (
         <div className="mb-6">
@@ -107,7 +98,7 @@ const NotesList = ({
             : "No notes yet. Create your first note!"}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

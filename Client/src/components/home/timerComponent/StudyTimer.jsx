@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion } from "framer-motion";
 import { Clock12, PlayCircle, RotateCcw } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
 import axiosInstance from "@/utils/axios";
+import { Button } from "@/components/ui/button";
 
 function StudyTimer() {
   const [time, setTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
@@ -293,11 +293,9 @@ function StudyTimer() {
       </div>
 
       <div className="flex gap-4 justify-center mt-4">
-        <motion.button
+        <Button
           onClick={handleStartPause}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className={`relative px-6 py-2 rounded-lg flex items-center gap-2 transition-colors duration-300 ease-in-out ${
+          className={`relative ${
             isRunning
               ? "bg-black/20 hover:bg-black/30"
               : "bg-purple-600 hover:bg-purple-700"
@@ -312,22 +310,22 @@ function StudyTimer() {
             <span>Start Studying</span>
           </span>
           <span
-            className={`absolute inset-0 flex items-center justify-center gap-2 transition-opacity duration-300 ${
+            className={`absolute flex items-center justify-center gap-2 transition-opacity duration-300 ${
               isRunning ? "opacity-100" : "opacity-0"
             }`}
           >
             <Clock12 className="w-5 h-5 animate-spin" />
             <span>Pause</span>
           </span>
-        </motion.button>
-        <motion.button
+        </Button>
+
+        {/* Reset button */}
+        <Button
           onClick={handleReset}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className="hover:bg-red-700 p-2 rounded-lg flex items-center gap-2"
+          className="hover:bg-red-700 bg-black/10 p-2 rounded-lg flex items-center gap-2"
         >
           <RotateCcw className="w-5 h-5" />
-        </motion.button>
+        </Button>
       </div>
     </div>
   );

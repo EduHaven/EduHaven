@@ -26,6 +26,9 @@ import Notes from "./pages/Notes";
 import Delete from "./components/settings/Delete";
 import Chats from "./pages/Chats";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import AuthLayout from "./components/AuthLayout";
+import Login from "./Auth/Login";
+import SignUp from "./Auth/SignUp";
 
 function App() {
   const queryClient = new QueryClient();
@@ -53,9 +56,13 @@ function App() {
                 <Route path="*" element={<PageNotFound />} />
               </Route>
 
-              <Route path="session/:id" element={<StudyRoom />} />
-              <Route path="/signout" element={<Signout />} />
+              <Route path="/auth" element={<AuthLayout />}>
+                <Route path="login" element={<Login />} />
+                <Route path="signup" element={<SignUp />} />
+              </Route>
+
               <Route path="/verify" element={<OtpInput />} />
+              <Route path="/delete-account" element={<Delete />} />
               <Route path="/authenticate" element={<Auth />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/verify-reset-otp" element={<OtpInput />} />
@@ -64,7 +71,9 @@ function App() {
                 path="/auth/google/callback"
                 element={<GoogleRedirect />}
               />
-              <Route path="/delete-account" element={<Delete />} />
+
+              <Route path="/signout" element={<Signout />} />
+              <Route path="session/:id" element={<StudyRoom />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>

@@ -41,7 +41,7 @@ const NoteEditor = ({
     >
       {/* Editor Header */}
       <div
-        className="p-4 border-b flex flex-col gap-3"
+        className="p-4 pb-0 flex flex-col gap-3"
         style={{ borderColor: "var(--bg-sec)" }}
       >
         <div className="flex items-center justify-between">
@@ -70,10 +70,10 @@ const NoteEditor = ({
 
         {/* Formatting Toolbar */}
         <div
-          className="flex items-center gap-0.5 flex-wrap p-2 bg-red-500"
+          className={`flex items-center gap-0.5 flex-wrap p-1.5 rounded-lg`}
           style={{
-            backgroundColor: "var(--bg-sec)",
-            borderRadius: "var(--radius)",
+            backgroundColor: colors.find((c) => c.name === selectedNote.color)
+              ?.style.backgroundColor,
           }}
         >
           {/* Headings */}

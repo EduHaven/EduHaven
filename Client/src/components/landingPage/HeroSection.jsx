@@ -90,7 +90,7 @@ function FloatingProfile({ profile, delay = 0, area = "bottom" }) {
         animation: `floatWave${profile.id} ${waveSpeed}ms ease-in-out infinite`,
       }}
     >
-      <style jsx>{`
+      <style>{`
         @keyframes floatWave${profile.id} {
           0% {
             transform: translate(-50%, -50%) translate(0px, 0px);

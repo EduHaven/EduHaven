@@ -98,7 +98,7 @@ function SuggestedFriends({ onViewSentRequests }) {
                     to={`/user/${user._id}`}
                     className="flex items-center hover:brightness-110"
                   >
-                   <Avatar src={user.ProfilePicture} alt={"Profile"} />
+                    <Avatar src={user.ProfilePicture} alt={"Profile"} />
                     <div className="ml-4 flex-1 overflow-hidden">
                       <div className="text-lg font-medium line-clamp-1 txt">
                         {user.FirstName

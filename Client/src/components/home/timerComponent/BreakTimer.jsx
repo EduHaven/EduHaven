@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { Clock12, Coffee, RotateCcw, Edit3, Check } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
 

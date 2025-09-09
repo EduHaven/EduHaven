@@ -243,10 +243,7 @@ const StudyStats = ({ stats: streakStats = {} }) => {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                className="flex items-center gap-1 hover:bg-gray-700 mt-4 md:mt-0"
-                onClick={() => setIsOpen(!isOpen)}
-              >
+              <Button variant="transparent" onClick={() => setIsOpen(!isOpen)}>
                 {view.charAt(0).toUpperCase() + view.slice(1)}{" "}
                 <ChevronDown className="w-4 h-4" />
               </Button>

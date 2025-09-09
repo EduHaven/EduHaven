@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import axiosInstance from "@/utils/axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+
 const backendUrl = import.meta.env.VITE_API_URL;
 
 function SignUp() {
@@ -248,6 +250,18 @@ function SignUp() {
           </button>
         </div>
       </form>
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className="mt-6 text-center"
+      >
+        <Link
+          className="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+          to="/auth/login"
+        >
+          Do not have an account? Sign up
+        </Link>
+      </motion.div>
     </div>
   );
 }

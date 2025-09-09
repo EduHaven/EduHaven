@@ -3,7 +3,14 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import axiosInstance from "@/utils/axios";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Eye, EyeOff, Shield, CheckCircle, KeyRound } from "lucide-react";
+import {
+  ArrowLeft,
+  Eye,
+  EyeOff,
+  Shield,
+  CheckCircle,
+  KeyRound,
+} from "lucide-react";
 import { toast } from "react-toastify";
 import bgImg from "../assets/LoginBackground.jpg";
 
@@ -68,7 +75,7 @@ function ResetPassword() {
     // Get email from localStorage
     const email = localStorage.getItem("resetEmail");
     const resetToken = localStorage.getItem("resetToken");
-    const otpVerified = localStorage.getItem("otpVerified")
+    const otpVerified = localStorage.getItem("otpVerified");
     if (email) {
       setResetEmail(email);
     } else {
@@ -105,7 +112,6 @@ function ResetPassword() {
   }, [password]);
 
   const onSubmit = async (data) => {
-  
     // Check if passwords match
     if (data.newPassword !== data.confirmPassword) {
       toast.error("Passwords do not match");
@@ -113,7 +119,7 @@ function ResetPassword() {
     }
 
     try {
-       const resetToken = localStorage.getItem("resetToken");
+      const resetToken = localStorage.getItem("resetToken");
       if (!resetToken) {
         toast.error("Reset token not found. Please start the process again.");
         navigate("/forgot-password");
@@ -137,19 +143,25 @@ function ResetPassword() {
       // Clear stored data
       localStorage.removeItem("resetToken");
       localStorage.removeItem("resetEmail");
-       localStorage.removeItem("otpVerified");
+      localStorage.removeItem("otpVerified");
       reset();
       setIsResetComplete(true);
       toast.success("Password reset successful!");
-      
+
       // Redirect to login after 3 seconds
       setTimeout(() => {
         navigate("/authenticate");
       }, 3000);
-
     } catch (error) {
-      console.error("Reset password failed:", error.response?.data || error.message);
-      toast.error(error.response?.data?.message || error.response?.data?.error || "Failed to reset password");
+      console.error(
+        "Reset password failed:",
+        error.response?.data || error.message
+      );
+      toast.error(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          "Failed to reset password"
+      );
     }
   };
 
@@ -173,7 +185,7 @@ function ResetPassword() {
           className="relative w-full max-w-md p-8 bg-white/80 dark:bg-black/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-white/10"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl pointer-events-none" />
-          
+
           <div className="relative z-10 text-center">
             <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-4">
               <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
@@ -182,7 +194,8 @@ function ResetPassword() {
               Password Reset Complete!
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Your password has been successfully reset. You can now login with your new password.
+              Your password has been successfully reset. You can now login with
+              your new password.
             </p>
             <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
               <p className="text-sm text-green-700 dark:text-green-300">
@@ -249,7 +262,6 @@ function ResetPassword() {
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 Reset Your Password
               </h2>
-
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -322,7 +334,11 @@ function ResetPassword() {
                     onClick={() => setShowConfirmPassword((prev) => !prev)}
                     className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-blue-600"
                   >
-                    {showConfirmPassword ? <Eye size={19} /> : <EyeOff size={19} />}
+                    {showConfirmPassword ? (
+                      <Eye size={19} />
+                    ) : (
+                      <EyeOff size={19} />
+                    )}
                   </button>
                 </div>
                 {errors.confirmPassword && (

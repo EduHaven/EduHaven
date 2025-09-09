@@ -68,6 +68,15 @@ function UserCard({ user, selectedTab }) {
           </button>
         )}
 
+        {selectedTab === "suggested" && user.requestSent && (
+          <button
+            onClick={() => cancelRequest(user._id)}
+            className="w-full bg-[var(--btn)] text-sm text-white px-3 py-2 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--btn-hover)] txt"
+          >
+            Cancel Request
+          </button>
+        )}
+
         {selectedTab === "friendRequests" && (
           <div className="flex gap-2">
             <button

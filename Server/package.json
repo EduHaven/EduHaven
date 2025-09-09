@@ -4,8 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "npx prettier --config ../.prettierrc.json --write ."
   },
@@ -18,6 +18,7 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.5.1",
+    "compression": "^1.8.1",
     "cont": "file:",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -32,6 +33,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.18.0",
     "mongoose": "^8.16.0",
+    "morgan": "^1.10.1",
     "multer": "^1.4.5-lts.1",
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.10.0",
@@ -41,5 +43,9 @@
     "resend": "^6.0.0",
     "sanitize-html": "^2.17.0",
     "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "globals": "^15.14.0"
   }
 }

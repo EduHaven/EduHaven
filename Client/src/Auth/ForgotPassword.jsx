@@ -52,7 +52,6 @@ const backgroundVariants = {
 function ForgotPassword() {
   const navigate = useNavigate();
 
-
   const {
     register,
     handleSubmit,
@@ -71,11 +70,16 @@ function ForgotPassword() {
         localStorage.setItem("resetToken", resetToken);
         localStorage.setItem("resetEmail", data.Email);
         toast.success("OTP sent to your email successfully!");
-         navigate("/verify-reset-otp");
+        navigate("/verify-reset-otp");
       }
     } catch (error) {
-      console.error("Forgot password failed:", error.response?.data || error.message);
-      toast.error(error.response?.data?.error || "Failed to send OTP. Please try again.");
+      console.error(
+        "Forgot password failed:",
+        error.response?.data || error.message
+      );
+      toast.error(
+        error.response?.data?.error || "Failed to send OTP. Please try again."
+      );
     }
   };
 
@@ -131,59 +135,60 @@ function ForgotPassword() {
                 Forgot Password?
               </h2>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                 Enter your email address and we'll send you an OTP to reset your password
+                Enter your email address and we will send you an OTP to reset
+                your password
               </p>
             </div>
-                       
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2"
-                  >
-                    Email Address
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    {...register("Email", {
-                      required: "Email is required",
-                      pattern: {
-                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: "Enter a valid email address",
-                      },
-                    })}
-                    className="block w-full rounded-xl bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm"
-                  />
-                  {errors.Email && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors.Email.message}
-                    </p>
-                  )}
-                </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`w-full rounded-xl py-3 px-4 text-white font-semibold flex items-center justify-center gap-2 ${
-                    isSubmitting
-                      ? "opacity-50 cursor-not-allowed bg-gray-400"
-                      : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  }`}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2"
                 >
-                  {isSubmitting ? (
-                    "Sending OTP..."
-                  ) : (
-                    <>
-                      <Send size={18} />
-                      Send Reset OTP
-                    </>
-                  )}
-                </motion.button>
-              </form>
+                  Email Address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  {...register("Email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Enter a valid email address",
+                    },
+                  })}
+                  className="block w-full rounded-xl bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm"
+                />
+                {errors.Email && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.Email.message}
+                  </p>
+                )}
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={isSubmitting}
+                className={`w-full rounded-xl py-3 px-4 text-white font-semibold flex items-center justify-center gap-2 ${
+                  isSubmitting
+                    ? "opacity-50 cursor-not-allowed bg-gray-400"
+                    : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                }`}
+              >
+                {isSubmitting ? (
+                  "Sending OTP..."
+                ) : (
+                  <>
+                    <Send size={18} />
+                    Send Reset OTP
+                  </>
+                )}
+              </motion.button>
+            </form>
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Remember your password?{" "}
