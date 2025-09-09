@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Clock12, Coffee, RotateCcw, Edit3, Check } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
 
-function BreakTimer() {
+function BreakTimer({ onTick }) {
   const [breakTime, setBreakTime] = useState(600); // Default break time in seconds (10 min)
   const [isRunning, setIsRunning] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -27,6 +27,13 @@ function BreakTimer() {
     }
     return () => clearInterval(interval);
   }, [isRunning, customBreakTime]);
+
+  // ✅ Call onTick to update title from parent
+  useEffect(() => {
+    if (typeof onTick === "function") {
+      onTick(breakTime, !isRunning);
+    }
+  }, [breakTime, isRunning, onTick]);
 
   const handleStartPause = () => setIsRunning((prev) => !prev);
   const handleReset = () => {

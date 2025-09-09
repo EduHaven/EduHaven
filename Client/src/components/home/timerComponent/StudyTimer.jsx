@@ -80,7 +80,17 @@ function StudyTimer() {
     return () => clearTimeout(timeout);
   }, [time, isRunning, startTime, lastUpdate, lastSavedSeconds]);
 
-  // Timer logic
+  // Existing useEffect hooks ke baad
+useEffect(() => {
+  const h = String(time.hours).padStart(2, "0");
+  const m = String(time.minutes).padStart(2, "0");
+  const s = String(time.seconds).padStart(2, "0");
+  const status = isRunning ? "Studying" : "Paused";
+
+  document.title = `${status} ${h}:${m}:${s}`;
+}, [isRunning, time]);
+
+  //Timer increment fixed — only runs when isRunning is true
   useEffect(() => {
     if (!isRunning) return;
     const interval = setInterval(() => {
@@ -89,11 +99,11 @@ function StudyTimer() {
         let m = prev.minutes;
         let h = prev.hours;
 
-        if (s === 60) {
+        if (s >= 60) {
           s = 0;
           m += 1;
         }
-        if (m === 60) {
+        if (m >= 60) {
           m = 0;
           h += 1;
         }
