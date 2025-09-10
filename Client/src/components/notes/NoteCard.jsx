@@ -1,6 +1,6 @@
 import { Copy, Download, Palette, Pin, Trash2, UserPlus } from "lucide-react";
 import { useState } from "react";
-
+import { motion } from "framer-motion";
 const NoteCard = ({
   note,
   onSelect,
@@ -78,10 +78,12 @@ const NoteCard = ({
       </div>
 
       {hovered && (
-        <div
+        <motion.div
           className="absolute bottom-2 left-2 right-2 flex justify-between items-center gap-2 px-2 py-1 rounded-lg"
           style={{ backgroundColor: "var(--bg-ter)" }}
           onClick={(e) => e.stopPropagation()}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
         >
           <button
             onClick={() =>
@@ -119,13 +121,15 @@ const NoteCard = ({
           >
             <Trash2 size={16} />
           </button>
-        </div>
+        </motion.div>
       )}
 
       {showColorPicker === note.id && (
-        <div
+        <motion.div
           className="absolute bottom-12 left-2 border p-2 shadow-lg z-20 flex gap-1 flex-wrap bg-[var(--bg-ter)] rounded-lg"
           onClick={(e) => e.stopPropagation()}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
         >
           {colors.map((color) => (
             <button
@@ -140,7 +144,7 @@ const NoteCard = ({
               }}
             />
           ))}
-        </div>
+        </motion.div>
       )}
     </div>
   );
