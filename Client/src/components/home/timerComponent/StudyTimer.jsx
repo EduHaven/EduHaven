@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion } from "framer-motion";
 import { Clock12, PlayCircle, RotateCcw } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
 import axiosInstance from "@/utils/axios";
+import { Button } from "@/components/ui/button";
+import { useTitleUpdater } from "./useTitleUpdater";
 
 function StudyTimer() {
   const [time, setTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
@@ -11,6 +12,12 @@ function StudyTimer() {
   const [lastUpdate, setLastUpdate] = useState(new Date().toISOString());
   const [hasPosted, setHasPosted] = useState(false);
   const [lastSavedSeconds, setLastSavedSeconds] = useState(0);
+
+  useTitleUpdater({
+    timeLeft: time.hours * 3600 + time.minutes * 60 + time.seconds,
+    isPaused: !isRunning,
+    isBreakMode: false,
+  });
 
   // Refs to access current state in event handlers
   const isRunningRef = useRef(false);
@@ -80,17 +87,7 @@ function StudyTimer() {
     return () => clearTimeout(timeout);
   }, [time, isRunning, startTime, lastUpdate, lastSavedSeconds]);
 
-  // Existing useEffect hooks ke baad
-useEffect(() => {
-  const h = String(time.hours).padStart(2, "0");
-  const m = String(time.minutes).padStart(2, "0");
-  const s = String(time.seconds).padStart(2, "0");
-  const status = isRunning ? "Studying" : "Paused";
-
-  document.title = `${status} ${h}:${m}:${s}`;
-}, [isRunning, time]);
-
-  //Timer increment fixed — only runs when isRunning is true
+  // Timer logic
   useEffect(() => {
     if (!isRunning) return;
     const interval = setInterval(() => {
@@ -99,11 +96,11 @@ useEffect(() => {
         let m = prev.minutes;
         let h = prev.hours;
 
-        if (s >= 60) {
+        if (s === 60) {
           s = 0;
           m += 1;
         }
-        if (m >= 60) {
+        if (m === 60) {
           m = 0;
           h += 1;
         }
@@ -288,6 +285,7 @@ useEffect(() => {
     setHasPosted(false);
     setLastSavedSeconds(0);
     localStorage.removeItem("studyTimer");
+    document.title = "EduHaven - Premium Study Platform";
   };
 
   return (
@@ -303,11 +301,9 @@ useEffect(() => {
       </div>
 
       <div className="flex gap-4 justify-center mt-4">
-        <motion.button
+        <Button
           onClick={handleStartPause}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className={`relative px-6 py-2 rounded-lg flex items-center gap-2 transition-colors duration-300 ease-in-out ${
+          className={`relative ${
             isRunning
               ? "bg-black/20 hover:bg-black/30"
               : "bg-purple-600 hover:bg-purple-700"
@@ -322,22 +318,22 @@ useEffect(() => {
             <span>Start Studying</span>
           </span>
           <span
-            className={`absolute inset-0 flex items-center justify-center gap-2 transition-opacity duration-300 ${
+            className={`absolute flex items-center justify-center gap-2 transition-opacity duration-300 ${
               isRunning ? "opacity-100" : "opacity-0"
             }`}
           >
             <Clock12 className="w-5 h-5 animate-spin" />
             <span>Pause</span>
           </span>
-        </motion.button>
-        <motion.button
+        </Button>
+
+        {/* Reset button */}
+        <Button
           onClick={handleReset}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className="hover:bg-red-700 p-2 rounded-lg flex items-center gap-2"
+          className="hover:bg-red-700 bg-black/10 p-2 rounded-lg flex items-center gap-2"
         >
           <RotateCcw className="w-5 h-5" />
-        </motion.button>
+        </Button>
       </div>
     </div>
   );

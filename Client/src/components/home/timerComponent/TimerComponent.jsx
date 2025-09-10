@@ -1,36 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import StudyTimer from "./StudyTimer";
 import BreakTimer from "./BreakTimer";
 
 function TimerComponent() {
   const [isBreakMode, setIsBreakMode] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0); // in seconds
-  const [isPaused, setIsPaused] = useState(true); // assume paused initially
-
-  // Format time like MM:SS
-  const formatTime = (seconds) => {
-    const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
-    const secs = String(seconds % 60).padStart(2, "0");
-    return `${mins}:${secs}`;
-  };
-
-  // Update title when timer changes
-  useEffect(() => {
-    const mode = isBreakMode ? "☕ Break" : "🧘 Focus";
-    const status = isPaused ? "(Paused)" : "";
-    document.title = `${formatTime(timeLeft)} ${mode} ${status}`;
-
-    return () => {
-      document.title = "EduHaven - Premium Study Platform"; // Reset on unmount
-    };
-  }, [timeLeft, isPaused, isBreakMode]);
-
-  // Callback from child timer components
-  const handleTick = (timeLeft, isPaused) => {
-    setTimeLeft(timeLeft);
-    setIsPaused(isPaused);
-  };
 
   return (
     <div className="relative p-6 rounded-3xl flex-1 text-white min-w-72 overflow-hidden">
@@ -92,11 +66,7 @@ function TimerComponent() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-            {isBreakMode ? (
-              <BreakTimer onTick={handleTick} />
-            ) : (
-              <StudyTimer onTick={handleTick} />
-            )}
+            {isBreakMode ? <BreakTimer /> : <StudyTimer />}
           </motion.div>
         </div>
       </div>

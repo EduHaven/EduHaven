@@ -2,15 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { Clock12, Coffee, RotateCcw, Edit3, Check } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
+import { useTitleUpdater } from "./useTitleUpdater";
 
-function BreakTimer({ onTick }) {
+function BreakTimer() {
   const [breakTime, setBreakTime] = useState(600); // Default break time in seconds (10 min)
   const [isRunning, setIsRunning] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [customBreakTime, setCustomBreakTime] = useState(10);
 
+  useTitleUpdater({
+    timeLeft: breakTime,
+    isPaused: !isRunning,
+    isBreakMode: true,
+  });
+  
   useEffect(() => {
     let interval;
     if (isRunning) {
@@ -28,17 +36,11 @@ function BreakTimer({ onTick }) {
     return () => clearInterval(interval);
   }, [isRunning, customBreakTime]);
 
-  // ✅ Call onTick to update title from parent
-  useEffect(() => {
-    if (typeof onTick === "function") {
-      onTick(breakTime, !isRunning);
-    }
-  }, [breakTime, isRunning, onTick]);
-
   const handleStartPause = () => setIsRunning((prev) => !prev);
   const handleReset = () => {
     setIsRunning(false);
     setBreakTime(customBreakTime * 60);
+    document.title = "EduHaven - Premium Study Platform";
   };
   const handleEditClick = () => setIsEditing(true);
   const handleApplyBreakTime = () => {
