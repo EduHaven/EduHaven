@@ -63,8 +63,8 @@ const Sidebar = ({ user, activeTab, setActiveTab }) => {
                     activeTab === tab.key
                       ? "bg-[var(--btn)] text-white"
                       : tab.incomplete
-                        ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
-                        : "hover:bg-ter"
+                      ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                      : "hover:bg-ter"
                   }`}
               >
                 <span className="flex items-center gap-1.5">
@@ -91,7 +91,7 @@ const Sidebar = ({ user, activeTab, setActiveTab }) => {
             </button>
           ) : (
             <button
-              onClick={() => navigate("/authenticate")}
+              onClick={() => navigate("/auth/login")}
               className="m-auto flex items-center justify-center px-5 py-2 text-green-400 transition-colors hover:bg-green-500 hover:text-white rounded-lg gap-2 border border-green-500"
             >
               <LogIn size={16} />

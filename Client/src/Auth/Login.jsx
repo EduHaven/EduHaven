@@ -141,7 +141,7 @@ function Login() {
           </div>
           <div className="text-right mt-2 mb-4">
             <Link
-              to="/forgot-password"
+              to="/auth/forgot-password"
               className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
             >
               Forgot password?

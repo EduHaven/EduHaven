@@ -5,7 +5,6 @@ import Home from "./pages/Home.jsx";
 import Stats from "./pages/Stats"; // Updated import name
 import GameRoom from "./routes/GameRoutes.jsx";
 import Signout from "./Auth/Signout";
-// import SignUp from "./Auth/Authenticate.jsx";
 import PageNotFound from "../src/pages/PageNotFound";
 import ProjectInfo from "../src/pages/ProjectInfo";
 import Session from "./pages/Sessions.jsx";
@@ -14,7 +13,6 @@ import OtpInput from "./Auth/Verifyotp.jsx";
 import Settings from "./pages/Settings";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import GoogleRedirect from "./Auth/GoogleRedirect";
-import Auth from "./Auth/Auth";
 import ForgotPassword from "./Auth/ForgotPassword";
 import ResetPassword from "./Auth/ResetPassword";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -59,14 +57,13 @@ function App() {
               <Route path="/auth" element={<AuthLayout />}>
                 <Route path="login" element={<Login />} />
                 <Route path="signup" element={<SignUp />} />
+                <Route path="verify" element={<OtpInput />} />
+                <Route path="delete-account" element={<Delete />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="verify-reset-otp" element={<OtpInput />} />
+                <Route path="reset-password" element={<ResetPassword />} />
               </Route>
 
-              <Route path="/verify" element={<OtpInput />} />
-              <Route path="/delete-account" element={<Delete />} />
-              <Route path="/authenticate" element={<Auth />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/verify-reset-otp" element={<OtpInput />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
               <Route
                 path="/auth/google/callback"
                 element={<GoogleRedirect />}

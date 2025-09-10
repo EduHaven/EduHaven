@@ -1,11 +1,9 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { useForm } from "react-hook-form";
 import axiosInstance from "@/utils/axios";
+import { motion } from "framer-motion";
+import { Mail, Send } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Mail, Send } from "lucide-react";
 import { toast } from "react-toastify";
-import bgImg from "../assets/LoginBackground.jpg";
 
 // const backendUrl = import.meta.env.VITE_API_URL;
 
@@ -56,12 +54,11 @@ function ForgotPassword() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    getValues,
   } = useForm();
 
   const onSubmit = async (data) => {
     try {
-      const url = `/auth/forgot-password`;
+      const url = "/auth/forgot-password";
       const response = await axiosInstance.post(url, { Email: data.Email });
 
       const { resetToken } = response.data;
@@ -70,7 +67,7 @@ function ForgotPassword() {
         localStorage.setItem("resetToken", resetToken);
         localStorage.setItem("resetEmail", data.Email);
         toast.success("OTP sent to your email successfully!");
-        navigate("/verify-reset-otp");
+        navigate("/auth/verify-reset-otp");
       }
     } catch (error) {
       console.error(
@@ -83,126 +80,102 @@ function ForgotPassword() {
     }
   };
 
-  const handleGoBack = () => {
-    navigate("/authenticate");
+  const goSignIn = () => {
+    navigate("/auth/login");
   };
 
   return (
     <motion.div
-      variants={backgroundVariants}
+      variants={containerVariants}
       initial="initial"
       animate="animate"
-      className="flex justify-center items-center min-h-screen w-full bg-cover bg-center bg-no-repeat p-6"
-      style={{ backgroundImage: `url(${bgImg})` }}
+      className="relative w-full max-w-md rounded-3xl"
     >
-      <motion.div
-        variants={containerVariants}
-        initial="initial"
-        animate="animate"
-        className="relative w-full max-w-md p-8 bg-white/80 dark:bg-black/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-white/10"
-      >
-        {/* Glass effect overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl pointer-events-none" />
+      {/* Glass effect overlay */}
+      <div className="absolute inset-0 rounded-3xl pointer-events-none" />
 
-        <div className="relative z-10">
-          {/* Back Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleGoBack}
-            className="absolute -top-2 -left-2 p-2 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-sm hover:bg-white/30 dark:hover:bg-black/30 transition-colors shadow-lg"
-          >
-            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-200" />
-          </motion.button>
-
-          {/* Header */}
-          <div className="flex w-full items-center gap-2 mb-8 justify-center dark:invert">
-            <img src="/Logo.svg" alt="Logo" className="size-8" />
-            <h3 className="text-black font-semibold text-xl">Eduhaven</h3>
+      <div className="relative z-10">
+        <motion.div
+          variants={formVariants}
+          initial="initial"
+          animate="animate"
+          className="space-y-6"
+        >
+          <div className="text-center">
+            <div className="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-4">
+              <Mail className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Forgot Password?
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
+              Enter your email address and we will send you an OTP to reset your
+              password
+            </p>
           </div>
 
-          <motion.div
-            variants={formVariants}
-            initial="initial"
-            animate="animate"
-            className="space-y-6"
-          >
-            <div className="text-center">
-              <div className="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-4">
-                <Mail className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Forgot Password?
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Enter your email address and we will send you an OTP to reset
-                your password
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2"
-                >
-                  Email Address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  {...register("Email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: "Enter a valid email address",
-                    },
-                  })}
-                  className="block w-full rounded-xl bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm"
-                />
-                {errors.Email && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.Email.message}
-                  </p>
-                )}
-              </div>
-
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full rounded-xl py-3 px-4 text-white font-semibold flex items-center justify-center gap-2 ${
-                  isSubmitting
-                    ? "opacity-50 cursor-not-allowed bg-gray-400"
-                    : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                }`}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2"
               >
-                {isSubmitting ? (
-                  "Sending OTP..."
-                ) : (
-                  <>
-                    <Send size={18} />
-                    Send Reset OTP
-                  </>
-                )}
-              </motion.button>
-            </form>
-            <div className="text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Remember your password?{" "}
-                <button
-                  onClick={handleGoBack}
-                  className="font-medium text-blue-600 hover:text-blue-700"
-                >
-                  Sign in
-                </button>
-              </p>
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                {...register("Email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Enter a valid email address",
+                  },
+                })}
+                className="block w-full rounded-xl bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm"
+              />
+              {errors.Email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.Email.message}
+                </p>
+              )}
             </div>
-          </motion.div>
-        </div>
-      </motion.div>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={isSubmitting}
+              className={`w-full rounded-xl py-3 px-4 text-white font-semibold flex items-center justify-center gap-2 ${
+                isSubmitting
+                  ? "opacity-50 cursor-not-allowed bg-gray-400"
+                  : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              }`}
+            >
+              {isSubmitting ? (
+                "Sending OTP..."
+              ) : (
+                <>
+                  <Send size={18} />
+                  Send Reset OTP
+                </>
+              )}
+            </motion.button>
+          </form>
+          <div className="text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Remember your password?{" "}
+              <button
+                onClick={goSignIn}
+                className="font-medium text-blue-600 hover:text-blue-700"
+              >
+                Sign in
+              </button>
+            </p>
+          </div>
+        </motion.div>
+      </div>
     </motion.div>
   );
 }

@@ -12,14 +12,14 @@ const Account = () => {
         <ChevronRight />
       </div>
       <Link
-        to="/forgot-password"
+        to="/auth/forgot-password"
         className="flex w-full items-center justify-between hover:bg-sec p-4 rounded-xl"
       >
         <p>Change your Password</p>
         <ChevronRight />
       </Link>
       <Link
-        to="/delete-account"
+        to="/auth/delete-account"
         className="flex w-full items-center justify-between hover:bg-sec p-4 rounded-xl"
       >
         <p>Request account deletion</p>

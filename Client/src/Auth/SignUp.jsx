@@ -40,12 +40,12 @@ function SignUp() {
 
       if (activationToken) {
         localStorage.setItem("activationToken", activationToken);
-        navigate("/verify");
+        navigate("/auth/verify");
       } else {
         toast.success(
           "Account created successfully! Please login to continue."
         );
-        navigate("/authenticate");
+        navigate("/auth/login");
       }
     } catch (error) {
       console.error(`Signup failed:`, error.response?.data || error.message);
