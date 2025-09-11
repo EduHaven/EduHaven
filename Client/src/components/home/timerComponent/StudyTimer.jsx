@@ -98,7 +98,7 @@ function StudyTimer() {
           },
         }
       );
-        },
+    },
     [startTime, time, postSession, setHasPosted, setLastSavedSeconds]
   );
 

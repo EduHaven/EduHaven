@@ -17,13 +17,16 @@ export const fetchUserTimerStats = async (userId) => {
 // Get consolidated stats with period parameter
 export const fetchConsolidatedStats = async (userId, period = "weekly") => {
   const response = await axiosInstance.get(
-    `/study-sessions/consolidated-stats${userId ? `/${userId}` : ''}?period=${period}`
+    `/study-sessions/consolidated-stats${userId ? `/${userId}` : ""}?period=${period}`
   );
   return response.data;
 };
 
 // Get leaderboard data
-export const fetchLeaderboard = async (period = "weekly", friendsOnly = false) => {
+export const fetchLeaderboard = async (
+  period = "weekly",
+  friendsOnly = false
+) => {
   const response = await axiosInstance.get(
     `/study-sessions/leaderboard?period=${period}&friendsOnly=${friendsOnly}`
   );

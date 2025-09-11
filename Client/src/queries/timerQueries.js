@@ -1,10 +1,10 @@
 // src/queries/timerQueries.js
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  fetchUserTimerStats, 
-  postStudySession, 
-  fetchConsolidatedStats, 
-  fetchLeaderboard 
+import {
+  fetchUserTimerStats,
+  postStudySession,
+  fetchConsolidatedStats,
+  fetchLeaderboard,
 } from "@/api/timerApi";
 
 // Query keys
@@ -39,7 +39,7 @@ export function usePostStudySession() {
 
 export function useConsolidatedStats(userId, period = "weekly") {
   return useQuery({
-    queryKey: [...timerKeys.all, 'consolidated', userId || 'current', period],
+    queryKey: [...timerKeys.all, "consolidated", userId || "current", period],
     queryFn: () => fetchConsolidatedStats(userId, period),
     staleTime: 5 * 60 * 1000,
   });
