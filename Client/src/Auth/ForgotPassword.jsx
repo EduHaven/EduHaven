@@ -90,10 +90,7 @@ function ForgotPassword() {
       initial="initial"
       animate="animate"
       className="relative w-full max-w-md rounded-3xl"
-    >
-      {/* Glass effect overlay */}
-      <div className="absolute inset-0 rounded-3xl pointer-events-none" />
-
+  >
       <div className="relative z-10">
         <motion.div
           variants={formVariants}

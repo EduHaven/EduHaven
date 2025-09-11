@@ -21,7 +21,7 @@ import FriendsPage from "./pages/FriendsPage.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Notes from "./pages/Notes";
-import Delete from "./components/settings/Delete";
+import Delete from "./Auth/DeleteAccount";
 import Chats from "./pages/Chats";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AuthLayout from "./components/AuthLayout";
