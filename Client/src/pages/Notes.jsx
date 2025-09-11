@@ -10,6 +10,8 @@ import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
 import Typography from "@tiptap/extension-typography";
 import Underline from "@tiptap/extension-underline";
+import FileHandler from "@tiptap/extension-file-handler";
+
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useRef, useState } from "react";
@@ -27,6 +29,7 @@ import {
 
 import "@/components/notes/note.css";
 import { toast } from "react-toastify";
+import axiosInstance from "@/utils/axios";
 
 const colors = [
   { name: "default", style: { backgroundColor: "var(--note-default)" } },
@@ -41,6 +44,8 @@ const colors = [
 
 const Notes = () => {
   const { data: notes = [], isLoading } = useNotes();
+  // console.log(notes);
+  
   const createNoteMutation = useCreateNote();
   const updateNoteMutation = useUpdateNote();
   const deleteNoteMutation = useDeleteNote();
@@ -48,6 +53,8 @@ const Notes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNote, setSelectedNote] = useState(null);
   const [showColorPicker, setShowColorPicker] = useState(null);
+
+  // console.log("selected note is", selectedNote);
 
   const typingTimeoutRef = useRef(null);
 
@@ -78,7 +85,21 @@ const Notes = () => {
       Link.configure({
         openOnClick: false,
       }),
-      Image,
+      Image.configure({
+        allowBase64: true,
+      }),
+      FileHandler.configure({
+        allowedMimeTypes: [
+          "image/png",
+          "image/jpeg",
+          "image/gif",
+          "image/webp",
+        ],
+        onDrop: (currentEditor, files, pos) =>
+          handleImageUpload(currentEditor, files, pos),
+        onPaste: (currentEditor, files, pos) =>
+          handleImageUpload(currentEditor, files, pos),
+      }),
       Table.configure({
         resizable: true,
       }),
@@ -91,6 +112,7 @@ const Notes = () => {
       if (!selectedNote) return;
 
       const content = editor.getHTML();
+      console.log(content);
 
       clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = setTimeout(() => {
@@ -104,6 +126,59 @@ const Notes = () => {
     },
     shouldRerenderOnTransaction: true,
   });
+
+  const handleImageUpload = async (editor, files, pos) => {
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) continue;
+
+      // ✅ fallback position if pos is undefined or invalid
+      const safePos =
+        typeof pos === "number" ? pos : editor.state.selection.from;
+
+      // Insert placeholder text
+      editor
+        .chain()
+        .focus()
+        .insertContentAt(safePos, {
+          type: "paragraph",
+          content: [{ type: "text", text: "Uploading image..." }],
+        })
+        .run();
+
+      try {
+        const formData = new FormData();
+        formData.append("noteImage", file);
+
+        const { data } = await axiosInstance.post("/note/upload", formData);
+        const imageUrl = data.noteImageUrl;
+
+        // ✅ again use safePos
+        editor
+          .chain()
+          .focus()
+          .insertContent(`<img src="${imageUrl}" alt="${file.name}" />`)
+          .run();
+
+        // editor
+        //   .chain()
+        //   .focus()
+        //   .insertContentAt(safePos, {
+        //     type: "image",
+        //     attrs: { src: imageUrl, alt: file.name },
+        //   })
+        //   .run();
+      } catch (err) {
+        editor
+          .chain()
+          .focus()
+          .insertContentAt(safePos, {
+            type: "paragraph",
+            content: [{ type: "text", text: "❌ Failed to upload image" }],
+          })
+          .run();
+      }
+    }
+  };
 
   useEffect(() => {
     if (editor && selectedNote) {

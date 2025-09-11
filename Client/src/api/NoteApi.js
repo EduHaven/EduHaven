@@ -20,7 +20,9 @@ export const createNote = async (noteData) => {
 
 // Update a note
 export const updateNote = async ({ id, ...noteData }) => {
+  console.log("note data is", noteData);
   const { data } = await axiosInstance.put(`/note/${id}`, noteData);
+
   return data.data;
 };
 
