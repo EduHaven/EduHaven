@@ -1,17 +1,17 @@
 // src/queries/noteQuery.js
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  createNote,
+  deleteNote,
   getAllNotes,
   getNoteById,
-  createNote,
   updateNote,
-  deleteNote,
 } from "@/api/NoteApi";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Fetch all notes
 export const useNotes = () => {
   return useQuery({
-    // queryKey: ["notes"],
+    queryKey: ["notes"],
     queryFn: getAllNotes,
   });
 };
@@ -19,7 +19,7 @@ export const useNotes = () => {
 // Fetch single note
 export const useNote = (id) => {
   return useQuery({
-    // queryKey: ["notes", id],
+    queryKey: ["notes", id],
     queryFn: () => getNoteById(id),
     enabled: !!id, // only run if id exists
   });
@@ -31,7 +31,7 @@ export const useCreateNote = () => {
   return useMutation({
     mutationFn: createNote,
     onSuccess: () => {
-      // queryClient.invalidateQueries(["notes"]);
+      queryClient.invalidateQueries(["notes"]);
     },
   });
 };
@@ -42,8 +42,8 @@ export const useUpdateNote = () => {
   return useMutation({
     mutationFn: updateNote,
     onSuccess: (data) => {
-      // queryClient.invalidateQueries(["notes"]);
-      // queryClient.invalidateQueries(["notes", data._id]);
+      queryClient.invalidateQueries(["notes"]);
+      queryClient.invalidateQueries(["notes", data._id]);
     },
   });
 };
@@ -54,7 +54,7 @@ export const useDeleteNote = () => {
   return useMutation({
     mutationFn: deleteNote,
     onSuccess: () => {
-      // queryClient.invalidateQueries(["notes"]);
+      queryClient.invalidateQueries(["notes"]);
     },
   });
 };

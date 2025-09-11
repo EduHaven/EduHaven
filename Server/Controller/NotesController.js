@@ -79,7 +79,6 @@ export const createNote = async (req, res) => {
 export const updateNote = async (req, res) => {
   try {
     const { title, content, color, visibility, collaborators } = req.body;
-    console.log("content is", content);
 
     const userId = req.user._id;
     const note = await Note.findById(req.params.id);
@@ -106,7 +105,6 @@ export const updateNote = async (req, res) => {
     }
 
     const updatedNote = await note.save();
-    console.log("updated note is", updatedNote);
 
     res.status(200).json({ success: true, data: updatedNote });
   } catch (error) {
