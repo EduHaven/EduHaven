@@ -30,6 +30,27 @@ export const BADGES = {
     description: 'Achieved by completing 10 focus sessions',
     icon: '/badges/Focus Enthusiast.png',
     category: 'Focus'
+  },
+  STREAK_30_DAYS: {
+    id: 'streak_30_days',
+    name: '30 Day Streak',
+    description: 'Achieved by maintaining a 30-day study streak',
+    icon: '/badges/30_day_streak.png',
+    category: 'Streak'
+  },
+  STREAK_100_DAYS: {
+    id: 'streak_100_days',
+    name: '100 Day Streak',
+    description: 'Achieved by maintaining a 100-day study streak',
+    icon: '/badges/100_day_streak.png',
+    category: 'Streak'
+  },
+  STREAK_200_DAYS: {
+    id: 'streak_200_days',
+    name: '200 Day Streak',
+    description: 'Achieved by maintaining a 200-day study streak',
+    icon: '/badges/200_day_streak.png',
+    category: 'Streak'
   }
 };
 
@@ -215,6 +236,47 @@ export const checkAndAwardFocusBadge = async (userId) => {
   }
 };
 
+// Check and award streak badges (30, 100, 200 days)
+export const checkAndAwardStreakBadges = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) return { success: false, error: 'User not found' };
+
+    const awardedBadges = [];
+    
+    if (user.streaks && user.streaks.current) {
+      const currentStreak = user.streaks.current;
+      
+      // Check for 30-day streak badge
+      if (currentStreak >= 30 && !hasBadge(user, BADGES.STREAK_30_DAYS.id)) {
+        const result = await awardBadge(userId, BADGES.STREAK_30_DAYS.id);
+        if (result.success) awardedBadges.push(result.badge);
+      }
+      
+      // Check for 100-day streak badge
+      if (currentStreak >= 100 && !hasBadge(user, BADGES.STREAK_100_DAYS.id)) {
+        const result = await awardBadge(userId, BADGES.STREAK_100_DAYS.id);
+        if (result.success) awardedBadges.push(result.badge);
+      }
+      
+      // Check for 200-day streak badge
+      if (currentStreak >= 200 && !hasBadge(user, BADGES.STREAK_200_DAYS.id)) {
+        const result = await awardBadge(userId, BADGES.STREAK_200_DAYS.id);
+        if (result.success) awardedBadges.push(result.badge);
+      }
+    }
+
+    return { 
+      success: awardedBadges.length > 0, 
+      badges: awardedBadges,
+      error: awardedBadges.length === 0 ? 'Badge criteria not met or already earned' : null
+    };
+  } catch (error) {
+    console.error('Error checking streak badges:', error);
+    return { success: false, error: error.message };
+  }
+};
+
 // Check all possible badges for a user
 export const checkAllBadges = async (userId) => {
   const results = [];
@@ -231,6 +293,12 @@ export const checkAllBadges = async (userId) => {
   
   const focusResult = await checkAndAwardFocusBadge(userId);
   if (focusResult.success) results.push(focusResult.badge);
+  
+  // Check streak badges
+  const streakResult = await checkAndAwardStreakBadges(userId);
+  if (streakResult.success && streakResult.badges) {
+    results.push(...streakResult.badges);
+  }
   
   return results;
 };

@@ -28,6 +28,27 @@ export const BADGES = {
     description: 'Achieved by completing 10 focus sessions',
     icon: '/badges/Focus Enthusiast.png',
     category: 'Focus'
+  },
+  STREAK_30_DAYS: {
+    id: 'streak_30_days',
+    name: '30 Day Streak',
+    description: 'Achieved by maintaining a 30-day study streak',
+    icon: '/badges/30_day_streak.png',
+    category: 'Streak'
+  },
+  STREAK_100_DAYS: {
+    id: 'streak_100_days',
+    name: '100 Day Streak',
+    description: 'Achieved by maintaining a 100-day study streak',
+    icon: '/badges/100_day_streak.png',
+    category: 'Streak'
+  },
+  STREAK_200_DAYS: {
+    id: 'streak_200_days',
+    name: '200 Day Streak',
+    description: 'Achieved by maintaining a 200-day study streak',
+    icon: '/badges/200_day_streak.png',
+    category: 'Streak'
   }
 };
 

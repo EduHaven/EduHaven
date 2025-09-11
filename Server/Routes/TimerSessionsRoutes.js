@@ -11,7 +11,7 @@ import mongoose from "mongoose";
 router.post("/timer", auth, async (req, res) => {
   try {
     const { startTime, endTime, duration } = req.body;
-    if (duration > 10) updateStreaks(req.user.id);
+    
     const session = new StudySession({
       user: req.user.id,
       startTime,
@@ -20,6 +20,11 @@ router.post("/timer", auth, async (req, res) => {
     });
 
     await session.save();
+    
+    // Update streaks after saving the session
+    // The updateStreaks function will check if daily 10-minute threshold is met
+    await updateStreaks(req.user.id);
+    
     res.status(201).json(session);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -256,6 +261,6 @@ router.get("/leaderboard", auth, async (req, res) => {
     console.error("Leaderboard error:", error);
     res.status(500).json({ error: error.message });
   }
-})
+});
 
 export const TimerSessionRoutes = router;

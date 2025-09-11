@@ -16,6 +16,7 @@ import NotesRoutes from "./Routes/NotesRoutes.js";
 import { TimerSessionRoutes } from "./Routes/TimerSessionsRoutes.js";
 import FriendsRoutes from "./Routes/FriendsRoutes.js";
 import SessionRoutes from "./Routes/SessionRoutes.js";
+import { checkAndResetStreaks } from "./utils/streakUpdater.js";
 
 import { initializeSocket } from "./Socket/socket.js";
 
@@ -59,4 +60,16 @@ initializeSocket(io);
 server.listen(port, () => {
   ConnectDB();
   console.log(`Server running at http://localhost:${port}`);
+  
+  // Start streak checking interval - runs every hour
+  setInterval(async () => {
+    console.log('Running streak check...');
+    await checkAndResetStreaks();
+  }, 60 * 60 * 1000); // Every hour
+  
+  // Run streak check immediately on startup
+  setTimeout(async () => {
+    console.log('Initial streak check on startup...');
+    await checkAndResetStreaks();
+  }, 5000); // Wait 5 seconds after startup
 });

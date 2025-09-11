@@ -167,12 +167,20 @@ const StudyStats = () => {
   const [view, setView] = useState("daily");
   const [isOpen, setIsOpen] = useState(false);
   const [stats, setStats] = useState([]);
+  const [userStats, setUserStats] = useState({
+    rank: 0,
+    totalUsers: 0,
+    streak: 0,
+    maxStreak: 0,
+  });
   const backendUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const handleGetStats = async () => {
       try {
         const token = localStorage.getItem("token");
+        
+        // Fetch period-based stats
         const response = await fetch(
           `${backendUrl}/timerstats?period=${view}`,
           {
@@ -256,7 +264,34 @@ const StudyStats = () => {
       }
     };
 
+    const handleGetUserStats = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `${backendUrl}/user-stats`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const result = await response.json();
+        
+        setUserStats({
+          rank: result.rank || 0,
+          totalUsers: result.totalUsers || 0,
+          streak: result.streak || 0,
+          maxStreak: result.maxStreak || 0,
+        });
+      } catch (error) {
+        console.error("Error fetching user stats:", error);
+      }
+    };
+
     handleGetStats();
+    handleGetUserStats();
   }, [view]);
 
   const summary = computeSummary(stats);
@@ -357,14 +392,16 @@ const StudyStats = () => {
       </div>
       <div className="text-sm p-6 mt-auto text-left w-fit">
         Rank:
-        <div className="text-4xl mb-8 font-bold text-blue-500">Null</div>
+        <div className="text-4xl mb-8 font-bold text-blue-500">
+          {userStats.rank > 0 ? `${userStats.rank}/${userStats.totalUsers}` : "Unranked"}
+        </div>
         Current Streak:
         <div className="text-4xl mb-8 font-bold text-yellow-500">
-          32 <span className="text-lg font-normal">days</span>
+          {userStats.streak} <span className="text-lg font-normal">days</span>
         </div>
         Max Streak:
         <div className="text-4xl mb-8 font-bold text-green-500">
-          50 <span className="text-lg font-normal">days</span>
+          {userStats.maxStreak} <span className="text-lg font-normal">days</span>
         </div>
       </div>
     </div>

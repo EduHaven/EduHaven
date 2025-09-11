@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import apiClient from "@/utils/apiClient";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { useUserProfile } from "../../contexts/UserProfileContext";
@@ -164,15 +165,9 @@ function EducationAndSkills() {
         ...profileData,
       };
 
-      const response = await axios.put(
-        `${backendUrl}/user/profile`,
-        updateData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        }
+      const response = await apiClient.put(
+        '/user/profile',
+        updateData
       );
 
       toast.success("Education & Skills updated successfully");
