@@ -172,7 +172,7 @@ const getUserStats = async (userId) => {
 
 // Helper function to get leaderboard data without HTTP handling
 const getLeaderboardData = async (period, friendsOnly, userId) => {
-  const validPeriods = ["hourly","daily", "weekly", "monthly"];
+  const validPeriods = ["hourly", "daily", "weekly", "monthly"];
   if (!validPeriods.includes(period)) {
     throw new Error("Invalid period");
   }
