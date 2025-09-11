@@ -90,7 +90,7 @@ function ForgotPassword() {
       initial="initial"
       animate="animate"
       className="relative w-full max-w-md rounded-3xl"
-  >
+    >
       <div className="relative z-10">
         <motion.div
           variants={formVariants}
