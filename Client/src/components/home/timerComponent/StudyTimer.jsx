@@ -3,7 +3,7 @@ import { Clock12, PlayCircle, RotateCcw } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
 import axiosInstance from "@/utils/axios";
 import { Button } from "@/components/ui/button";
-import { useTitleUpdater } from "./useTitleUpdater";
+import { useTitleUpdater } from "@/hooks/useTitleUpdater";
 
 function StudyTimer() {
   const [time, setTime] = useState({ hours: 0, minutes: 0, seconds: 0 });

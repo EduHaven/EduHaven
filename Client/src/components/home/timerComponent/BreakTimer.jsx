@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Clock12, Coffee, RotateCcw, Edit3, Check } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
-import { useTitleUpdater } from "./useTitleUpdater";
+import { useTitleUpdater } from "@/hooks/useTitleUpdater";
 
 function BreakTimer() {
   const [breakTime, setBreakTime] = useState(600); // Default break time in seconds (10 min)
