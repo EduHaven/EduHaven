@@ -130,8 +130,9 @@
       const storedTheme = localStorage.getItem('theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-      // Updated with all the new themes
+      // Include "light" theme in the list
       const validThemes = [
+        'light',
         'dark',
         'theme-forest',
         'theme-cyberpunk',
@@ -175,6 +176,7 @@
   <style>
     /* Prevent flash of unstyled content */
     html {
+      --theme-transition: background-color 0.3s ease, color 0.3s ease; /* default to avoid flicker */
       background-color: var(--bg-primary, #dfddec);
       color: var(--txt, #1f2937);
       transition: var(--theme-transition);
@@ -220,3 +222,4 @@
 </body>
 
 </html>
+

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
+import axiosInstance from "@/utils/axios";
 
 const backendUrl = import.meta.env.VITE_API_URL;
 
@@ -22,20 +22,23 @@ function Login() {
     reset,
     watch,
   } = useForm();
+
   const onSubmit = async (data) => {
     console.log("Form submitted:", data);
     try {
       const url = `${backendUrl}/login`;
-      const response = await axios.post(url, data);
+      const response = await axiosInstance.post(url, data);
       console.log(response.data);
       reset();
-      const token = response.data.token;
-      const activationToken = response.data.activationToken;
+      const { token, refreshToken } = response.data;
 
       if (token) {
         localStorage.setItem("token", token);
-        localStorage.setItem("activationToken", activationToken);
       }
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
+      }
+
       toast.success("Login successful! Welcome back.");
       navigate("/");
     } catch (error) {

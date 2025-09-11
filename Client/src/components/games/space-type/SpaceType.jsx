@@ -2,573 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield, Bomb, Pause, Play, RefreshCw, ArrowLeft } from "lucide-react";
 
-const wordList = [
-   // Entry Level: Short Words (3 characters)
-  "bat",
-  "cat",
-  "dog",
-  "red",
-  "box",
-  "top",
-  "sun",
-  "car",
-  "bag",
-  "pen",
-  "cap",
-  "fun",
-  "hat",
-  "log",
-  "man",
-  "map",
-  "pop",
-  "run",
-  "row",
-  "wet",
-  "pig",
-  "ice",
-  "jam",
-  "key",
-  "lip",
-  "mix",
-  "new",
-  "old",
-  "pit",
-  "rag",
-  "sea",
-  "tin",
-  "van",
-  "yes",
-  "zip",
-  "arc",
-  "bud",
-  "cut",
-  "dry",
-  "egg",
-  "fan",
-  "gem",
-  "hut",
-  "ivy",
-  "job",
-  "kit",
-  "low",
-  "nap",
-  "owl",
-  "pan",
-  "web",
-  "sip",
-  "dot",
-  "lot",
-  "tap",
-  "tap",
-  "rip",
-  "bag",
-  "bit",
-  "bot",
-  "sip",
-  "map",
-  "cap",
-  "jam",
-  "dot",
-  "vat",
-  "git",
-  "raw",
-  "sad",
-  "tag",
-  "tip",
-  "bun",
-  "pet",
-  "run",
-  "sit",
-  "sub",
-  "ten",
-  "bus",
-  "bug",
-  "van",
-  "pit",
-  "pet",
-  "bat",
-  "top",
-  "tab",
-  "rot",
-  "tar",
-  "jar",
-  "lit",
-  "tip",
-
-  // Medium Words: (4 characters)
-  "blue",
-  "tree",
-  "game",
-  "fire",
-  "wolf",
-  "zoom",
-  "jump",
-  "rock",
-  "star",
-  "cold",
-  "dark",
-  "lamp",
-  "rain",
-  "ship",
-  "time",
-  "wave",
-  "gift",
-  "good",
-  "grow",
-  "high",
-  "land",
-  "moon",
-  "open",
-  "peak",
-  "road",
-  "safe",
-  "slow",
-  "wind",
-  "wood",
-  "year",
-  "zone",
-  "calm",
-  "clap",
-  "dust",
-  "ever",
-  "fear",
-  "glow",
-  "gold",
-  "grip",
-  "heat",
-  "hill",
-  "iron",
-  "kind",
-  "life",
-  "note",
-  "path",
-  "rise",
-  "sing",
-  "snow",
-  "stop",
-  "talk",
-  "view",
-  "walk",
-  "wild",
-  "data",
-  "code",
-  "test",
-  "read",
-  "study",
-  "mark",
-  "quiz",
-  "home",
-  "idea",
-  "time",
-  "read",
-  "work",
-  "note",
-  "edit",
-  "list",
-  "file",
-  "plan",
-  "goal",
-  "task",
-  "copy",
-  "pass",
-  "goal",
-  "find",
-  "task",
-  "race",
-  "match",
-  "link",
-  "show",
-  "read",
-  "pick",
-  "work",
-  "write",
-  "mail",
-  "edit",
-  "rich",
-  "kind",
-  "fast",
-  "slow",
-  "rest",
-  "vote",
-  "zoom",
-  "chat",
-  "gift",
-  "plan",
-
-  // Long Words: (5 characters)
-  "apple",
-  "beach",
-  "cloud",
-  "dance",
-  "flame",
-  "grass",
-  "heart",
-  "jelly",
-  "light",
-  "movie",
-  "night",
-  "ocean",
-  "party",
-  "queen",
-  "river",
-  "shine",
-  "smile",
-  "space",
-  "storm",
-  "sugar",
-  "table",
-  "thing",
-  "tiger",
-  "torch",
-  "trust",
-  "voice",
-  "world",
-  "youth",
-  "zebra",
-  "angle",
-  "armor",
-  "brave",
-  "chase",
-  "clear",
-  "creek",
-  "dress",
-  "faith",
-  "glide",
-  "grave",
-  "hover",
-  "knife",
-  "level",
-  "lucky",
-  "peace",
-  "plate",
-  "polar",
-  "scope",
-  "sleep",
-  "solid",
-  "sweet",
-  "tower",
-  "trace",
-  "track",
-  "value",
-  "water",
-  "wheel",
-  "study",
-  "learn",
-  "topic",
-  "pupil",
-  "class",
-  "room",
-  "grade",
-  "test",
-  "task",
-  "skill",
-  "memo",
-  "research",
-  "library",
-  "study",
-  "block",
-  "debug",
-  "class",
-  "index",
-  "align",
-  "array",
-  "loops",
-  "bytes",
-  "print",
-  "compile",
-  "logic",
-  "value",
-  "input",
-  "stack",
-  "button",
-  "coding",
-  "class",
-  "stage",
-  "input",
-  "shift",
-  "scope",
-  "value",
-
-  // Very Long Words: (6 characters)
-  "banana",
-  "bridge",
-  "castle",
-  "charge",
-  "circle",
-  "dragon",
-  "flight",
-  "flower",
-  "forest",
-  "future",
-  "hunger",
-  "island",
-  "jungle",
-  "market",
-  "motion",
-  "oyster",
-  "planet",
-  "prince",
-  "prison",
-  "rescue",
-  "rocket",
-  "school",
-  "shadow",
-  "shield",
-  "silver",
-  "source",
-  "strike",
-  "stream",
-  "symbol",
-  "talent",
-  "tunnel",
-  "vision",
-  "volume",
-  "window",
-  "winter",
-  "absorb",
-  "artist",
-  "beyond",
-  "camera",
-  "candle",
-  "dinner",
-  "dreams",
-  "empire",
-  "fusion",
-  "growth",
-  "honest",
-  "impact",
-  "intent",
-  "lovers",
-  "master",
-  "moment",
-  "nation",
-  "nature",
-  "nobody",
-  "parlor",
-  "resist",
-  "program",
-  "error",
-  "syntax",
-  "output",
-  "code",
-  "compile",
-  "matrix",
-  "logic",
-  "debug",
-  "stack",
-  "style",
-  "class",
-  "button",
-  "editor",
-  "public",
-  "inner",
-  "system",
-  "inputs",
-  "print",
-  "scan",
-  "index",
-  "loop",
-  "value",
-  "search",
-  "update",
-  "switch",
-  "input",
-  "print",
-  "target",
-  "query",
-  "array",
-  "align",
-  "enter",
-  "record",
-  "learn",
-  "result",
-  "study",
-
-  // Advanced Level: Words with 7 characters
-  "android",
-  "captain",
-  "control",
-  "crystal",
-  "decline",
-  "density",
-  "diamond",
-  "discuss",
-  "element",
-  "fiction",
-  "fortune",
-  "general",
-  "gravity",
-  "history",
-  "imagery",
-  "journey",
-  "justice",
-  "kitchen",
-  "kingdom",
-  "manager",
-  "mariner",
-  "monster",
-  "morning",
-  "natural",
-  "network",
-  "octopus",
-  "outlook",
-  "passion",
-  "pattern",
-  "perfect",
-  "picture",
-  "popular",
-  "produce",
-  "quality",
-  "reactor",
-  "release",
-  "resolve",
-  "science",
-  "soldier",
-  "species",
-  "success",
-  "surface",
-  "survive",
-  "temple",
-  "theater",
-  "trouble",
-  "victory",
-  "welcome",
-  "program",
-  "python",
-  "android",
-  "binary",
-  "debug",
-  "device",
-  "closure",
-  "output",
-  "indexer",
-  "stack",
-  "model",
-  "parser",
-  "forloop",
-  "swift",
-  "gitflow",
-  "render",
-  "buffer",
-  "query",
-  "input",
-  "compile",
-  "structure",
-  "class",
-  "matrix",
-  "integer",
-  "version",
-  "update",
-  "icon",
-  "format",
-  "input",
-  "network",
-  "create",
-  "runtime",
-  "request",
-  "handler",
-  "encrypt",
-  "format",
-  "server",
-  "debugger",
-  "visual",
-  "remote",
-  "update",
-  "tracking",
-  "reboot",
-
-  // Grandmaster Level: Complex to type
-  "velocity",
-  "aerodrome",
-  "geometry",
-  "computer",
-  "keyboard",
-  "function",
-  "terminal",
-  "parallel",
-  "compiler",
-  "sequence",
-  "variable",
-  "developer",
-  "packages",
-  "dynamics",
-  "resource",
-  "equation",
-  "software",
-  "optimize",
-  "abstract",
-  "learning",
-  "flexible",
-  "argument",
-  "balanced",
-  "external",
-  "hardware",
-  "progress",
-  "training",
-  "research",
-  "platform",
-  "settings",
-  "designer",
-  "advanced",
-  "strategy",
-  "pipeline",
-  "feedback",
-  "analyze",
-  "debugger",
-  "security",
-  "database",
-  "framework",
-  "solution",
-  "browser",
-  "reliable",
-  "analytics",
-  "frontend",
-  "backend",
-  "document",
-  "function",
-  "hypervelocity",
-  "aerodynamics",
-  "gravitational",
-  "astrophysics",
-  "interstellar",
-  "extraterrestrial",
-  "microgravity",
-  "quasarsandquarks",
-  "quantization",
-  "ionization",
-  "thermodynamics",
-  "spectroscopy",
-  "parallelism",
-  "ultraviolet",
-  "supercluster",
-  "eventhorizon",
-  "cosmological",
-  "darkmatter",
-  "neutronstar",
-  "eigenvectors",
-  "cryptography",
-  "infrastructure",
-  "characteristic",
-  "congratulations",
-  "differentiation",
-  "generalization",
-  "localization",
-  "decomposition",
-  "synchronization",
-  "hyperparameter",
-  "revolutionary",
-  "superconductivity",
-  "information",
-  "initialization",
-  "procrastination",
-  "suboptimization",
-  "digitalization",
-  "misconfiguration",
-  "decentralization",
-  "computational",
-  "superimposition",
-  "microcontrollers",
-];
+import wordList from "./wordList";
 
 const SpaceType = () => {
   const [enemies, setEnemies] = useState([]);
@@ -584,19 +18,21 @@ const SpaceType = () => {
   const [startTime] = useState(Date.now());
   const [lasers, setLasers] = useState([]);
   const [particles, setParticles] = useState([]);
-  const [gameContainerSize, setGameContainerSize] = useState({ width: 0, height: 0 });
+  const [gameContainerSize, setGameContainerSize] = useState({
+    width: 0,
+    height: 0,
+  });
   const [shipPosition, setShipPosition] = useState({ x: 0, y: 0 });
   const [currentTarget, setCurrentTarget] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
   const [highScore, setHighScore] = useState(0);
-  
+
   const shipRef = useRef(null);
   const gameContainerRef = useRef(null);
 
-
   // Load high score from localStorage on component mount
   useEffect(() => {
-    const savedHighScore = localStorage.getItem('spacetype-highscore');
+    const savedHighScore = localStorage.getItem("spacetype-highscore");
     if (savedHighScore) {
       setHighScore(parseInt(savedHighScore, 10));
     }
@@ -606,7 +42,7 @@ const SpaceType = () => {
   useEffect(() => {
     if (score > highScore) {
       setHighScore(score);
-      localStorage.setItem('spacetype-highscore', score.toString());
+      localStorage.setItem("spacetype-highscore", score.toString());
     }
   }, [score, highScore]);
 
@@ -617,18 +53,18 @@ const SpaceType = () => {
         const rect = gameContainerRef.current.getBoundingClientRect();
         const newSize = {
           width: rect.width,
-          height: rect.height
+          height: rect.height,
         };
         setGameContainerSize(newSize);
         setShipPosition({
           x: newSize.width / 2 - 32, // Center ship (32px is half ship width)
-          y: newSize.height - 80 // 80px from bottom
+          y: newSize.height - 80, // 80px from bottom
         });
       }
     };
     updateContainerSize();
-    window.addEventListener('resize', updateContainerSize);
-    return () => window.removeEventListener('resize', updateContainerSize);
+    window.addEventListener("resize", updateContainerSize);
+    return () => window.removeEventListener("resize", updateContainerSize);
   }, []);
 
   const createParticles = (x, y) => {
@@ -657,7 +93,9 @@ const SpaceType = () => {
     const targetY = targetEnemy.position.y + 40; // 40 is half bubble height
 
     // Calculate distance for laser travel time
-    const distance = Math.sqrt(Math.pow(targetX - shipX, 2) + Math.pow(targetY - shipY, 2));
+    const distance = Math.sqrt(
+      Math.pow(targetX - shipX, 2) + Math.pow(targetY - shipY, 2)
+    );
     const travelTime = distance / 800; // Adjust speed as needed
 
     const newLaser = {
@@ -667,17 +105,20 @@ const SpaceType = () => {
       targetX,
       targetY,
       targetEnemyId: targetEnemy.id,
-      travelTime: travelTime * 1000 // Convert to milliseconds
+      travelTime: travelTime * 1000, // Convert to milliseconds
     };
 
     setLasers((prev) => [...prev, newLaser]);
 
     // Move ship towards target
-    setShipPosition(prev => {
-      const newX = Math.max(32, Math.min(gameContainerSize.width - 64, targetX - 32));
+    setShipPosition((prev) => {
+      const newX = Math.max(
+        32,
+        Math.min(gameContainerSize.width - 64, targetX - 32)
+      );
       return {
         ...prev,
-        x: newX
+        x: newX,
       };
     });
 
@@ -699,7 +140,12 @@ const SpaceType = () => {
   }, [level]);
 
   const spawnEnemy = useCallback(() => {
-    if (enemies.length < 5 && !isPaused && !gameOver && gameContainerSize.width > 0) {
+    if (
+      enemies.length < 5 &&
+      !isPaused &&
+      !gameOver &&
+      gameContainerSize.width > 0
+    ) {
       const word = getWordForLevel();
       const newEnemy = {
         id: Date.now(),
@@ -712,34 +158,43 @@ const SpaceType = () => {
       };
       setEnemies((prev) => [...prev, newEnemy]);
     }
-  }, [enemies.length, isPaused, gameOver, level, gameContainerSize, getWordForLevel]);
+  }, [
+    enemies.length,
+    isPaused,
+    gameOver,
+    level,
+    gameContainerSize,
+    getWordForLevel,
+  ]);
 
   // get the previous highscore
   useEffect(() => {
     const prevScore = localStorage.getItem("spaceTypeHiScore");
-    if(prevScore){
+    if (prevScore) {
       setHiScore(parseInt(prevScore));
     }
-  },[])
+  }, []);
 
   // when game ends highscore is saved.
   useEffect(() => {
-  if (gameOver) {
-    playGameOver();
-    setHiScore((prevHighScore) => {
-      if (score > prevHighScore) {
-        localStorage.setItem("spaceTypeHiScore", score);
-        return score;
-      }
-      return prevHighScore;
-    });
-  }
-}, [gameOver]);
-
+    if (gameOver) {
+      playGameOver();
+      setHiScore((prevHighScore) => {
+        if (score > prevHighScore) {
+          localStorage.setItem("spaceTypeHiScore", score);
+          return score;
+        }
+        return prevHighScore;
+      });
+    }
+  }, [gameOver]);
 
   useEffect(() => {
     if (gameContainerSize.width === 0) return;
-    const spawnInterval = setInterval(spawnEnemy, Math.max(1000, 2500 - level * 150));
+    const spawnInterval = setInterval(
+      spawnEnemy,
+      Math.max(1000, 2500 - level * 150)
+    );
     return () => clearInterval(spawnInterval);
   }, [spawnEnemy, level, gameContainerSize]);
 
@@ -790,12 +245,12 @@ const SpaceType = () => {
   const handleKeyPress = useCallback(
     (e) => {
       if (gameOver || isPaused) return;
-      
+
       if (e.key === "Enter") {
         useBomb();
         return;
       }
-      
+
       const char = e.key.toLowerCase();
       if (!/^[a-z]$/.test(char)) return;
 
@@ -840,7 +295,7 @@ const SpaceType = () => {
     if (bombs > 0) {
       setBombs((b) => b - 1);
       // Create explosion effects for all enemies
-      enemies.forEach(enemy => {
+      enemies.forEach((enemy) => {
         createParticles(enemy.position.x + 40, enemy.position.y + 40);
       });
       setEnemies([]);
@@ -873,24 +328,23 @@ const SpaceType = () => {
     if (gameContainerSize.width > 0) {
       setShipPosition({
         x: gameContainerSize.width / 2 - 32,
-        y: gameContainerSize.height - 80
+        y: gameContainerSize.height - 80,
       });
     }
   };
 
   return (
-    <div 
+    <div
       ref={gameContainerRef}
       className="relative w-full h-screen bg-gradient-to-b from-gray-900 via-black to-gray-800 overflow-hidden"
-      style={{ fontFamily: 'monospace' }}
+      style={{ fontFamily: "monospace" }}
     >
       {/* Simple Starry background */}
       <div
         className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986')] 
                       bg-cover bg-center opacity-20"
-      />i h
-
-      {/* UI Header */}
+      />
+      i h{/* UI Header */}
       <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center text-white z-30 bg-black bg-opacity-50">
         <div className="flex gap-6 text-lg font-bold">
           <div className="text-yellow-400">Score: {score}</div>
@@ -903,28 +357,28 @@ const SpaceType = () => {
           <p className="text-gray-400 text-xs">Press ENTER for bomb</p>
         </div>
         <div className="flex gap-4">
-          <button 
+          <button
             onClick={() => setShowInfo(!showInfo)}
             className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded-lg transition-colors"
             title="Keyboard shortcuts"
           >
             <span className="text-white font-bold text-sm">i</span>
           </button>
-          <button 
-            onClick={useShield} 
+          <button
+            onClick={useShield}
             disabled={shields === 0}
             className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 px-3 py-2 rounded-lg transition-colors"
           >
             <Shield size={20} className="text-blue-400" /> {shields}
           </button>
-          <button 
+          <button
             onClick={useBomb}
             disabled={bombs === 0}
             className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 px-3 py-2 rounded-lg transition-colors"
           >
             <Bomb size={20} className="text-red-400" /> {bombs}
           </button>
-          <button 
+          <button
             onClick={() => setIsPaused(!isPaused)}
             className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded-lg transition-colors"
           >
@@ -932,16 +386,29 @@ const SpaceType = () => {
           </button>
         </div>
       </div>
-
       {/* Info Panel */}
       {showInfo && (
         <div className="absolute top-24 right-4 z-40 bg-black bg-opacity-90 p-6 rounded-lg border border-purple-400 max-w-xs">
-          <h3 className="text-purple-400 font-bold mb-4 text-lg">Keyboard Shortcuts</h3>
+          <h3 className="text-purple-400 font-bold mb-4 text-lg">
+            Keyboard Shortcuts
+          </h3>
           <div className="text-white text-sm space-y-2">
-            <div><span className="text-yellow-400">A-Z Keys:</span> Type to destroy enemies</div>
-            <div><span className="text-red-400">ENTER:</span> Use bomb (destroys all enemies)</div>
-            <div><span className="text-blue-400">Shield Button:</span> Restore health to 100%</div>
-            <div><span className="text-gray-400">Pause Button:</span> Pause/Resume game</div>
+            <div>
+              <span className="text-yellow-400">A-Z Keys:</span> Type to destroy
+              enemies
+            </div>
+            <div>
+              <span className="text-red-400">ENTER:</span> Use bomb (destroys
+              all enemies)
+            </div>
+            <div>
+              <span className="text-blue-400">Shield Button:</span> Restore
+              health to 100%
+            </div>
+            <div>
+              <span className="text-gray-400">Pause Button:</span> Pause/Resume
+              game
+            </div>
           </div>
           <div className="mt-4 pt-4 border-t border-gray-600">
             <div className="text-xs text-gray-400">
@@ -952,7 +419,6 @@ const SpaceType = () => {
           </div>
         </div>
       )}
-
       {/* Health Bar */}
       <div className="absolute top-20 left-4 right-4 h-4 bg-gray-800 rounded-full border-2 border-gray-600 z-30">
         <motion.div
@@ -965,7 +431,6 @@ const SpaceType = () => {
           Health: {health}%
         </div>
       </div>
-
       {/* Enemy Bubbles */}
       <AnimatePresence>
         {enemies.map((enemy) => (
@@ -973,22 +438,23 @@ const SpaceType = () => {
             key={enemy.id}
             className="absolute z-20"
             initial={{ x: enemy.position.x, y: -80, scale: 0 }}
-            animate={{ 
-              x: enemy.position.x, 
-              y: enemy.position.y, 
-              scale: 1
+            animate={{
+              x: enemy.position.x,
+              y: enemy.position.y,
+              scale: 1,
             }}
             exit={{ scale: 0, opacity: 0 }}
-            transition={{ 
-              duration: 0.016
+            transition={{
+              duration: 0.016,
             }}
           >
             <div className="relative">
               <div
                 className={`w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-sm
-                  ${currentTarget?.id === enemy.id 
-                    ? "bg-gradient-to-br from-yellow-400 to-orange-500 ring-4 ring-yellow-300 shadow-lg shadow-yellow-400/50" 
-                    : "bg-gradient-to-br from-purple-500 to-pink-500"
+                  ${
+                    currentTarget?.id === enemy.id
+                      ? "bg-gradient-to-br from-yellow-400 to-orange-500 ring-4 ring-yellow-300 shadow-lg shadow-yellow-400/50"
+                      : "bg-gradient-to-br from-purple-500 to-pink-500"
                   } 
                   border-2 border-white shadow-lg`}
               >
@@ -1006,16 +472,18 @@ const SpaceType = () => {
           </motion.div>
         ))}
       </AnimatePresence>
-
       {/* Laser Beams */}
       <AnimatePresence>
         {lasers.map((laser) => {
           const distance = Math.sqrt(
-            Math.pow(laser.targetX - laser.startX, 2) + 
-            Math.pow(laser.targetY - laser.startY, 2)
+            Math.pow(laser.targetX - laser.startX, 2) +
+              Math.pow(laser.targetY - laser.startY, 2)
           );
-          const angle = Math.atan2(laser.targetY - laser.startY, laser.targetX - laser.startX);
-          
+          const angle = Math.atan2(
+            laser.targetY - laser.startY,
+            laser.targetX - laser.startX
+          );
+
           return (
             <motion.div
               key={laser.id}
@@ -1029,25 +497,24 @@ const SpaceType = () => {
             >
               <motion.div
                 className="h-1 bg-cyan-400 rounded-full"
-                style={{ 
-                  boxShadow: "0 0 5px #00bfff"
+                style={{
+                  boxShadow: "0 0 5px #00bfff",
                 }}
                 initial={{ width: 0, opacity: 1 }}
-                animate={{ 
+                animate={{
                   width: distance,
-                  opacity: [1, 1, 0]
+                  opacity: [1, 1, 0],
                 }}
                 exit={{ opacity: 0 }}
-                transition={{ 
+                transition={{
                   duration: laser.travelTime / 1000,
-                  ease: "easeOut"
+                  ease: "easeOut",
                 }}
               />
             </motion.div>
           );
         })}
       </AnimatePresence>
-
       {/* Explosion Particles */}
       <AnimatePresence>
         {particles.map((particle) => (
@@ -1071,27 +538,26 @@ const SpaceType = () => {
           />
         ))}
       </AnimatePresence>
-
       {/* Player Ship */}
       <motion.div
         ref={shipRef}
         className="absolute z-30"
         animate={{
           x: shipPosition.x,
-          y: shipPosition.y
+          y: shipPosition.y,
         }}
         transition={{
           type: "spring",
           damping: 20,
-          stiffness: 100
+          stiffness: 100,
         }}
       >
         <div className="relative">
-          <div 
+          <div
             className="w-16 h-16 bg-gradient-to-t from-cyan-400 via-blue-500 to-purple-600 shadow-xl"
             style={{
-              clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
-              filter: 'drop-shadow(0 0 15px rgba(59, 130, 246, 0.8))'
+              clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)",
+              filter: "drop-shadow(0 0 15px rgba(59, 130, 246, 0.8))",
             }}
           />
           {/* Engine glow */}
@@ -1100,7 +566,6 @@ const SpaceType = () => {
           </div>
         </div>
       </motion.div>
-
       {/* Current Word Display */}
       <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 z-30">
         <div className="bg-black bg-opacity-70 px-6 py-3 rounded-lg border border-purple-400">
@@ -1112,17 +577,28 @@ const SpaceType = () => {
           </div>
         </div>
       </div>
-
       {/* Game Over Screen */}
       {gameOver && (
         <div className="absolute inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50">
           <div className="text-center text-white bg-gray-900 p-10 rounded-xl border-2 border-purple-500 shadow-2xl">
             <h2 className="text-5xl mb-6 text-red-400 font-bold">Game Over</h2>
             <div className="space-y-3 mb-8 text-xl">
-              <p>Final Score: <span className="text-yellow-400 font-bold">{score}</span></p>
-              <p>High Score: <span className="text-green-400 font-bold">{highScore}</span></p>
-              <p>Level Reached: <span className="text-blue-400 font-bold">{level}</span></p>
-              <p>Words Per Minute: <span className="text-purple-400 font-bold">{wpm}</span></p>
+              <p>
+                Final Score:{" "}
+                <span className="text-yellow-400 font-bold">{score}</span>
+              </p>
+              <p>
+                High Score:{" "}
+                <span className="text-green-400 font-bold">{highScore}</span>
+              </p>
+              <p>
+                Level Reached:{" "}
+                <span className="text-blue-400 font-bold">{level}</span>
+              </p>
+              <p>
+                Words Per Minute:{" "}
+                <span className="text-purple-400 font-bold">{wpm}</span>
+              </p>
             </div>
             <div className="flex gap-4 justify-center">
               <button
@@ -1131,7 +607,7 @@ const SpaceType = () => {
               >
                 <RefreshCw size={24} /> Play Again
               </button>
-              <button 
+              <button
                 onClick={() => window.location.reload()}
                 className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-8 py-4 rounded-lg transition-colors text-lg font-bold"
               >

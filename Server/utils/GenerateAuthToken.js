@@ -9,7 +9,7 @@ const generateAuthToken = (user) => {
       profileImage: user.ProfilePicture,
     },
     process.env.JWT_SECRET,
-    { expiresIn: "1d" }
+    { expiresIn: process.env.TOKEN_EXPIRY }
   );
 };
 

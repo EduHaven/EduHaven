@@ -62,16 +62,22 @@ router.get("/google/callback", async (req, res) => {
     }
 
     const appToken = generateAuthToken(user);
+    const refreshToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+      }
+    );
 
     res
       .cookie("token", appToken, {
         httpOnly: true,
         secure: true, // set to true on HTTPS production
         sameSite: "lax",
-        maxAge: 24 * 60 * 60 * 1000,
       })
       .redirect(
-        `${process.env.CORS_ORIGIN}/auth/google/callback?token=${appToken}`
+        `${process.env.CORS_ORIGIN}/auth/google/callback?token=${appToken}&refreshToken=${refreshToken}`
       );
   } catch (err) {
     console.error("Google OAuth error:", err);

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function GoogleRedirect() {
   const navigate = useNavigate();
@@ -7,11 +8,15 @@ export default function GoogleRedirect() {
 
   useEffect(() => {
     const params = new URLSearchParams(search);
-    console.log(params)
+    console.log(params);
     const token = params.get("token");
-    if (token) {
+    const refreshToken = params.get("refreshToken");
+
+    if (token && refreshToken) {
       localStorage.setItem("token", token);
+      localStorage.setItem("refreshToken", refreshToken);
       navigate("/", { replace: true });
+      toast.success("Login successful! Welcome back.");
     } else {
       navigate("/authenticate");
     }

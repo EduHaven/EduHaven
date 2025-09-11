@@ -4,7 +4,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
 import cookieParser from "cookie-parser";
-import bodyParser from "body-parser";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
@@ -41,7 +40,6 @@ const corsOptions = {
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(cookieParser());
-app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => res.send("Hello, World!"));

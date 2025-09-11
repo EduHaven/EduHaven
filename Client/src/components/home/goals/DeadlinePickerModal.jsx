@@ -62,7 +62,10 @@ const DeadlinePickerModal = ({ isOpen, onClose, onSave, currentDeadline, todoTit
 
         {/* Time Picker */}
         <div className="mb-6">
-          <label className=" font-semibold mb-2 flex items-center gap-2">
+          <label
+            htmlFor="timeSelect"
+            className=" font-semibold mb-2 flex items-center gap-2"
+          >
             <Clock className="h-4 w-4" />
             Time:
           </label>

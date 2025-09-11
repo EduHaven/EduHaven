@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import { Clock12, PlayCircle, RotateCcw } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
-
-const backendUrl = import.meta.env.VITE_API_URL;
+import axiosInstance from "@/utils/axios";
 
 function StudyTimer() {
   const [time, setTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
@@ -28,15 +27,20 @@ function StudyTimer() {
   }, [isRunning, time, startTime, hasPosted]);
 
   // Utility: Calculate total time in seconds
-  const getTotalSeconds = (t) =>
-    t.hours * 3600 + t.minutes * 60 + t.seconds;
+  const getTotalSeconds = (t) => t.hours * 3600 + t.minutes * 60 + t.seconds;
 
   // Restore session and catch up
   useEffect(() => {
     const saved = localStorage.getItem("studyTimer");
     if (!saved) return;
 
-    const { time: savedTime, isRunning, startTime, lastUpdate, lastSavedSeconds } = JSON.parse(saved);
+    const {
+      time: savedTime,
+      isRunning,
+      startTime,
+      lastUpdate,
+      lastSavedSeconds,
+    } = JSON.parse(saved);
     let total = savedTime ? getTotalSeconds(savedTime) : 0;
 
     if (isRunning && lastUpdate) {
@@ -63,7 +67,13 @@ function StudyTimer() {
     const timeout = setTimeout(() => {
       localStorage.setItem(
         "studyTimer",
-        JSON.stringify({ time, isRunning, startTime, lastUpdate, lastSavedSeconds })
+        JSON.stringify({
+          time,
+          isRunning,
+          startTime,
+          lastUpdate,
+          lastSavedSeconds,
+        })
       );
     }, 300);
 
@@ -108,34 +118,29 @@ function StudyTimer() {
   }, [isRunning]);
 
   // Post to backend with better error handling
-  const handlePostSession = useCallback(async (endTime) => {
-    const totalMinutes = getTotalSeconds(time) / 60;
-    if (totalMinutes < 1) return false;
+  const handlePostSession = useCallback(
+    async (endTime) => {
+      const totalMinutes = getTotalSeconds(time) / 60;
+      if (totalMinutes < 1) return false;
 
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${backendUrl}/timer`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      try {
+        const res = await axiosInstance.post(`/timer`, {
           startTime,
           endTime,
           duration: Math.round(totalMinutes),
-        }),
-      });
+        });
 
-      const result = await res.json();
-      setHasPosted(true);
-      setLastSavedSeconds(getTotalSeconds(time));
-      return true;
-    } catch (err) {
-      console.error("Failed to save session:", err);
-      return false;
-    }
-  }, [startTime, time]);
+        const result = await res.data;
+        setHasPosted(true);
+        setLastSavedSeconds(getTotalSeconds(time));
+        return true;
+      } catch (err) {
+        console.error("Failed to save session:", err);
+        return false;
+      }
+    },
+    [startTime, time]
+  );
 
   // Auto post session every 30 seconds after 1 min
   useEffect(() => {
@@ -144,43 +149,45 @@ function StudyTimer() {
     const interval = setInterval(async () => {
       const totalSeconds = getTotalSeconds(time);
       const totalMinutes = totalSeconds / 60;
-      
+
       // Save every 30 seconds if there's at least 30 seconds of new progress
-      if (totalMinutes >= 1 && (totalSeconds - lastSavedSeconds) >= 30) {
+      if (totalMinutes >= 1 && totalSeconds - lastSavedSeconds >= 30) {
         const success = await handlePostSession(new Date().toISOString());
         if (success) {
-          console.log("🔄 Auto-saved to database at", new Date().toLocaleTimeString());
+          console.log(
+            "🔄 Auto-saved to database at",
+            new Date().toLocaleTimeString()
+          );
         }
       }
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [isRunning, startTime, time, hasPosted, lastSavedSeconds, handlePostSession]);
+  }, [
+    isRunning,
+    startTime,
+    time,
+    hasPosted,
+    lastSavedSeconds,
+    handlePostSession,
+  ]);
 
   // Save unsaved progress function
   const saveUnsavedProgress = useCallback(async () => {
     if (!startTimeRef.current || hasPostedRef.current) return;
-    
+
     const currentTime = timeRef.current;
     const totalSeconds = getTotalSeconds(currentTime);
-    
-    if (totalSeconds >= 60) { // At least 1 minute
+
+    if (totalSeconds >= 60) {
       try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(`${backendUrl}/timer`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            startTime: startTimeRef.current,
-            endTime: new Date().toISOString(),
-            duration: Math.round(totalSeconds / 60),
-          }),
+        const res = await axiosInstance.post("/timer", {
+          startTime: startTimeRef.current,
+          endTime: new Date().toISOString(),
+          duration: Math.round(totalSeconds / 60),
         });
 
-        if (res.ok) {
+        if (res.status === 200) {
           console.log("Saved progress before leaving");
           localStorage.removeItem("studyTimer");
         }
@@ -195,11 +202,12 @@ function StudyTimer() {
     const handleBeforeUnload = (e) => {
       const currentTime = timeRef.current;
       const totalSeconds = getTotalSeconds(currentTime);
-      
+
       if (isRunningRef.current && totalSeconds >= 60 && !hasPostedRef.current) {
         e.preventDefault();
-        e.returnValue = "You have unsaved study progress. Are you sure you want to leave?";
-        
+        e.returnValue =
+          "You have unsaved study progress. Are you sure you want to leave?";
+
         // Attempt to save in background
         saveUnsavedProgress();
         return e.returnValue;
@@ -214,7 +222,11 @@ function StudyTimer() {
 
     // Handle SPA navigation
     const handlePopState = () => {
-      if (isRunningRef.current && getTotalSeconds(timeRef.current) >= 60 && !hasPostedRef.current) {
+      if (
+        isRunningRef.current &&
+        getTotalSeconds(timeRef.current) >= 60 &&
+        !hasPostedRef.current
+      ) {
         const confirmLeave = window.confirm(
           "You have unsaved study progress. Do you want to save it before leaving?"
         );
@@ -248,12 +260,12 @@ function StudyTimer() {
   // Reset timer with confirmation
   const handleReset = async () => {
     const totalSeconds = getTotalSeconds(time);
-    
+
     if (totalSeconds >= 60 && !hasPosted) {
       const confirmReset = window.confirm(
         "You have unsaved progress. Do you want to save this session before resetting?"
       );
-      
+
       if (confirmReset) {
         await handlePostSession(new Date().toISOString());
       }
@@ -317,10 +329,7 @@ function StudyTimer() {
           <RotateCcw className="w-5 h-5" />
         </motion.button>
       </div>
-
-
-      </div>
-    
+    </div>
   );
 }
 

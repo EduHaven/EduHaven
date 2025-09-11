@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axiosInstance from "@/utils/axios";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
@@ -30,7 +30,7 @@ function SignUp() {
         throw new Error("First Name and Last Name are required");
       }
 
-      const response = await axios.post(url, data);
+      const response = await axiosInstance.post(url, data);
 
       reset();
 

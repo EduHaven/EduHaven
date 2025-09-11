@@ -18,8 +18,8 @@ import Auth from "./Auth/Auth";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { SocketProvider } from "./context/SocketContext";
 import FriendsPage from "./pages/FriendsPage.jsx";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import NoteNest from "./pages/NoteNest";
 import Delete from "./components/settings/Delete";
 
@@ -33,15 +33,16 @@ function App() {
               <Route index element={<Home />} />
               <Route path="session" element={<Session />} />
               <Route path="stats" element={<Stats isCurrentUser={true} />} />
-              <Route path="user/:userId" element={<Stats isCurrentUser={false} />} />
+              <Route
+                path="user/:userId"
+                element={<Stats isCurrentUser={false} />}
+              />
               <Route path="games/*" element={<GameRoom />} />
               <Route path="notenest" element={<NoteNest />} />
               <Route path="project-details" element={<ProjectInfo />} />
               <Route path="settings/" element={<Settings />} />
               <Route path="friends" element={<FriendsPage />} />
               <Route path="*" element={<PageNotFound />} />
-              <Route path="/delete-account" element={<Delete />} />
-
             </Route>
 
             <Route path="session/:id" element={<StudyRoom />} />
@@ -49,6 +50,7 @@ function App() {
             <Route path="/verify" element={<OtpInput />} />
             <Route path="/authenticate" element={<Auth />} />
             <Route path="/auth/google/callback" element={<GoogleRedirect />} />
+            <Route path="/delete-account" element={<Delete />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>

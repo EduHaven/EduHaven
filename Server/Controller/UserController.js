@@ -9,7 +9,11 @@ import Note from "../Model/NoteModel.js";
 import TimerSession from "../Model/StudySession.js";
 import SessionRoom from "../Model/SessionModel.js";
 import Task from "../Model/ToDoModel.js";
-import { checkAndAwardRookieBadge, checkAllBadges, BADGES } from "../utils/badgeSystem.js";
+import {
+  checkAndAwardRookieBadge,
+  checkAllBadges,
+  BADGES,
+} from "../utils/badgeSystem.js";
 
 // Configure Cloudinary
 cloudinary.config({
@@ -61,26 +65,7 @@ export const signup = async (req, res) => {
       }
     );
 
-    console.log(`Attempting to send OTP to ${Email} for user ${FirstName}`);
-    console.log(`Generated OTP: ${otp}`);
-    
-    try {
-      await sendMail(Email, FirstName, otp);
-      console.log(`Email sent successfully to ${Email}`);
-    } catch (emailError) {
-      console.error(`Failed to send email to ${Email}:`, emailError);
-      
-      // Check if it's a Resend testing mode restriction
-      if (emailError.message && emailError.message.includes('testing emails')) {
-        return res.status(400).json({ 
-          error: "Email verification is currently limited to verified addresses. Please contact support or try with a verified email address." 
-        });
-      }
-      
-      return res.status(500).json({ 
-        error: "Failed to send verification email. Please try again." 
-      });
-    }
+    await sendMail(Email, FirstName, otp);
 
     const token = generateAuthToken(user);
 
@@ -152,12 +137,15 @@ export const verifyUser = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    console.log('updateProfile called');
-    console.log('req.user:', req.user ? { id: req.user._id, name: req.user.FirstName } : 'No user');
-    console.log('Request body:', req.body);
-    
+    console.log("updateProfile called");
+    console.log(
+      "req.user:",
+      req.user ? { id: req.user._id, name: req.user.FirstName } : "No user"
+    );
+    console.log("Request body:", req.body);
+
     if (!req.user) {
-      console.log('No user in request - auth middleware failed');
+      console.log("No user in request - auth middleware failed");
       return res.status(401).json({ error: "Unauthorized" });
     }
 
@@ -218,10 +206,10 @@ export const updateProfile = async (req, res) => {
 
     // Check and award Rookie badge if profile is complete
     try {
-      console.log('Profile updated, checking for Rookie badge...');
+      console.log("Profile updated, checking for Rookie badge...");
       const badgeResult = await checkAndAwardRookieBadge(userId);
-      console.log('Badge check result:', badgeResult);
-      
+      console.log("Badge check result:", badgeResult);
+
       if (badgeResult.success) {
         console.log(`Rookie badge awarded to user ${userId}`);
         // Re-fetch user to include the new badge
@@ -279,7 +267,6 @@ export const deleteAccount = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { Email, Password } = req.body;
-
     if (!Email || !Password) {
       return res.status(422).json({ error: "Please fill all the fields" });
     }
@@ -300,25 +287,62 @@ export const login = async (req, res) => {
       httpOnly: true,
     });
 
-    return res
-      .status(200)
-      .json({ message: "User Login Successfully", token, user });
+    // refresh token expires in 7 days
+    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+    });
+    res.cookie("refreshToken", refreshToken, {
+      expires: new Date(Date.now() + 86400000 * 7),
+      httpOnly: true,
+    });
+
+    return res.status(200).json({
+      message: "User Login Successfully",
+      token,
+      refreshToken,
+      user,
+    });
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: error.message });
   }
 };
 
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
+    res.clearCookie("token");
+    res.clearCookie("refreshToken");
 
     return res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
     return res.status(500).json({ error: "Logout failed" });
+  }
+};
+
+export const refreshAccessToken = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized request",
+      });
+    }
+
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    const newToken = generateAuthToken(user);
+    return res.status(200).json({ success: true, token: newToken });
+  } catch (error) {
+    console.error("Error refreshing access token:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -396,31 +420,31 @@ export const getUserBadges = async (req, res) => {
     }
 
     const userId = req.user._id;
-    console.log('Getting badges for user:', userId);
-    
+    console.log("Getting badges for user:", userId);
+
     const user = await User.findById(userId).select("badges");
-    
+
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    console.log('Current user badges:', user.badges);
+    console.log("Current user badges:", user.badges);
 
     // Check for any newly earned badges
     try {
-      console.log('Checking for new badges...');
+      console.log("Checking for new badges...");
       const newBadges = await checkAllBadges(userId);
-      console.log('New badges found:', newBadges);
-      
+      console.log("New badges found:", newBadges);
+
       if (newBadges.length > 0) {
         // Re-fetch user to get updated badges
         const updatedUser = await User.findById(userId).select("badges");
-        console.log('Updated user badges after awarding:', updatedUser.badges);
-        
+        console.log("Updated user badges after awarding:", updatedUser.badges);
+
         return res.status(200).json({
           badges: updatedUser.badges || [],
           newBadges: newBadges,
-          availableBadges: Object.values(BADGES)
+          availableBadges: Object.values(BADGES),
         });
       }
     } catch (badgeError) {
@@ -431,13 +455,109 @@ export const getUserBadges = async (req, res) => {
     return res.status(200).json({
       badges: user.badges || [],
       newBadges: [],
-      availableBadges: Object.values(BADGES)
+      availableBadges: Object.values(BADGES),
     });
   } catch (error) {
     console.error("Get badges error:", error);
     return res.status(500).json({
       error: "Failed to get badges",
-      details: error.message
+      details: error.message,
+    });
+  }
+};
+
+export const giveKudos = async (req, res) => {
+  try {
+    const giverId = req.user.id;
+    const { receiverId } = req.body;
+
+    if (giverId === receiverId) {
+      return res
+        .status(400)
+        .json({ message: "You cannot give kudos to yourself." });
+    }
+
+    const giver = await User.findById(giverId);
+    const receiver = await User.findById(receiverId);
+
+    if (!receiver) {
+      return res.status(404).json({ message: "Receiver not found." });
+    }
+
+    if (giver.kudosGiven.includes(receiverId)) {
+      return res
+        .status(400)
+        .json({ message: "You have already given kudos to this user." });
+    }
+
+    giver.kudosGiven.push(receiverId);
+    receiver.kudosReceived = (receiver.kudosReceived || 0) + 1;
+
+    await giver.save();
+    await receiver.save();
+
+    res.status(200).json({
+      message: "Kudos given successfully!",
+      receiverKudos: receiver.kudosReceived,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+//NEW: Get user stats (for streaks, rank, etc.)
+
+export const getUserStats = async (req, res) => {
+  try {
+    const userId = req.query.id || req.user?._id;
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const user = await User.findById(userId).select(
+      "streaks rank level badges"
+    );
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Count total users for rank context
+    const totalUsersCount = await User.countDocuments();
+
+    let newBadges = [];
+    try {
+      console.log("Checking for new badges...");
+      newBadges = await checkAllBadges(userId);
+
+      if (newBadges.length > 0) {
+        // Refresh badges if new ones were awarded
+        const updatedUser = await User.findById(userId).select("badges");
+        user.badges = updatedUser.badges;
+      }
+    } catch (badgeError) {
+      console.error("Error checking badges:", badgeError);
+    }
+
+    return res.status(200).json({
+      rank: user.rank || 0,
+      totalUsers: totalUsersCount,
+      currentStreak: user.streaks?.current || 0,
+      maxStreak: user.streaks?.max || 0,
+      level: user.level || {
+        name: "Beginner",
+        progress: 0,
+        hoursToNextLevel: 2,
+      },
+      badges: user.badges || [],
+      newBadges,
+      availableBadges: Object.values(BADGES),
+    });
+  } catch (error) {
+    console.error("Error fetching user stats:", error);
+    return res.status(500).json({
+      error: "Failed to fetch user stats",
+      details: error.message,
     });
   }
 };

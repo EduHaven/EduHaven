@@ -1,6 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import axios from "axios";
-const backendUrl = import.meta.env.VITE_API_URL;
+import axiosInstance from "@/utils/axios";
 
 const UserProfileContext = createContext({
   user: null,
@@ -14,9 +13,7 @@ export const UserProfileProvider = ({ children }) => {
 
   const fetchUserDetails = async (userId) => {
     try {
-      const response = await axios.get(
-        `${backendUrl}/user/details?id=${userId}`
-      );
+      const response = await axiosInstance.get(`/user/details?id=${userId}`);
       const userData = response.data;
       setUser(userData);
       return userData;
@@ -51,24 +48,14 @@ export const useUserProfile = () => {
  */
 export const fetchUserStats = async (userId) => {
   try {
-    // Get token from localStorage or wherever you're storing it
-    const token = localStorage.getItem("token");
-
-    // Throw an error early if token doesn't exist
-    if (!token) {
-      throw new Error("No auth token found");
-    }
-
-    // Make authenticated request
-    const response = await axios.get(`${backendUrl}/friends/${userId}/stats`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axiosInstance.get(`/friends/${userId}/stats`);
 
     return response.data;
   } catch (error) {
-    console.error("Error fetching user stats:", error.response?.data || error.message);
+    console.error(
+      "Error fetching user stats:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };

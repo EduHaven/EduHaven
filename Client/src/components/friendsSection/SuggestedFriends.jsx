@@ -1,8 +1,7 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { User, UserPlus, MoreVertical } from "lucide-react";
-const backendUrl = import.meta.env.VITE_API_URL;
+import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "@/utils/axios";
+import { User, MoreVertical, Plus } from "lucide-react";
 
 function SuggestedFriends({ onViewSentRequests }) {
   const navigate = useNavigate();
@@ -12,7 +11,10 @@ function SuggestedFriends({ onViewSentRequests }) {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdrownRef.current && !dropdrownRef.current.contains(event.target)) {
+      if (
+        dropdrownRef.current &&
+        !dropdrownRef.current.contains(event.target)
+      ) {
         setShowDropdown(false);
       }
     };
@@ -21,20 +23,12 @@ function SuggestedFriends({ onViewSentRequests }) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showDropdown]); 
+  }, [showDropdown]);
 
-  const getAuthHeader = () => {
-    const token = localStorage.getItem("token");
-    return { headers: { Authorization: `Bearer ${token}` } };
-  };
 
   const sendRequest = async (friendId) => {
     try {
-      const response = await axios.post(
-        `${backendUrl}/friends/request/${friendId}`,
-        null,
-        getAuthHeader()
-      );
+      const response = await axiosInstance.post(`/friends/request/${friendId}`, null);
       console.log("Response:", response.data.message);
       setSuggestedFriends((prevUsers) =>
         prevUsers.map((user) =>
@@ -46,13 +40,9 @@ function SuggestedFriends({ onViewSentRequests }) {
     }
   };
 
-  const handleViewProfile = (userId) => {
-    navigate(`/user/${userId}`);
-  };
-
   useEffect(() => {
-    axios
-      .get(`${backendUrl}/friends/friend-suggestions`, getAuthHeader())
+    axiosInstance
+      .get(`/friends/friend-suggestions`)
       .then((response) => {
         setSuggestedFriends(response.data);
       })
@@ -92,39 +82,34 @@ function SuggestedFriends({ onViewSentRequests }) {
       </div>
       <div className="space-y-2">
         {limitedFriends
-          .slice() 
+          .slice()
           .reverse()
           .map((user) => (
-            <div key={user._id} className=" relative group py-1 bg-slate-400">
+            <div key={user._id} className=" relative group py-1">
               <div className="flex items-center">
-                {user.ProfilePicture ? (
-                  <img
-                    src={user.ProfilePicture}
-                    className="w-11 h-11 rounded-full"
-                    alt="Profile"
-                  />
-                ) : (
-                  <div className="p-2 bg-ter rounded-full">
-                    <User className="w-7 h-7" />
+                <Link to={`/user/${user._id}`} className="flex items-center hover:brightness-110">
+                  {user.ProfilePicture ? (
+                    <img
+                      src={user.ProfilePicture}
+                      className="w-11 h-11 rounded-full transition cursor-pointer"
+                      alt="Profile"
+                    />
+                  ) : (
+                    <div className="p-2 bg-ter rounded-full transition cursor-pointer">
+                      <User className="w-7 h-7" />
+                    </div>
+                  )}
+                  <div className="ml-4 flex-1 overflow-hidden">
+                    <div className="text-lg font-medium line-clamp-1 txt">
+                      {user.FirstName
+                        ? `${user.FirstName} ${user.LastName || ""}`
+                        : "old-user"}
+                    </div>
+                    <p className="text-sm txt-dim line-clamp-1">{user.Bio}</p>
                   </div>
-                )}
-                <div className="ml-4 flex-1 overflow-hidden">
-                  <h4 className="text-lg font-medium line-clamp-1 txt">
-                    {user.FirstName
-                      ? `${user.FirstName} ${user.LastName || ""}`
-                      : "old-user"}
-                  </h4>
-                  <p className="text-sm txt-dim line-clamp-1">{user.Bio}</p>
-                </div>
+                </Link>
               </div>
-              <div className="absolute top-[8%] right-0 bg-sec p-1.5 px-2 transition-all opacity-0 group-hover:opacity-100 flex gap-2">
-                <button
-                  onClick={() => handleViewProfile(user._id)}
-                  className="bg-ter text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--btn-hover)] txt"
-                >
-                  <User className="w-4 h-4" />
-                  Profile
-                </button>
+              <div className="absolute top-[8%] right-0 bg-sec p-1.5 px-2 transition-all opacity-0 group-hover:opacity-100 flex gap-1">
                 {user.requestSent ? (
                   <button
                     disabled
@@ -135,10 +120,10 @@ function SuggestedFriends({ onViewSentRequests }) {
                 ) : (
                   <button
                     onClick={() => sendRequest(user._id)}
-                    className="bg-ter text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--btn-hover)] txt"
+                    className="bg-ter text-sm 2xl:text-base px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--btn-hover)] txt"
                   >
-                    <UserPlus className="w-4 h-4" />
-                    Add
+                    <Plus className="w-4 h-4" />
+                    Friend
                   </button>
                 )}
               </div>

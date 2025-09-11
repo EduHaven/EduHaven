@@ -5,6 +5,7 @@ import Ai from "./AiChatbot.jsx";
 import PinnedLinks from "./PinnedLinks.jsx";
 import Slogan from "./Slogan.jsx";
 import OnlineUsers from "./OnlineUsers.jsx";
+import Calculator from "./Calculator.jsx";
 
 function NavBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -22,6 +23,7 @@ function NavBar() {
       <div className="flex items-center gap-4">
         {isLoggedIn && <OnlineUsers />}
         <Ai onShowId={setSelectedId} />
+        <Calculator />
         {!isLoggedIn && (
           <Link
             className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg flex items-center gap-2"

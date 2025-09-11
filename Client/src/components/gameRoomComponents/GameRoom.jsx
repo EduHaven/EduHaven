@@ -52,10 +52,10 @@ function GameRoom() {
           </div>
         </div>
         <div className="flex flex-col justify-center h-full z-10 relative">
-          <h1 className="text-[5vw] font-extrabold text-[var(--btn-hover)] py-3 px-28 select-none">
+          <h1 className="text-[5vw] font-extrabold text-[var(--btn-hover)] py-3 md:px-28 select-none">
             Enough grinding,
           </h1>
-          <h2 className="text-[4vw] font-semibold text-[var(--txt-disabled)] py-3 px-28 select-none">
+          <h2 className="text-[4vw] font-semibold text-[var(--txt-disabled)] py-3 md:px-28 select-none">
             time to chill & relax!
           </h2>
         </div>

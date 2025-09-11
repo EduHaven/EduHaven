@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { PlusCircle } from "lucide-react";
-import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion"; 
+import axiosInstance from "@/utils/axios";
+import { motion, AnimatePresence } from "framer-motion";
 import RoomCard from "./RoomCard";
 import CreateRoomModal from "./CreateRoomModal";
 
@@ -11,19 +11,14 @@ export default function YourRooms({ myRooms }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [roomToDelete, setRoomToDelete] = useState(null);
 
-  const backendUrl = import.meta.env.VITE_API_URL;
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
     setSessions(myRooms.map((r) => ({ ...r, joins: r.joins ?? 0 })));
   }, [myRooms]);
 
   const handleCreate = async (data) => {
     try {
-      const res = await axios.post(`${backendUrl}/session-room`, data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setSessions((s) => [...s, res.data]); 
+      const res = await axiosInstance.post(`/session-room`, data);
+      setSessions((s) => [...s, res.data]);
     } catch (err) {
       console.error("Create room failed:", err);
     }
@@ -36,9 +31,7 @@ export default function YourRooms({ myRooms }) {
 
   const confirmDelete = async () => {
     try {
-      await axios.delete(`${backendUrl}/session-room/${roomToDelete._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axiosInstance.delete(`/session-room/${roomToDelete._id}`);
       setSessions((s) => s.filter((r) => r._id !== roomToDelete._id));
     } catch (err) {
       console.error("Delete room failed:", err);
@@ -55,7 +48,9 @@ export default function YourRooms({ myRooms }) {
 
   return (
     <div className="flex-1">
-      <h1 className="text-lg 2xl:text-2xl font-semibold txt mb-3 2xl:mb-6">Your Rooms</h1>
+      <h1 className="text-lg 2xl:text-2xl font-semibold txt mb-3 2xl:mb-6">
+        Your Rooms
+      </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 2xl:gap-6">
         {sessions.map((room) => (
@@ -99,7 +94,9 @@ export default function YourRooms({ myRooms }) {
               transition={{ duration: 0.25 }}
               className="bg-sec border border-white/20 rounded-2xl shadow-2xl p-6 max-w-sm w-[90%]"
             >
-              <h2 className="text-xl text-[var(--txt)] font-semibold mb-2">Delete Room?</h2>
+              <h2 className="text-xl text-[var(--txt)] font-semibold mb-2">
+                Delete Room?
+              </h2>
               <p className="mb-6 text-[var(--txt-dim)] dark:text-gray-300 text-sm">
                 This action is permanent and cannot be undone.
               </p>

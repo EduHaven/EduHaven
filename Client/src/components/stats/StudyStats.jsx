@@ -16,6 +16,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import axiosInstance from "@/utils/axios";
 
 // ──────────────────────────────────────────────────────────────
 // Helper functions for date formatting
@@ -163,7 +164,7 @@ const computeSummary = (data) => {
 // Main Component
 // ──────────────────────────────────────────────────────────────
 
-const StudyStats = () => {
+const StudyStats = ({ stats: streakStats = {} }) => {
   const [view, setView] = useState("daily");
   const [isOpen, setIsOpen] = useState(false);
   const [stats, setStats] = useState([]);
@@ -194,71 +195,26 @@ const StudyStats = () => {
         const result = await response.json();
         let timeline = [];
 
-        if (view === "hourly") {
-          timeline = generateHourlyTimeline();
-          result.periodData.forEach((item) => {
-            const found = timeline.find((entry) => entry.value === item._id);
-            if (found) {
-              found.totalHours = item.totalHours || 0;
-              found.studyRoomHours = item.studyRoomHours || 0;
-            }
-          });
-          setStats(
-            timeline.map((entry) => ({
-              name: entry.label,
-              totalHours: entry.totalHours,
-              studyRoomHours: entry.studyRoomHours,
-            }))
-          );
-        } else if (view === "daily") {
-          timeline = generateDailyTimeline();
-          result.periodData.forEach((item) => {
-            const found = timeline.find((entry) => entry.value === item._id);
-            if (found) {
-              found.totalHours = item.totalHours || 0;
-              found.studyRoomHours = item.studyRoomHours || 0;
-            }
-          });
-          setStats(
-            timeline.map((entry) => ({
-              name: entry.label,
-              totalHours: entry.totalHours,
-              studyRoomHours: entry.studyRoomHours,
-            }))
-          );
-        } else if (view === "weekly") {
-          timeline = generateWeeklyTimeline();
-          result.periodData.forEach((item) => {
-            const found = timeline.find((entry) => entry.value === item._id);
-            if (found) {
-              found.totalHours = item.totalHours || 0;
-              found.studyRoomHours = item.studyRoomHours || 0;
-            }
-          });
-          setStats(
-            timeline.map((entry) => ({
-              name: entry.label,
-              totalHours: entry.totalHours,
-              studyRoomHours: entry.studyRoomHours,
-            }))
-          );
-        } else if (view === "monthly") {
-          timeline = generateMonthlyTimeline();
-          result.periodData.forEach((item) => {
-            const found = timeline.find((entry) => entry.value === item._id);
-            if (found) {
-              found.totalHours = item.totalHours || 0;
-              found.studyRoomHours = item.studyRoomHours || 0;
-            }
-          });
-          setStats(
-            timeline.map((entry) => ({
-              name: entry.label,
-              totalHours: entry.totalHours,
-              studyRoomHours: entry.studyRoomHours,
-            }))
-          );
-        }
+        if (view === "hourly") timeline = generateHourlyTimeline();
+        if (view === "daily") timeline = generateDailyTimeline();
+        if (view === "weekly") timeline = generateWeeklyTimeline();
+        if (view === "monthly") timeline = generateMonthlyTimeline();
+
+        result.periodData.forEach((item) => {
+          const found = timeline.find((entry) => entry.value === item._id);
+          if (found) {
+            found.totalHours = item.totalHours || 0;
+            found.studyRoomHours = item.studyRoomHours || 0;
+          }
+        });
+
+        setChartStats(
+          timeline.map((entry) => ({
+            name: entry.label,
+            totalHours: entry.totalHours,
+            studyRoomHours: entry.studyRoomHours,
+          }))
+        );
       } catch (error) {
         console.error("Error fetching stats:", error);
       }
@@ -294,7 +250,7 @@ const StudyStats = () => {
     handleGetUserStats();
   }, [view]);
 
-  const summary = computeSummary(stats);
+  const summary = computeSummary(chartStats);
 
   const handleDropdownClick = (viewType) => {
     setView(viewType);
@@ -347,7 +303,7 @@ const StudyStats = () => {
         </div>
         <ResponsiveContainer width="100%" height={300}>
           <ComposedChart
-            data={stats}
+            data={chartStats}
             margin={{ top: 20, right: 30, left: 0, bottom: 10 }}
           >
             <defs>
@@ -368,6 +324,10 @@ const StudyStats = () => {
               }}
               itemStyle={{ color: "var(--txt)" }}
               labelStyle={{ color: "var(--btn)" }}
+              formatter={(value, name) => {
+                const num = Number(value);
+                return [Number.isInteger(num) ? num : num.toFixed(2), name];
+              }}
             />
             <Area
               type="monotone"

@@ -1,15 +1,9 @@
-import UserCard from "./UserCard"
+import SuggestedFriends from "./tabs/SuggestedFriends.jsx";
+import FriendRequests from "./tabs/FriendRequests";
+import SentRequests from "./tabs/SentRequests";
+import AllFriends from "./tabs/AllFriends";
 
-function MainContent({
-  selectedTab,
-  loading,
-  users,
-  onSendRequest,
-  onCancelRequest,
-  onAcceptRequest,
-  onRejectRequest,
-  onRemoveFriend,
-}) {
+function MainContent({ selectedTab }) {
   const getTitle = () => {
     switch (selectedTab) {
       case "suggested":
@@ -25,36 +19,27 @@ function MainContent({
     }
   };
 
-  const renderUsers = () =>
-    users.length > 0 ? (
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {users.map((user) => (
-        <UserCard
-          key={user._id}
-          user={user}
-          selectedTab={selectedTab}
-          onSendRequest={onSendRequest}
-          onCancelRequest={onCancelRequest}
-          onAcceptRequest={onAcceptRequest}
-          onRejectRequest={onRejectRequest}
-          onRemoveFriend={onRemoveFriend}
-        />
-      ))}
-      </div>
-    ) : (
-      <div className="text-center text-gray-500">Nothing to display</div>
-    );
+  const renderTab = () => {
+    switch (selectedTab) {
+      case "suggested":
+        return <SuggestedFriends />;
+      case "friendRequests":
+        return <FriendRequests />;
+      case "sentRequests":
+        return <SentRequests />;
+      case "allFriends":
+        return <AllFriends />;
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="w-3/4 bg-[var(--bg-sec)] p-6 rounded-xl shadow-md">
-      <h2 className="text-2xl font-semibold mb-4 text-[var(--txt)]">{getTitle()}</h2>
-      <div className="space-y-4">
-        {loading ? (
-          <div className="text-center text-gray-500">Loading...</div>
-        ) : (
-          renderUsers()
-        )}
-      </div>
+    <div className="flex-1 pt-3 pr-3 2xl:pt-6 2xl:pr-6 overflow-y-auto">
+      <h2 className="text-2xl font-semibold mb-4 text-[var(--txt)]">
+        {getTitle()}
+      </h2>
+      <div className="space-y-4">{renderTab()}</div>
     </div>
   );
 }

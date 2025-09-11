@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Clock4, Flame, BarChart2 } from "lucide-react";
-import axios from "axios";
+import axiosInstance from "@/utils/axios";
 
 // Variants for dropdown buttons (using custom variable for hover bg)
 const dropdownButtonVariants = {
@@ -31,21 +31,11 @@ function StatsSummary() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const backendUrl = import.meta.env.VITE_API_URL;
-
-  const getAuthHeader = () => {
-    const token = localStorage.getItem("token");
-    return { headers: { Authorization: `Bearer ${token}` } };
-  };
-
   const fetchUserStats = async () => {
     try {
       setError(null);
 
-      const response = await axios.get(
-        `${backendUrl}/user-stats`,
-        getAuthHeader()
-      );
+      const response = await axiosInstance.get(`/user-stats`);
       const stats = response.data;
 
       // Update study data with real values
@@ -74,7 +64,7 @@ function StatsSummary() {
 
   useEffect(() => {
     fetchUserStats();
-  }, [backendUrl]);
+  }, []);
 
   const handleRefresh = () => {
     fetchUserStats(true);

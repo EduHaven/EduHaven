@@ -29,37 +29,42 @@ const Stats = ({ isCurrentUser = false }) => {
           await fetchUserDetails(decoded.id);
 
           setUserStats({
-            name: `${currentUser?.FirstName} ${currentUser?.LastName}`,
-            bio: currentUser?.Bio,
-            profilePicture: currentUser?.ProfilePicture,
-            studyStats: currentUser?.StudyStats,
-            monthlyLevel: currentUser?.MonthlyLevel,
-            badges: currentUser?.Badges,
-            goals: currentUser?.Goals,
-            leaderboard: currentUser?.Leaderboard,
-            testData: currentUser?.TestData,
+            name: `${currentUser?.FirstName ?? ""} ${currentUser?.LastName ?? ""}`.trim(),
+            bio: currentUser?.Bio ?? "",
+            profilePicture: currentUser?.ProfilePicture ?? "",
+            studyStats: {
+              totalSessions: currentUser?.StudyStats?.totalSessions ?? 0,
+              totalHours: currentUser?.StudyStats?.totalHours ?? 0,
+              currentStreak: currentUser?.streaks?.current ?? 0,
+              maxStreak: currentUser?.streaks?.max ?? 0,
+              lastActive: currentUser?.streaks?.lastStudyDate ?? null,
+            },
+            monthlyLevel: currentUser?.MonthlyLevel ?? {},
+            badges: currentUser?.Badges ?? [],
+            goals: currentUser?.Goals ?? [],
+            leaderboard: currentUser?.Leaderboard ?? [],
+            testData: currentUser?.TestData ?? {},
           });
         } else {
           const res = await fetchUserStats(userId);
 
-          const mappedStats = {
-            name: `${res.userInfo.firstName} ${res.userInfo.lastName}`,
-            bio: res.userInfo.bio,
-            profilePicture: res.userInfo.profilePicture,
+          setUserStats({
+            name: `${res.userInfo?.firstName ?? ""} ${res.userInfo?.lastName ?? ""}`.trim(),
+            bio: res.userInfo?.bio ?? "",
+            profilePicture: res.userInfo?.profilePicture ?? "",
             studyStats: {
-              totalSessions: res.stats.totalSessions,
-              totalHours: res.stats.totalHours,
-              streak: res.stats.streak,
-              lastActive: res.stats.lastActive,
+              totalSessions: res.stats?.totalSessions ?? 0,
+              totalHours: res.stats?.totalHours ?? 0,
+              currentStreak: res.stats?.streaks?.current ?? 0,
+              maxStreak: res.stats?.streaks?.max ?? 0,
+              lastActive: res.stats?.streaks?.lastStudyDate ?? null,
             },
-            monthlyLevel: res.stats.monthlyLevel || {},
-            badges: res.stats.badges || [],
-            goals: res.stats.goals || [],
-            leaderboard: res.stats.leaderboard || [],
-            testData: res.stats.testData || {},
-          };
-
-          setUserStats(mappedStats);
+            monthlyLevel: res.stats?.monthlyLevel ?? {},
+            badges: res.stats?.badges ?? [],
+            goals: res.stats?.goals ?? [],
+            leaderboard: res.stats?.leaderboard ?? [],
+            testData: res.stats?.testData ?? {},
+          });
         }
       } catch (error) {
         console.error("Error fetching user stats:", error);
@@ -115,7 +120,7 @@ const Stats = ({ isCurrentUser = false }) => {
                 <Badges data={userStats.badges} />
               </div>
               <div className="gap-3 2xl:gap-6 mb-3 2xl:mb-6">
-                <Goals goals={userStats.goals} />
+                <Goals goals={userStats.goals} isCurrentUser={isCurrentUser} />
               </div>
             </div>
             <div>

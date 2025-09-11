@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "@/utils/axios";
 import { toast } from "react-toastify";
-const backendUrl = import.meta.env.VITE_API_URL;
 
 const Signout = () => {
   const navigate = useNavigate();
@@ -10,7 +9,11 @@ const Signout = () => {
   useEffect(() => {
     const handleSignOut = async () => {
       try {
-        await axios.post(`${backendUrl}/logout`, {}, { withCredentials: true });
+        await axiosInstance.post(
+          `${backendUrl}/logout`,
+          {},
+          { withCredentials: true }
+        );
 
         localStorage.removeItem("token");
         localStorage.removeItem("activationToken");

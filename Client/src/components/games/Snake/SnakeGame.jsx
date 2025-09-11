@@ -1,20 +1,109 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import $ from "jquery";
-import "./snake.css";
-import { Link } from "react-router-dom";
+import styles from "./snake.module.css";
 import { ArrowLeft } from "lucide-react";
 
-const SnakeGame = () => {
+const ChevronDown = ({ size = 20, className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <polyline points="6 9 12 15 18 9"></polyline>
+  </svg>
+);
 
-  const [hiScore,setHiScore] = useState(0);
+const ToggleSwitch = ({ label, checked, onChange }) => {
+  return (
+    <div className={styles.line}>
+      <span className={styles.toggleLabel}>{label}</span>
+      <div
+        className={styles.toggleTrack}
+        style={{ backgroundColor: checked ? "var(--btn)" : "#cccccc" }} // Keep dynamic background color
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent dropdown from closing
+          onChange(!checked);
+        }}
+      >
+        <div
+          className={styles.toggleThumb}
+          style={{ transform: checked ? "translateX(22px)" : "translateX(0)" }} // Keep dynamic transform
+        ></div>
+      </div>
+    </div>
+  );
+};
+
+const SnakeGame = () => {
+  const root = document.documentElement; // or any container element
+  const txtDim = getComputedStyle(root).getPropertyValue("--txt-dim").trim();
+  const btn = getComputedStyle(root).getPropertyValue("--btn").trim();
+
+  const [hiScore, setHiScore] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [gameMode, setGameMode] = useState("Modes");
+
+  // CHANGED: RENAMED 'settings' TO 'drawingOptions' TO MATCH GAME LOGIC AND ADDED CORRECT KEYS
+  const [drawingOptions, setDrawingOptions] = useState({
+    contour: true,
+    circles: false,
+    lines: false,
+  });
+  const dropdownRef = useRef(null);
+
+  // CHANGED: ADDED GAME MODES TO THE DROPDOWN LIST
+  const dropdownOptions = [
+    { type: "setting", label: "Circles", key: "circles" },
+    { type: "setting", label: "Lines", key: "lines" },
+    { type: "setting", label: "Contour", key: "contour" },
+  ];
+
+  // Effect to handle clicks outside the dropdown to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
+
+  // Handler for changing game mode
+  const handleModeClick = (option) => {
+    setGameMode(option.label);
+    setIsOpen(false); // Close dropdown when a mode is selected
+  };
+
+  // CHANGED: RENAMED HANDLER TO MATCH NEW STATE NAME
+  const handleDrawingChange = (key) => {
+    // This directly manipulates the `drawing` object in the game's scope
+    // This is a necessary workaround because the game logic is not React-driven
+    if (window.drawing) {
+      window.drawing[key] = !window.drawing[key];
+    }
+    setDrawingOptions((prevOptions) => ({
+      ...prevOptions,
+      [key]: !prevOptions[key],
+    }));
+  };
 
   // fetches the prev hi score on mount
-  useEffect(()=>{
+  useEffect(() => {
     const prevHiScore = localStorage.getItem("snakeHiScore");
-    if(prevHiScore){
+    if (prevHiScore) {
       setHiScore(parseInt(prevHiScore));
     }
-  },[])
+  }, []);
 
   useEffect(() => {
     Math.PI2 = 2 * Math.PI;
@@ -126,7 +215,12 @@ const SnakeGame = () => {
         rotSpeed,
         density,
         score;
-      var drawing = { circles: true, lines: false, contour: false };
+      // CHANGED: ATTACHED 'drawing' TO WINDOW SCOPE FOR REACT TO ACCESS
+      var drawing = (window.drawing = {
+        circles: false,
+        lines: false,
+        contour: true,
+      });
 
       function newGoal() {
         var p,
@@ -152,7 +246,7 @@ const SnakeGame = () => {
             }
         }
         goalSize = 200;
-        ctx.strokeStyle = "white";
+        ctx.strokeStyle = txtDim;
         goal = p;
       }
       function start() {
@@ -200,7 +294,7 @@ const SnakeGame = () => {
           ctx.fillText(rScore, 0, 0);
           ctx.restore();
         }
-        ctx.fillStyle = "white";
+        ctx.fillStyle = txtDim;
         ctx.fillText(rScore, 0, 0);
         ctx.restore();
       }
@@ -256,11 +350,11 @@ const SnakeGame = () => {
         ctx.font = "20px" + scoreFont; // Increase font size
         ctx.textAlign = "right"; // Align text to the right
         ctx.textBaseline = "top"; // Keep it at the top
-        ctx.fillStyle = "white";
+        ctx.fillStyle = txtDim;
         ctx.fillText(Math.round(score), w - 20, 20);
         ctx.beginPath();
         ctx.arc(goal.x, goal.y, goalSize, 0, Math.PI2, false);
-        ctx.strokeStyle = "white";
+        ctx.strokeStyle = txtDim;
         ctx.stroke();
 
         var p, i, l;
@@ -269,7 +363,7 @@ const SnakeGame = () => {
             p = bodyP[i];
             ctx.beginPath();
             ctx.arc(p.x, p.y, bodyRadius, 0, Math.PI2, false);
-            ctx.strokeStyle = "white";
+            ctx.strokeStyle = txtDim;
             ctx.stroke();
           }
         }
@@ -287,7 +381,7 @@ const SnakeGame = () => {
             .clone()
             .add(bodyM[l - 1].clone().set("d", bodyRadius).toPoint());
           ctx.lineTo(p.x, p.y);
-          ctx.strokeStyle = "white";
+          ctx.strokeStyle = txtDim;
           ctx.stroke();
         }
         if (drawing.contour) {
@@ -321,7 +415,7 @@ const SnakeGame = () => {
             ctx.restore();
           }
           ctx.closePath();
-          ctx.strokeStyle = "white";
+          ctx.strokeStyle = txtDim;
           ctx.stroke();
         }
       }
@@ -377,13 +471,13 @@ const SnakeGame = () => {
           w = c.width = $c.width();
           h = c.height = $c.height();
           if (!played) {
-            ctx.fillStyle = "#969696";
-            ctx.strokeStyle = "white";
+            ctx.fillStyle = txtDim;
+            ctx.strokeStyle = txtDim;
             ctx.font = "37px" + fontFamily;
             ctx.textAlign = "center";
             ctx.textBaseline = "bottom";
 
-            ctx.strokeText("PRESS SPACE OR UP TO START", w * 0.5, h * 0.5);
+            ctx.fillText("PRESS SPACE OR UP TO START", w * 0.5, h * 0.5);
 
             ctx.font = "20px" + fontFamily;
             ctx.textBaseline = "top";
@@ -396,45 +490,75 @@ const SnakeGame = () => {
         })
         .resize(); // Trigger resize function on initial load
 
-      $("#circles, #lines, #contour")
-        .change(function (e) {
-          var $this = $(this);
-          drawing[$this.attr("id")] = $this.is(":checked");
-        })
-        .change();
+      // REMOVED: OLD JQUERY EVENT HANDLERS FOR CHECKBOXES
     });
-  }, []);
+  }, [hiScore]); // ADDED HISCORE TO DEPENDENCY ARRAY
 
   return (
-    <div className="Snakegame">
-      <div id="snakenav">
-        <Link
-          to={"/games"}
-          className="mb-8 flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors"
+    <div className={styles.snakeGame}>
+      <nav
+        className="bg-[var(--bg-sec)] shadow-lg border-b border-[rgba(var(--shadow-rgb),0.08)] px-6 sm:px-7 py-1 flex items-center justify-between fixed top-0 z-20"
+        style={{ width: "94%", left: "80px" }}
+      >
+        <button
+          onClick={() => window.history.back()}
+          className="flex items-center gap-2 px-3 py-2 text-[txtDim] bg-[var(--bg-ter)] rounded-lg cursor-pointer transition-all duration-200 text-base font-medium hover:bg-ter hover:text-[var(--txt)] shadow-sm"
         >
           <ArrowLeft size={20} />
-          Back to Games
-        </Link>
-        <div className="block">
-          <div className="line">
-            <input type="checkbox" id="circles" />
-            <label htmlFor="circles">circles</label>
+          <span className="hidden sm:inline">Back</span>
+        </button>
+
+        <div className={styles.hiScore}>High Score: {hiScore}</div>
+        {/* REMOVED UNNECESSARY WRAPPER DIVS AND CORRECTED className USAGE */}
+        <div className={styles.customDropdown} ref={dropdownRef}>
+          <div
+            className={styles.dropdownHeader}
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <span>{gameMode}</span>
+            <ChevronDown
+              size={20}
+              className={`${styles.chevron} ${
+                isOpen ? styles.chevronOpen : ""
+              }`}
+            />
           </div>
-          <div className="line">
-            <input type="checkbox" id="lines" />
-            <label htmlFor="lines">lines</label>
-          </div>
-          <div className="line">
-            <input type="checkbox" id="contour" defaultChecked />
-            <label htmlFor="contour">contour</label>
-          </div>
+          {isOpen && (
+            <div className={styles.dropdownList}>
+              {dropdownOptions.map((option, index) => {
+                if (option.type === "setting") {
+                  return (
+                    <div
+                      key={option.key}
+                      className={styles.dropdownItemNoHover}
+                    >
+                      <ToggleSwitch
+                        label={option.label}
+                        checked={drawingOptions[option.key]}
+                        onChange={() => handleDrawingChange(option.key)}
+                      />
+                    </div>
+                  );
+                }
+
+                return (
+                  <div
+                    key={option.label}
+                    className={styles.dropdownItem}
+                    onClick={() => handleModeClick(option)}
+                  >
+                    {option.label}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-      </div>
-      <div className="text-white font-semibold text-xs ml-4 mb-3">
-          High Score: {hiScore}
-        </div>
-      <canvas className="ml-10" id="c"></canvas>
-      <div className="notice-pause">
+      </nav>
+
+      <canvas className={styles.canvas} id="c"></canvas>
+
+      <div className={styles.noticePause}>
         Use space or down to pause and space or up to resume.
       </div>
     </div>

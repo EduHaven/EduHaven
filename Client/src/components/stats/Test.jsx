@@ -1,3 +1,4 @@
+import axiosInstance from "@/utils/axios";
 import { useState } from "react";
 function App() {
   const [startTime, setStartTime] = useState("");
@@ -5,13 +6,6 @@ function App() {
   const [duration, setDuration] = useState("");
   const [period, setPeriod] = useState("");
   const [stats, setStats] = useState(null);
-  const backendUrl = import.meta.env.VITE_API_URL;
-
-  // Function to get Authorization header from localStorage
-  const getAuthHeader = () => {
-    const token = localStorage.getItem("token"); // Assuming token is saved in localStorage
-    return { headers: { Authorization: `Bearer ${token}` } };
-  };
 
   // Handle POST request to log session
   const handlePostSession = async (e) => {
@@ -19,16 +13,9 @@ function App() {
     const sessionData = { startTime, endTime, duration };
 
     try {
-      const response = await fetch(`${backendUrl}/timer`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...getAuthHeader().headers, // Add Authorization header
-        },
-        body: JSON.stringify(sessionData),
-      });
+      const response = await axiosInstance.post("/timer", sessionData);
 
-      const result = await response.json();
+      const result = await response.data;
       console.log("Session logged:", result);
     } catch (error) {
       console.error("Error logging session:", error);
@@ -38,15 +25,9 @@ function App() {
   // Handle GET request to fetch statistics
   const handleGetStats = async () => {
     try {
-      const response = await fetch(
-        `${backendUrl}/timerstats?period=${period}`,
-        {
-          method: "GET",
-          ...getAuthHeader(), // Add Authorization header
-        }
-      );
+      const response = await axiosInstance.get(`/timerstats?period=${period}`);
 
-      const result = await response.json();
+      const result = await response.data;
       setStats(result);
       console.log("Fetched Stats:", result);
     } catch (error) {

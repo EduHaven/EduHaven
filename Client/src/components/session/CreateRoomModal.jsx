@@ -57,8 +57,14 @@ function CreateRoomModal({ isOpen, onClose, onCreate }) {
           >
             <h2 className="text-2xl font-semibold txt mb-6">Create a New Room</h2>
             <form onSubmit={handleSubmit}>
-              <label className="block mb-2 font-medium txt">Room Name</label>
+              <label
+                htmlFor="room-name"
+                className="block mb-2 font-medium txt"
+              >
+                Room Name
+              </label>
               <input
+                id="room-name"
                 type="text"
                 value={roomName}
                 onChange={(e) => setRoomName(e.target.value)}
@@ -67,8 +73,14 @@ function CreateRoomModal({ isOpen, onClose, onCreate }) {
                 style={{ "--tw-ring-color": "var(--btn)" }}
               />
 
-              <label className="block mb-2 font-medium txt">Category</label>
+              <label
+                htmlFor="category-select"
+                className="block mb-2 font-medium txt"
+              >
+                Category
+              </label>
               <select
+                id="category-select"
                 value={cateogery}
                 onChange={(e) => setcateogery(e.target.value)}
                 className="w-full px-4 py-3 mb-6 rounded-lg bg-sec txt border border-gray-500/50 focus:outline-none"
@@ -85,8 +97,14 @@ function CreateRoomModal({ isOpen, onClose, onCreate }) {
                 ))}
               </select>
 
-              <label className="block mb-2 font-medium txt">Room Description</label>
+              <label
+                htmlFor="room-description"
+                className="block mb-2 font-medium txt"
+              >
+                Room Description
+              </label>
               <input
+                id="room-description"
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}

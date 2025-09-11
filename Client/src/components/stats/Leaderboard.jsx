@@ -1,20 +1,14 @@
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
+import axiosInstance from "@/utils/axios";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-
-const backendUrl = import.meta.env.VITE_API_URL;
-
-const getAuthHeader = () => {
-  const token = localStorage.getItem("token");
-  return { headers: { Authorization: `Bearer ${token}` } };
-};
+import { Link } from "react-router-dom";
 
 const Leaderboard = () => {
   const [view, setView] = useState("weekly");
@@ -38,9 +32,8 @@ const Leaderboard = () => {
     const fetchLeaderboard = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(
-          `${backendUrl}/leaderboard?period=${view}&friendsOnly=${friendsOnly}`,
-          getAuthHeader()
+        const res = await axiosInstance.get(
+          `/leaderboard?period=${view}&friendsOnly=${friendsOnly}`
         );
         setTimeout(() => {
           setLeaderboard(res.data);
@@ -190,9 +183,12 @@ const Leaderboard = () => {
                   <div className="flex justify-start min-w-9">
                     {getBadge(index)}
                   </div>
-                  <div className="text-center font-semibold">
+                  <Link
+                    to={isCurrentUser ? "/stats" : `/user/${user.userId}`}
+                    className="text-center font-semibold"
+                  >
                     {user.username}
-                  </div>
+                  </Link>
                 </div>
 
                 <div

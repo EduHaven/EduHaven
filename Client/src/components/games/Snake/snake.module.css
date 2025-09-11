@@ -1,0 +1,165 @@
+/* --- Main Game Container --- */
+.snakeGame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--bg-sec);
+  font-family: 'Arial', sans-serif;
+  box-sizing: border-box;
+  padding-top: 80px;
+}
+
+/* --- High Score Display --- */
+.hiScore {
+  color: var(--btn);
+  background-color: var(--accent);
+  font-size: 1.1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+.hiScore{
+  color: var(--btn-hover);
+}
+/* --- Game Canvas --- */
+.canvas {
+  background: var(--bg-ter);
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  margin: 0;
+  width: calc(100vw - 10rem);
+  height: calc(100vh - 10rem);
+  border-radius: 2rem;
+  /* max-width: 800px; */
+  aspect-ratio: 16 / 9;
+}
+
+/* --- Footer Notice --- */
+.noticePause {
+  margin-top: 1.5rem;
+  color: var(--txt-dim);
+  font-size: 0.875rem;
+}
+
+/* --- Custom Dropdown (CLEANED UP AND MERGED) --- */
+.customDropdown {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  position: relative;
+  width: 150px; /* A good default width */
+  color: var(--txt);
+  font-size: 1rem;
+  user-select: none;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+}
+
+.dropdownHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--bg-ter);
+  border: 1px solid white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  
+}
+
+.dropdownHeader:hover {
+  border-color: var(--txt);
+}
+
+.chevron {
+  transition: transform 0.3s ease;
+  color: var(--txt-dim);
+  margin-left: 8px;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.dropdownList {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background-color: var(--bg-ter);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 0.5rem 0;
+}
+
+.dropdownItem {
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dropdownItem:hover {
+  background-color: var(--btn);
+  color: var(--txt-invert);
+}
+
+/* --- ADDED: STYLES FOR TOGGLE SWITCHES AND OTHER DROPDOWN ELEMENTS --- */
+
+/* A container for toggle items so they don't have a hover effect */
+.dropdownItemNoHover {
+  padding: 0.5rem 1.25rem;
+}
+
+/* A visual separator in the dropdown list */
+/* .divider {
+  height: 1px;
+  background-color: var(--btn);
+  margin: 0.5rem 0;
+} */
+
+/* Flex container for the toggle switch (label + track) */
+.line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Text label for the toggle */
+.toggleLabel {
+  color: var(--txt-dim);
+  font-size: 1rem;
+}
+
+/* The background track of the toggle switch */
+.toggleTrack {
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+  border-radius: 14px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* The sliding circle/thumb of the toggle */
+.toggleThumb {
+  position: absolute;
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+}

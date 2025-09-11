@@ -15,28 +15,32 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import axios from "axios";
+import axiosInstance from "@/utils/axios";
+import { useParams } from "react-router-dom";
 
-const backendUrl = import.meta.env.VITE_API_URL;
+const Goals = ({ isCurrentUser = false }) => {
+  const { userId } = useParams();
 
-const getAuthHeader = () => {
-  const token = localStorage.getItem("token");
-  return { headers: { Authorization: `Bearer ${token}` } };
-};
-
-const Goals = () => {
   const [view, setView] = useState("weekly");
   const [isOpen, setIsOpen] = useState(false);
-  const [chartData, setChartData] = useState({ daily: [], weekly: [], monthly: [] });
+  const [chartData, setChartData] = useState({
+    daily: [],
+    weekly: [],
+    monthly: [],
+  });
   const [totalStats, setTotalStats] = useState({ completed: 0, total: 0 });
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get(
-          `${backendUrl}/todo?view=${view}`,
-          getAuthHeader()
-        );
+        let response;
+        if (isCurrentUser) {
+          response = await axiosInstance.get(`/todo?view=${view}`);
+        } else {
+          response = await axiosInstance.get(`/todo/user/${userId}?view=${view}`);
+        }
+
+        // console.log(response.data);
 
         setChartData((prev) => ({ ...prev, [view]: response.data.chartData }));
         setTotalStats({

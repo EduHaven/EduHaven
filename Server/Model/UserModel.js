@@ -29,6 +29,8 @@ const UserSchema = new mongoose.Schema(
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     sentRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    kudosGiven: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    kudosReceived: { type: Number, default: 0 },
     notes: [
       {
         type: mongoose.Schema.Types.ObjectId,
