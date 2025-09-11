@@ -168,6 +168,7 @@ const StudyStats = ({ stats: streakStats = {} }) => {
   const [view, setView] = useState("daily");
   const [isOpen, setIsOpen] = useState(false);
   const [stats, setStats] = useState([]);
+  const [chartStats, setChartStats] = useState([]);
   const [userStats, setUserStats] = useState({
     rank: 0,
     totalUsers: 0,
