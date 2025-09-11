@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Clock4, Flame, BarChart2 } from "lucide-react";
-import axiosInstance from "@/utils/axios";
+import { useConsolidatedStats } from "@/queries/timerQueries";
 
-// Variants for dropdown buttons (using custom variable for hover bg)
+// Variants for dropdown buttons
 const dropdownButtonVariants = {
   initial: { backgroundColor: "transparent" },
   hover: { backgroundColor: "var(--bg-ter)" },
@@ -12,62 +12,53 @@ const dropdownButtonVariants = {
 function StatsSummary() {
   const [selectedTime, setSelectedTime] = useState("Today");
   const [isOpen, setIsOpen] = useState(false);
-  const [studyData, setStudyData] = useState({
-    Today: "0.0 h",
-    "This week": "0.0 h",
-    "This month": "0.0 h",
-    "All time": "0.0 h",
-  });
-  const [userStats, setUserStats] = useState({
-    rank: 0,
-    totalUsers: 0,
-    streak: 0,
-    level: {
-      name: "Beginner",
-      progress: 0,
-      hoursToNextLevel: "2.0",
-    },
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
   const dropdownRef = useRef(null);
 
-  const fetchUserStats = async () => {
-    try {
-      setError(null);
+  // Use the consolidated TanStack Query hook
+  const { data, isLoading, error, refetch } = useConsolidatedStats();
 
-      const response = await axiosInstance.get(`/study-sessions/user-stats`);
-      const stats = response.data;
+  // Extract the user-specific stats from the consolidated data object
+  const stats = data?.userStats;
 
-      // Update study data with real values
-      setStudyData({
-        Today: `${stats.timePeriods.today} h`,
-        "This week": `${stats.timePeriods.thisWeek} h`,
-        "This month": `${stats.timePeriods.thisMonth} h`,
-        "All time": `${stats.timePeriods.allTime} h`,
-      });
+  // Prepare study data from the query response
+  const studyData = stats
+    ? {
+        Today: `${stats.timePeriods?.today || "0.0"} h`,
+        "This week": `${stats.timePeriods?.thisWeek || "0.0"} h`,
+        "This month": `${stats.timePeriods?.thisMonth || "0.0"} h`,
+        "All time": `${stats.timePeriods?.allTime || "0.0"} h`,
+      }
+    : {
+        Today: "0.0 h",
+        "This week": "0.0 h",
+        "This month": "0.0 h",
+        "All time": "0.0 h",
+      };
 
-      // Update user stats
-      setUserStats({
-        rank: stats.rank,
-        totalUsers: stats.totalUsers,
-        streak: stats.streak,
-        level: stats.level,
-      });
+  // Prepare user stats from the query response
+  const userStats = stats
+    ? {
+        rank: stats.rank || 0,
+        totalUsers: stats.totalUsers || 0,
+        streak: stats.streak || 0,
+        level: stats.level || {
+          name: "Beginner",
+          progress: 0,
+          hoursToNextLevel: "2.0",
+        },
+      }
+    : {
+        rank: 0,
+        totalUsers: 0,
+        streak: 0,
+        level: {
+          name: "Beginner",
+          progress: 0,
+          hoursToNextLevel: "2.0",
+        },
+      };
 
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching user stats:", error);
-      setError("Failed to load statistics");
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserStats();
-  }, []);
-
+  // Handle click outside dropdown
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -78,11 +69,13 @@ function StatsSummary() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Handle refresh - use refetch from TanStack Query
   const handleRefresh = () => {
-    fetchUserStats(true);
+    refetch();
   };
 
-  if (loading) {
+  if (isLoading) {
+    // Loading skeleton UI remains the same
     return (
       <motion.div
         className="txt m-4 mt-2 w-[25%] h-full"
@@ -92,24 +85,19 @@ function StatsSummary() {
       >
         <div className="animate-pulse">
           <div className="h-5 w-5 rounded-full bg-gray-500/20 ml-auto -mb-1" />
-
           <div className="flex items-center gap-4 mb-3">
             <div className="h-12 w-12 rounded-full bg-gray-500/20" />
             <div className="h-6 w-24 rounded-md bg-gray-500/20" />
           </div>
-
           <div className="flex items-center gap-4 mb-3">
             <div className="h-12 w-12 rounded-full bg-gray-500/20" />
             <div className="h-6 w-16 rounded-md bg-gray-500/20" />
           </div>
-
           <div className="flex items-center gap-4 mb-3">
             <div className="h-12 w-12 rounded-full bg-gray-500/20" />
             <div className="h-6 w-24 rounded-md bg-gray-500/20" />
           </div>
-
           <div className="h-5 w-40 rounded-md bg-gray-500/20 mb-2" />
-
           <div className="relative w-full h-5 rounded-2xl overflow-hidden bg-gray-500/20">
             <div className="absolute left-0 top-0 h-5 rounded-2xl bg-white/60 dark:bg-gray-600/50" />
           </div>
@@ -119,6 +107,7 @@ function StatsSummary() {
   }
 
   if (error) {
+    // Error UI remains the same
     return (
       <motion.div
         className="txt m-4 mt-2 w-[25%] h-full"
@@ -127,7 +116,9 @@ function StatsSummary() {
         transition={{ duration: 0.5 }}
       >
         <div className="flex flex-col items-center justify-center h-full gap-2">
-          <p className="text-red-400 text-sm">{error}</p>
+          <p className="text-red-400 text-sm">
+            {error.message || "Failed to load statistics"}
+          </p>
           <button
             onClick={handleRefresh}
             className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors"
@@ -139,6 +130,7 @@ function StatsSummary() {
     );
   }
 
+  // Render content UI - no changes needed here
   return (
     <motion.div
       className="txt m-4 mt-2 w-[25%] h-full"
@@ -146,7 +138,6 @@ function StatsSummary() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Header with refresh button */}
       <div className="flex items-center justify-between -mb-3">
         <div ref={dropdownRef} className="relative ml-auto">
           <motion.button

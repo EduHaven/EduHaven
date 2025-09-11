@@ -9,11 +9,7 @@ const Signout = () => {
   useEffect(() => {
     const handleSignOut = async () => {
       try {
-        await axiosInstance.post(
-          `/auth/logout`,
-          {},
-          { withCredentials: true }
-        );
+        await axiosInstance.post(`/auth/logout`, {}, { withCredentials: true });
 
         localStorage.removeItem("token");
         localStorage.removeItem("activationToken");

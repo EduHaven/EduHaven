@@ -133,11 +133,11 @@ function Sidebar() {
       <div className="space-y-2 w-full">
         {!token && (
           <SidebarLink
-            to="/authenticate"
+            to="/auth/login"
             IconComponent={LogIn}
             label="Login"
-            isActive={location.pathname === "/authenticate"}
-            ref={(el) => (linkRefs.current["/authenticate"] = el)}
+            isActive={location.pathname === "/auth/login"}
+            ref={(el) => (linkRefs.current["/auth/login"] = el)}
           />
         )}
         <SidebarLink

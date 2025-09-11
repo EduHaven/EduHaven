@@ -207,7 +207,7 @@ export default function Info() {
               <SmilePlus /> Why It Stands Out?
             </h3>
             <p className="txt-dim">
-              EduHaven is more than just a study app—it's a community-driven,
+              EduHaven is more than just a study app—it is a community-driven,
               data-backed platform that fosters productivity, teamwork, and
               personalized learning. By leveraging real-time features and
               gamification, it ensures students stay engaged and on track.
@@ -354,7 +354,9 @@ export default function Info() {
 
             {/* Feedback Section */}
             <div className="mt-6 mb-6">
-              <h3 className="semi-bold text-lg txt mb-3">Share Your Feedback</h3>
+              <h3 className="semi-bold text-lg txt mb-3">
+                Share Your Feedback
+              </h3>
               <motion.a
                 href="https://forms.gle/SKL45KczPnVBkY276"
                 target="_blank"

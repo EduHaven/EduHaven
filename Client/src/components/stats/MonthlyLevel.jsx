@@ -1,10 +1,11 @@
-import axiosInstance from "@/utils/axios";
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useParams } from "react-router-dom";
+import { useConsolidatedStats } from "@/queries/timerQueries";
 
 const MonthlyLevel = () => {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { userId } = useParams();
+  // Replace direct axios call with consolidated data hook
+  const { data, isLoading, error } = useConsolidatedStats(userId);
 
   const levels = [
     { name: "Bronze", min: 0, max: 10, color: "#cd7f32" },
@@ -15,23 +16,7 @@ const MonthlyLevel = () => {
     { name: "Emerald", min: 150, max: Infinity, color: "#50c878" },
   ];
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await axiosInstance.get(
-          "/study-sessions/stats?period=monthly"
-        );
-        setStats(res.data.periodData?.[0] || null);
-      } catch (err) {
-        console.error("Error fetching stats", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="bg-[var(--bg-sec)] rounded-3xl shadow-md p-6 flex items-center justify-center w-full">
         <p>Loading...</p>
@@ -39,7 +24,7 @@ const MonthlyLevel = () => {
     );
   }
 
-  if (!stats) {
+  if (error || !data) {
     return (
       <div className="bg-[var(--bg-sec)] rounded-3xl shadow-md p-6 flex items-center justify-center w-full">
         <p className="text-red-400">No data available</p>
@@ -47,7 +32,10 @@ const MonthlyLevel = () => {
     );
   }
 
-  const totalHours = stats.totalHours || 0;
+  // Get monthly data from the consolidated response
+  const totalHours = data.userStats?.timePeriods?.thisMonth
+    ? parseFloat(data.userStats.timePeriods.thisMonth)
+    : 0;
 
   const currentLevel =
     levels.find((lvl) => totalHours >= lvl.min && totalHours < lvl.max) ||

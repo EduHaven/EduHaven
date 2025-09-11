@@ -7,7 +7,7 @@ function StudyRoom() {
         <div
           className="aspect-video relative bg-cover bg-center"
           style={{
-            backgroundImage: "url('/studyRoom.png')",
+            backgroundImage: `url('/studyRoom.png')`,
           }}
         >
           {/* Mock macOS window controls */}
@@ -31,7 +31,7 @@ function StudyRoom() {
             <div className="flex items-center space-x-2">
               <Video size={16} style={{ color: "var(--btn)" }} />
               <span className="text-xs" style={{ color: "black" }}>
-                Let's start a study group!
+                Let us start a study group!
               </span>
             </div>
           </div>

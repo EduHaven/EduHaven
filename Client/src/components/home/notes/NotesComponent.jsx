@@ -7,6 +7,9 @@ import {
   Plus,
   RefreshCcwDot,
 } from "lucide-react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
 
 function NotesComponent() {
   const [notes, setNotes] = useState([]);
@@ -22,12 +25,86 @@ function NotesComponent() {
   const [scrollHeight, setScrollHeight] = useState(0);
   const textAreaRef = useRef(null);
 
+  // TipTap editor setup
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Placeholder.configure({
+        placeholder: "Take a note...",
+      }),
+    ],
+    content: notes[currentPage]?.content || "",
+    onUpdate: ({ editor }) => {
+      const content = editor.getHTML();
+      const noteIndex = currentPage;
+      const currentTitle = notes[noteIndex]?.title || "";
+
+      // Update local state
+      setNotes((prevNotes) =>
+        prevNotes.map((note, index) =>
+          index === noteIndex ? { ...note, content } : note
+        )
+      );
+
+      // Validate fields
+      validateFields(currentTitle, content);
+
+      if (error) setError("");
+
+      // Auto-save logic
+      if (content.trim() && currentTitle.trim()) {
+        if (isSynced) {
+          setIsSynced(false);
+          setRotate(false);
+        }
+
+        clearTimeout(contentTimeoutRef.current);
+        const noteId = notes[noteIndex]?._id;
+        const contentToSave = content.trim();
+
+        contentTimeoutRef.current = setTimeout(async () => {
+          try {
+            if (noteId) {
+              await axiosInstance.put(`/note/${noteId}`, {
+                content: contentToSave,
+              });
+            }
+            handleSync(notes[noteIndex].title, content);
+          } catch (err) {
+            console.error("Error updating note content:", err);
+            setError("Failed to save changes");
+            setIsSynced(true);
+          }
+        }, 3000);
+      } else {
+        clearTimeout(contentTimeoutRef.current);
+        if (!isSynced) {
+          setIsSynced(true);
+          setRotate(false);
+        }
+      }
+    },
+    editorProps: {
+      attributes: {
+        class: "prose prose-lg max-w-none focus:outline-none",
+        style: "line-height: 32px; padding-top: 8px;",
+      },
+    },
+  });
+
+  // Update editor content when currentPage changes
+  useEffect(() => {
+    if (editor && notes[currentPage]) {
+      const currentContent = editor.getHTML();
+      if (currentContent !== notes[currentPage].content) {
+        editor.commands.setContent(notes[currentPage].content || "");
+      }
+    }
+  }, [currentPage, notes, editor]);
+
   useEffect(() => {
     fetchNotes();
 
-    if (textAreaRef.current) {
-      setScrollHeight(textAreaRef.current.scrollHeight);
-    }
     return () => {
       clearTimeout(titleTimeoutRef.current);
       clearTimeout(contentTimeoutRef.current);
@@ -42,6 +119,7 @@ function NotesComponent() {
           addNewPage(); // adding new is necessary cause we get err in posting data to db.
         } else {
           setNotes(response.data.data);
+          console.log("fetched notes", response.data.data);
         }
       } else {
         setError("Something wrong at our end");
@@ -127,55 +205,6 @@ function NotesComponent() {
 
     if (!content.trim()) setContentError("*content is required");
     else setContentError("");
-  };
-
-  const handleNoteContentChange = (event) => {
-    const updatedText = event.target.value;
-    const noteIndex = currentPage;
-
-    const currentTitle = notes[noteIndex]?.title || "";
-    validateFields(currentTitle, updatedText);
-
-    setNotes((prevNotes) =>
-      prevNotes.map((note, index) =>
-        index === noteIndex ? { ...note, content: updatedText } : note
-      )
-    );
-
-    if (error) setError("");
-
-    if (updatedText.trim() && currentTitle.trim()) {
-      if (isSynced) {
-        setIsSynced(false);
-        setRotate(false);
-      }
-
-      clearTimeout(contentTimeoutRef.current);
-
-      const noteId = notes[noteIndex]?._id;
-      const contentToSave = updatedText.trim();
-
-      contentTimeoutRef.current = setTimeout(async () => {
-        try {
-          if (noteId) {
-            await axiosInstance.put(`/note/${noteId}`, {
-              content: contentToSave,
-            });
-          }
-          handleSync(notes[noteIndex].title, updatedText); // sets synced = true
-        } catch (err) {
-          console.error("Error updating note content:", err);
-          setError("Failed to save changes");
-          setIsSynced(true);
-        }
-      }, 3000);
-    } else {
-      clearTimeout(contentTimeoutRef.current);
-      if (!isSynced) {
-        setIsSynced(true);
-        setRotate(false);
-      }
-    }
   };
 
   const handleTitleChange = (event) => {
@@ -310,7 +339,7 @@ function NotesComponent() {
           )}
       </div>
 
-      {/* Content */}
+      {/* Content with TipTap Editor */}
       <div className="relative w-full h-64 overflow-hidden">
         <div
           className="absolute w-full pointer-events-none"
@@ -322,19 +351,15 @@ function NotesComponent() {
             marginTop: "2px",
           }}
         ></div>
-        <textarea
-          ref={textAreaRef}
-          id="area"
-          className="relative w-full h-full bg-transparent txt-dim p-2 px-3 outline-none resize-none font-kalam font-light"
+        <div
+          className="relative w-full h-full bg-transparent txt-dim p-2 px-3 font-kalam font-light overflow-auto"
           style={{
             lineHeight: "32px",
             paddingTop: "8px",
           }}
-          placeholder="Take a note..."
-          onScroll={handleScroll}
-          value={notes[currentPage]?.content}
-          onChange={handleNoteContentChange}
-        ></textarea>
+        >
+          <EditorContent editor={editor} />
+        </div>
       </div>
       {contentError && (
         <span className="text-red-400 text-xs mt-1 absolute bottom-4 left-3">

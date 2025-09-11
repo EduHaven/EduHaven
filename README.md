@@ -1,6 +1,49 @@
 [![join our group on discord](./Client/public/joinDiscordIcon.png)
 ](https://discord.gg/yMBMNdmC)
 
+<!-- GSSoC banner and project insights -->
+<h1 align="center">
+  <img width="64" height="64" alt="LegalHuB Logo" src="Client/public/Logo.svg"/>
+  <br>
+  EduHaven
+</h1>
+
+
+<p align="center">
+  <b>This project is now OFFICIALLY accepted for:</b>
+</p>
+
+<div align="center">
+  <img src="Client/public/gssoc.png" alt="GSSOC" width="80%">
+</div>
+
+**📊 Project Insights**
+
+<table align="center">
+    <thead align="center">
+        <tr>
+            <td><b>🌟 Stars</b></td>
+            <td><b>🍴 Forks</b></td>
+            <td><b>🐛 Issues</b></td>
+            <td><b>🔔 Open PRs</b></td>
+            <td><b>🔕 Closed PRs</b></td>
+            <td><b>🛠️ Languages</b></td>
+            <td><b>👥 Contributors</b></td>
+        </tr>
+     </thead>
+    <tbody>
+         <tr>
+            <td><img alt="Stars" src="https://img.shields.io/github/stars/EduHaven/EduHaven?style=flat&logo=github"/></td>
+            <td><img alt="Forks" src="https://img.shields.io/github/forks/EduHaven/EduHaven?style=flat&logo=github"/></td>
+            <td><img alt="Issues" src="https://img.shields.io/github/issues/EduHaven/EduHaven?style=flat&logo=github"/></td>
+            <td><img alt="Open PRs" src="https://img.shields.io/github/issues-pr/EduHaven/EduHaven?style=flat&logo=github"/></td>
+            <td><img alt="Closed PRs" src="https://img.shields.io/github/issues-pr-closed/EduHaven/EduHaven?style=flat&color=critical&logo=github"/></td>
+            <td><img alt="Languages Count" src="https://img.shields.io/github/languages/count/EduHaven/EduHaven?style=flat&color=green&logo=github"></td>
+            <td><img alt="Contributors Count" src="https://img.shields.io/github/contributors/EduHaven/EduHaven?style=flat&color=blue&logo=github"/></td>
+        </tr>
+    </tbody>
+</table>
+
 # EduHaven
 
 ![image](https://github.com/user-attachments/assets/970c84bf-ac78-4583-af73-d2b8b4b393b0)

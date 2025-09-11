@@ -228,18 +228,21 @@ const Whacamole = () => {
             <h2 className="text-3xl font-bold text-white mb-4">How to Play</h2>
             <ul className="text-white mb-4 list-disc list-inside text-left space-y-2">
               <li>
-                Tap the <span className="font-bold">Moles </span>🦦 to earn points 
-                (<span className="font-bold text-green-600">+10</span>).
+                Tap the <span className="font-bold">Moles </span>🦦 to earn
+                points (<span className="font-bold text-green-600">+10</span>).
               </li>
               <li>
-                Avoid the <span className="font-bold text-red-400">Evil Plants🌱</span>- one hit ends the game.
+                Avoid the{" "}
+                <span className="font-bold text-red-400">Evil Plants🌱</span>-
+                one hit ends the game.
               </li>
               <li>
-                Missing a <span className="font-bold">Mole </span>🦦 costs you 
+                Missing a <span className="font-bold">Mole </span>🦦 costs you
                 <span className="font-bold text-red-400"> -5 points</span>.
               </li>
               <li>
-                The game lasts <span className="font-bold">30 seconds </span>⏱️- try to beat your High Score!
+                The game lasts <span className="font-bold">30 seconds </span>⏱️-
+                try to beat your High Score!
               </li>
             </ul>
             <button

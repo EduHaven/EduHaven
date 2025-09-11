@@ -96,7 +96,7 @@
   
   <!-- Auth Pages -->
   <url>
-    <loc>https://eduhaven.online/authenticate</loc>
+    <loc>https://eduhaven.online/auth/login</loc>
     <lastmod>2024-01-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import axiosInstance from "@/utils/axios";
+import { useParams } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -9,14 +9,22 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
+import { useLeaderboard } from "@/queries/timerQueries";
 
 const Leaderboard = () => {
   const [view, setView] = useState("weekly");
   const [friendsOnly, setFriendsOnly] = useState(false);
-  const [leaderboard, setLeaderboard] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { userId } = useParams();
 
+  // Replace direct axios call with TanStack Query hook
+  const {
+    data: leaderboard = [],
+    isLoading,
+    error,
+  } = useLeaderboard(view, friendsOnly);
+
+  // Extract currentUserId from JWT token (keep this part)
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -27,26 +35,6 @@ const Leaderboard = () => {
       console.error("Invalid token", err);
     }
   }, []);
-
-  useEffect(() => {
-    const fetchLeaderboard = async () => {
-      setLoading(true);
-      try {
-        const res = await axiosInstance.get(
-          `/study-sessions/leaderboard?period=${view}&friendsOnly=${friendsOnly}`
-        );
-        setTimeout(() => {
-          setLeaderboard(res.data);
-          setLoading(false);
-        }, 300);
-      } catch (error) {
-        console.error("Failed to fetch leaderboard:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchLeaderboard();
-  }, [friendsOnly, view]);
 
   const handleDropdownClick = (viewType) => setView(viewType);
   const handleFriendsOnlyToggle = () => setFriendsOnly((prev) => !prev);
@@ -128,7 +116,7 @@ const Leaderboard = () => {
           {/* Timeframe Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="text-sm">
+              <Button variant="transparent">
                 {view.charAt(0).toUpperCase() + view.slice(1)}{" "}
                 <ChevronDown className="w-4 h-4" />
               </Button>
@@ -160,10 +148,10 @@ const Leaderboard = () => {
       {/* Leaderboard Content */}
       <div
         className={`space-y-2 transition-all duration-500 ${
-          loading ? "opacity-0 -translate-y-2" : "opacity-100 translate-y-0"
+          isLoading ? "opacity-0 -translate-y-2" : "opacity-100 translate-y-0"
         } min-h-[450px]`}
       >
-        {!loading && leaderboard.length === 0 ? (
+        {!isLoading && leaderboard.length === 0 ? (
           <div className="flex items-center justify-center h-full text-[var(--txt-dim)] text-sm font-medium">
             No records found for this timeframe.
           </div>

@@ -1,8 +1,8 @@
+import axiosInstance from "@/utils/axios";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { motion, AnimatePresence } from "framer-motion";
-import bgImg from "../../assets/LoginBackground.jpg";
 
 const Delete = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -16,7 +16,7 @@ const Delete = () => {
 
   const handleConfirmDelete = async () => {
     if (confirmText !== "delete my account") {
-      toast.error("Please type exactly 'delete my account' to continue");
+      toast.error(`Please type exactly "delete my account" to continue`);
       return;
     }
 
@@ -48,13 +48,10 @@ const Delete = () => {
   };
 
   return (
-    <div
-      className="h-screen w-full flex items-center justify-center relative bg-cover bg-center"
-      style={{ backgroundImage: `url(${bgImg})` }}
-    >
+    <div className="flex items-center justify-center relative bg-cover bg-center">
       {/* Card Container */}
       <motion.div
-        className="w-full max-w-lg bg-white/50 backdrop-blur-3xl rounded-3xl shadow-2xl p-8"
+        className="w-full max-w-lg  rounded-3xl"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
@@ -78,7 +75,8 @@ const Delete = () => {
         </div>
 
         <p className="text-sm text-center text-black/80 mb-6">
-          If you're facing issues, please contact support first before deleting.
+          If you are facing issues, please contact support first before
+          deleting.
         </p>
 
         {/* Buttons */}
@@ -102,14 +100,14 @@ const Delete = () => {
       <AnimatePresence>
         {showConfirmModal && (
           <motion.div
-            className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+            className="fixed inset-0 flex items-center justify-center z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className="bg-white rounded-2xl p-8 w-full max-w-md shadow-xl"
+              className="bg-white rounded-2xl p-9 max-w-md shadow-xl"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
@@ -119,7 +117,7 @@ const Delete = () => {
                 Final Confirmation
               </h3>
               <p className="text-gray-600 mb-4 text-center">
-                Please type <strong>"delete my account"</strong> to confirm:
+                Please type <strong>{"delete my account"}</strong> to confirm:
               </p>
               <input
                 type="text"

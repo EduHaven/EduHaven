@@ -41,12 +41,10 @@ export const getEventByDate = async (req, res) => {
     });
 
     if (events.length === 0) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          error: "No events found for the specified date.",
-        });
+      return res.status(404).json({
+        success: false,
+        error: "No events found for the specified date.",
+      });
     }
 
     res.status(200).json({ success: true, data: events });

@@ -91,7 +91,7 @@ axiosInstance.interceptors.response.use(
         localStorage.removeItem("refreshToken");
 
         // Redirect to login page
-        window.location.href = "/authenticate";
+        window.location.href = "/auth/login";
         toast.error("Token expired: Please Login Again");
 
         return Promise.reject(refreshError);

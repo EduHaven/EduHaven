@@ -90,7 +90,7 @@ function FloatingProfile({ profile, delay = 0, area = "bottom" }) {
         animation: `floatWave${profile.id} ${waveSpeed}ms ease-in-out infinite`,
       }}
     >
-      <style jsx>{`
+      <style>{`
         @keyframes floatWave${profile.id} {
           0% {
             transform: translate(-50%, -50%) translate(0px, 0px);
@@ -262,7 +262,7 @@ function HeroSection() {
           learn, collaborate, & grow together.
         </motion.h2>
         <motion.button
-          onClick={() => navigate("/authenticate")}
+          onClick={() => navigate("/auth/login")}
           className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-semibold transition-all hover:scale-105 transform duration-300 shadow-lg hover:shadow-xl"
           initial={{ opacity: 0, y: 20, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
