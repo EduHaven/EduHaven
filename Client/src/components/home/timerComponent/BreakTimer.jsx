@@ -18,7 +18,7 @@ function BreakTimer() {
     isPaused: !isRunning,
     isBreakMode: true,
   });
-  
+
   useEffect(() => {
     let interval;
     if (isRunning) {
