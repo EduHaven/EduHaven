@@ -184,7 +184,7 @@ const doGracefulShutdown = async(signal) => {
     setTimeout(() => {
         console.error("⚠️ Forcing shutdown (timeout).");
         process.exit(1);
-    }, 10 _000).unref();
+    }, 10_000).unref();
 };
 
 // SIGINT
