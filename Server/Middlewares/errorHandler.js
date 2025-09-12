@@ -1,4 +1,4 @@
-// Previous implementation 
+// Previous implementation
 // export default (err, req, res, next) => {
 //   console.error(err.stack);
 //   res.status(err.status || 500).json({
@@ -10,15 +10,15 @@
 import logger from "../logger/winstonLogger.js";
 
 const errorHandler = (err, req, res, next) => {
-    const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-    res.status(statusCode);
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  res.status(statusCode);
 
-    logger.error(`${err.message} - ${req.method} ${req.originalUrl}`);
+  logger.error(`${err.message} - ${req.method} ${req.originalUrl}`);
 
-    res.json({
-        message: err.message,
-        stack: process.env.NODE_ENV === "production" ? "prod" : err.stack,
-    });
+  res.json({
+    message: err.message,
+    stack: process.env.NODE_ENV === "production" ? "prod" : err.stack,
+  });
 };
 
 export default errorHandler;
