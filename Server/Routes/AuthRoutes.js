@@ -11,6 +11,8 @@ import {
   signup,
   verifyResetOTP,
   verifyUser,
+  requestDeletionOTP,
+  verifyDeletionOTP,
 } from "../Controller/AuthController.js";
 
 // these are added -> for security --
@@ -69,6 +71,8 @@ router.post("/reset-password", resetPassword);
 
 router.post("/logout", logout);
 router.post("/refresh", refreshAccessToken);
+router.post("/delete/request-otp", authMiddleware, requestDeletionOTP);
+router.post("/delete/verify-otp", authMiddleware, verifyDeletionOTP);
 router.delete("/delete", authMiddleware, deleteAccount);
 
 export default router;
