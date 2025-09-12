@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 function TabNavigation({ activeTab, onTabChange }) {
   const tabs = [
     { id: "suggested", label: "Suggested" },
@@ -11,17 +12,16 @@ function TabNavigation({ activeTab, onTabChange }) {
       <h3 className="text-xl font-semibold mb-4 text-[var(--txt)]">Friends</h3>
       <div className="space-y-2">
         {tabs.map((tab) => (
-          <button
+          <Button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className={`w-full text-left px-4 py-2 rounded-lg ${
-              activeTab === tab.id
-                ? "bg-[var(--btn)] text-white"
-                : "hover:bg-[var(--bg-ter)] duration-300"
-            }`}
+            variant={activeTab === tab.id ? "default" : "secondary"}
+            size="default"
+            className="w-full text-left px-4 py-2"
           >
             {tab.label}
-          </button>
+          </Button>
+
         ))}
       </div>
     </div>

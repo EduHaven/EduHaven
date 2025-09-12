@@ -243,21 +243,25 @@ const Ai = () => {
                 <h3 className="text-lg txt-dim font-semibold pl-8">Ask AI</h3>
                 <div className="flex items-center gap-2.5">
                   {messages.length > 0 && (
-                    <button
+                    <Button
                       onClick={clearChat}
-                      className="text-sm txt-dim hover:text-red-500 flex items-center gap-1 transition bg-gray-500/10 hover:bg-gray-500/20 my-auto px-2.5 py-1 rounded-full"
+                      variant="destructive"
+                      size="default"
+                      className="flex items-center gap-1 my-auto px-2.5 py-1 rounded-full text-sm bg-gray-500/10 hover:bg-gray-500/20 txt-dim"
                       title="Clear Chat"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Clear</span>
-                    </button>
+                    </Button>
                   )}
-                  <button
+                  <Button
                     onClick={closeModal}
+                    variant="transparent"
+                    size="icon"
                     className="hover:txt transition p-2 txt-dim"
                   >
                     <X className="h-6 w-6" />
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -283,16 +287,14 @@ const Ai = () => {
                       variants={messageVariants}
                       initial="hidden"
                       animate="visible"
-                      className={`flex flex-col ${
-                        msg.type === "user" ? "items-end" : "items-start"
-                      }`}
+                      className={`flex flex-col ${msg.type === "user" ? "items-end" : "items-start"
+                        }`}
                     >
                       <p
-                        className={`py-2 px-4 rounded-lg ${
-                          msg.type === "user"
-                            ? "bg-sec txt"
-                            : "bg-transparent txt"
-                        }`}
+                        className={`py-2 px-4 rounded-lg ${msg.type === "user"
+                          ? "bg-sec txt"
+                          : "bg-transparent txt"
+                          }`}
                       >
                         {msg.text}
                       </p>
@@ -317,17 +319,15 @@ const Ai = () => {
                     className="w-full p-3 rounded-full outline-none bg-transparent focus:ring-2 focus:ring-transparent"
                   />
                 </div>
-                <button
+                <Button
                   onClick={generateQuestion}
-                  className={`txt font-bold p-3 rounded-full transition-all shadow-[0_4px_20px_rgba(var(--shadow-rgb),0.3)] hover:shadow-[0_4px_70px_rgba(var(--shadow-rgb),0.4)] ${
-                    loading
-                      ? "bg-sec cursor-not-allowed"
-                      : "btn hover:bg-[var(--btn-hover)]"
-                  }`}
+                  variant="default"
+                  size="default"
+                  className={`txt font-bold p-3 rounded-full transition-all shadow-[0_4px_20px_rgba(var(--shadow-rgb),0.3)] hover:shadow-[0_4px_70px_rgba(var(--shadow-rgb),0.4)] ${loading ? "bg-sec cursor-not-allowed" : "btn hover:bg-[var(--btn-hover)]"}`}
                   disabled={loading}
                 >
                   {loading ? <Loader className="animate-spin" /> : <ArrowUp />}
-                </button>
+                </Button>
               </div>
             </div>
           </motion.div>

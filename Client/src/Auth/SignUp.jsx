@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 const backendUrl = import.meta.env.VITE_API_URL;
 
@@ -91,14 +92,14 @@ function SignUp() {
         </h2>
       </div>
 
-      <button
+      <Button
         onClick={handleGoogleLogin}
+        variant="default" // You can create a custom "google" variant if you prefer
         className="flex items-center justify-center gap-2 border border-gray-400 rounded-xl text-black dark:text-white font-semibold p-2 text-lg w-full"
       >
         <img src="/GoogleIcon.svg" alt="Google sign-in" className="size-6" />
-
-        <p>Continue with google</p>
-      </button>
+        <p>Continue with Google</p>
+      </Button>
       {/* or */}
       <div className="flex items-center my-6">
         <div className="flex-grow h-px bg-gray-300"></div>
@@ -194,9 +195,8 @@ function SignUp() {
           >
             Password{" "}
             <span
-              className={`text-sm ml-52 font-semibold ${
-                strengthLevels[strength - 1]?.color
-              }`}
+              className={`text-sm ml-52 font-semibold ${strengthLevels[strength - 1]?.color
+                }`}
             >
               {strengthLevels[strength - 1]?.level}
             </span>
@@ -233,17 +233,17 @@ function SignUp() {
         </div>
 
         <div>
-          <button
+          <Button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full rounded-md py-2 px-4 text-white font-semibold ${
-              isSubmitting
-                ? "opacity-50 cursor-not-allowed bg-gray-400"
-                : "bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600"
-            }`}
+            variant="default"
+            className={`w-full rounded-md py-2 px-4 font-semibold ${isSubmitting
+              ? "opacity-50 cursor-not-allowed bg-gray-400"
+              : "bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              }`}
           >
             {isSubmitting ? "Submitting..." : "Create account"}
-          </button>
+          </Button>
         </div>
       </form>
       <motion.div
