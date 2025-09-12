@@ -6,6 +6,7 @@ import { useTimerStore } from "@/stores/timerStore";
 import { usePostStudySession } from "@/queries/timerQueries";
 import { useTitleUpdater } from "@/hooks/useTitleUpdater"; 
 
+
 function StudyTimer() {
   const {
     time,
