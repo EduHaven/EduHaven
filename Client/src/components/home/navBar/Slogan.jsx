@@ -8,7 +8,6 @@ function Slogan() {
   const [author, setAuthor] = useState("");
   const [displayMode, setDisplayMode] = useState("greeting");
   const [firstName, setFirstName] = useState("User");
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const getFirstNameFromJWT = () => {
     const token = localStorage.getItem("token");
@@ -207,13 +206,6 @@ function Slogan() {
     return () => clearTimeout(timer);
   }, [displayMode]);
 
-  // Track screen size changes
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   const textVariants = {
     initial: { opacity: 0, y: 20, filter: "blur(10px)" },
     animate: {
@@ -230,13 +222,6 @@ function Slogan() {
     },
   };
 
-  // Helper for responsive font
-  const getFontSize = () => {
-    if (windowWidth < 640) return "text-sm";
-    if (windowWidth < 1024) return "text-base";
-    return "text-lg";
-  };
-
   return (
     <div className="slogan flex items-center justify-center relative group min-h-[3rem] px-2 w-full">
       <AnimatePresence mode="wait">
@@ -248,12 +233,9 @@ function Slogan() {
           exit="exit"
           className="text-center w-full max-w-full px-2 md:px-4"
         >
-          {/* Show greeting always, show quote only on larger screens */}
-          {displayMode === "quote" && windowWidth >= 768 ? (
-            <div className="flex items-center justify-center gap-2 md:gap-4 flex-wrap">
-              <div
-                className={`${getFontSize()} font-semibold break-words max-w-full`}
-              >
+          {displayMode === "quote" ? (
+            <div className="hidden md:flex items-center justify-center gap-2 md:gap-4 flex-nowrap whitespace-nowrap overflow-hidden text-ellipsis">
+              <div className="font-semibold break-words max-w-full">
                 {quote}
               </div>
               <motion.div
@@ -267,9 +249,7 @@ function Slogan() {
               </motion.div>
             </div>
           ) : (
-            <div className={`${getFontSize()} font-semibold truncate`}>
-              {getGreeting()}
-            </div>
+            <div className="font-semibold truncate">{getGreeting()}</div>
           )}
         </motion.div>
       </AnimatePresence>
