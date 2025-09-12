@@ -68,6 +68,7 @@ function StudyTimer() {
 
         return { hours: h, minutes: m, seconds: s };
       });
+
       setLastUpdate(new Date().toISOString());
     }, 1000);
 

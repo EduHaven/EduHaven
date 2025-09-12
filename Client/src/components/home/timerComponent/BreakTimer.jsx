@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Clock12, Coffee, RotateCcw, Edit3, Check } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
+
 import { useTitleUpdater } from "@/hooks/useTitleUpdater";
 
 function BreakTimer() {
@@ -42,6 +43,7 @@ function BreakTimer() {
     setBreakTime(customBreakTime * 60);
     document.title = "EduHaven - Premium Study Platform";
   };
+
   const handleEditClick = () => setIsEditing(true);
   const handleApplyBreakTime = () => {
     setBreakTime(customBreakTime * 60);
@@ -78,6 +80,7 @@ function BreakTimer() {
             </motion.button>
           </div>
         )}
+
         {!isEditing && (
           <motion.button
             onClick={handleEditClick}

@@ -10,6 +10,7 @@ export const useTitleUpdater = ({ timeLeft, isPaused, isBreakMode }) => {
 
     const mode = isBreakMode ? "🟣 Break" : "🧘‍♂️ Focus";
     const status = isPaused ? "(Paused)" : "";
+
     document.title = `${formatTime(timeLeft)} ${mode} ${status}`;
 
     return () => {
