@@ -172,7 +172,7 @@ function Login() {
           className="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
           to="/auth/signup"
         >
-          Already have an account? Sign in
+          Do not have an account? Sign up
         </Link>
       </motion.div>
     </div>
