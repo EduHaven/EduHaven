@@ -46,8 +46,6 @@ function TimerComponent() {
           <div className="relative">
             <button
               onClick={() => setIsBreakMode(true)}
-              variant="link"
-              size="default"
               className={`text-xl transition-colors duration-300 pb-1 ${isBreakMode ? "font-semibold text-white" : "text-gray-300"}`}
             >
               Take a Break
