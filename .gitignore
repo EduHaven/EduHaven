@@ -4,3 +4,7 @@ package-lock.json
 node_modules
 .vscode
 bun.lock
+CLO.js
+dbtest.js
+jut.js
+sendmail.js

@@ -1,3 +1,4 @@
+import FileHandler from "@tiptap/extension-file-handler";
 import Highlight from "@tiptap/extension-highlight";
 import { Image } from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
@@ -74,7 +75,21 @@ const Notes = () => {
       Link.configure({
         openOnClick: false,
       }),
-      Image,
+      Image.configure({
+        allowBase64: true,
+      }),
+      FileHandler.configure({
+        allowedMimeTypes: [
+          "image/png",
+          "image/jpeg",
+          "image/gif",
+          "image/webp",
+        ],
+        onDrop: (currentEditor, files, pos) =>
+          handleImageUpload(currentEditor, files, pos),
+        onPaste: (currentEditor, files, pos) =>
+          handleImageUpload(currentEditor, files, pos),
+      }),
       Table.configure({
         resizable: true,
       }),
