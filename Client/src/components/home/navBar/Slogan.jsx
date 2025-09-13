@@ -119,10 +119,7 @@ function Slogan() {
         quote: "The struggle you’re in today builds strength for tomorrow.",
         author: "Unknown",
       },
-      {
-        quote: "If it matters to you, you’ll find a way.",
-        author: "Unknown",
-      },
+      { quote: "If it matters to you, you’ll find a way.", author: "Unknown" },
       {
         quote: "The harder you work, the luckier you get.",
         author: "Gary Player",
@@ -131,34 +128,19 @@ function Slogan() {
         quote: "Great things never come from comfort zones.",
         author: "Unknown",
       },
-      {
-        quote: "Success is earned, not given.",
-        author: "Unknown",
-      },
+      { quote: "Success is earned, not given.", author: "Unknown" },
       {
         quote: "Don’t watch the clock; do what it does — keep going.",
         author: "Sam Levenson",
       },
-      {
-        quote: "Believe in your hustle.",
-        author: "Unknown",
-      },
-      {
-        quote: "Dream it. Wish it. Do it.",
-        author: "Unknown",
-      },
+      { quote: "Believe in your hustle.", author: "Unknown" },
+      { quote: "Dream it. Wish it. Do it.", author: "Unknown" },
       {
         quote: "Don’t limit your challenges, challenge your limits.",
         author: "Jerry Dunn",
       },
-      {
-        quote: "You are stronger than your excuses.",
-        author: "Unknown",
-      },
-      {
-        quote: "Focus on the goal, not the obstacle.",
-        author: "Unknown",
-      },
+      { quote: "You are stronger than your excuses.", author: "Unknown" },
+      { quote: "Focus on the goal, not the obstacle.", author: "Unknown" },
       {
         quote: "It always seems impossible until it's done.",
         author: "Nelson Mandela",
@@ -171,7 +153,6 @@ function Slogan() {
   const shouldRefreshQuote = () => {
     const cachedDate = localStorage.getItem("quoteTimestamp");
     if (!cachedDate) return true;
-
     const ninetyMinAgo = Date.now() - 180 * 60 * 1000;
     return parseInt(cachedDate) < ninetyMinAgo;
   };
@@ -186,7 +167,6 @@ function Slogan() {
       localStorage.setItem("dailyQuote", fetchedData.quote);
       localStorage.setItem("quoteAuthor", fetchedData.author);
       localStorage.setItem("quoteTimestamp", Date.now().toString());
-      console.log("Quote refreshed:", fetchedData);
     } catch (error) {
       setQuote("Failed to fetch quote.");
       setAuthor("Try again");
@@ -207,16 +187,13 @@ function Slogan() {
     if (cachedQuote && !shouldRefreshQuote()) {
       setQuote(cachedQuote);
       setAuthor(cachedAuthor || "");
-      // console.log("Using cached quote:", cachedQuote);
     } else {
-      // console.log("Fetching new quote...");
       fetchQuote().then((fetchedData) => {
         setQuote(fetchedData.quote);
         setAuthor(fetchedData.author);
         localStorage.setItem("dailyQuote", fetchedData.quote);
         localStorage.setItem("quoteAuthor", fetchedData.author);
         localStorage.setItem("quoteTimestamp", Date.now().toString());
-        console.log("New quote fetched:", fetchedData);
       });
     }
   }, []);
@@ -226,38 +203,27 @@ function Slogan() {
     const timer = setTimeout(() => {
       setDisplayMode((prev) => (prev === "greeting" ? "quote" : "greeting"));
     }, duration);
-
     return () => clearTimeout(timer);
   }, [displayMode]);
 
   const textVariants = {
-    initial: {
-      opacity: 0,
-      y: 20,
-      filter: "blur(10px)",
-    },
+    initial: { opacity: 0, y: 20, filter: "blur(10px)" },
     animate: {
       opacity: 1,
       y: 0,
       filter: "blur(0px)",
-      transition: {
-        duration: 0.4,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.4, ease: "easeOut" },
     },
     exit: {
       opacity: 0,
       y: -20,
       filter: "blur(10px)",
-      transition: {
-        duration: 0.2,
-        ease: "easeIn",
-      },
+      transition: { duration: 0.2, ease: "easeIn" },
     },
   };
 
   return (
-    <div className="slogan text-2xl font-semibold txt min-h-[3rem] flex items-center justify-center relative group">
+    <div className="slogan flex items-center justify-center relative group min-h-[3rem] px-2 w-full">
       <AnimatePresence mode="wait">
         <motion.div
           key={displayMode + (displayMode === "quote" ? quote : getGreeting())}
@@ -265,23 +231,25 @@ function Slogan() {
           initial="initial"
           animate="animate"
           exit="exit"
-          className="text-center max-w-4xl px-4"
+          className="text-center w-full max-w-full px-2 md:px-4"
         >
           {displayMode === "quote" ? (
-            <div className="flex items-end gap-4">
-              <div>{quote}</div>
+            <div className="hidden md:flex items-center justify-center gap-2 md:gap-4 flex-nowrap whitespace-nowrap overflow-hidden text-ellipsis">
+              <div className="font-semibold break-words max-w-full">
+                {quote}
+              </div>
               <motion.div
                 whileHover={{ rotate: -360 }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="txt-dim opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                className="txt-dim opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer flex-shrink-0"
                 onClick={handleIconClick}
                 title="Refresh Quote"
               >
-                <RotateCcw size={20} />
+                <RotateCcw className="w-4 h-4 md:w-5 md:h-5" />
               </motion.div>
             </div>
           ) : (
-            getGreeting()
+            <div className="font-semibold truncate">{getGreeting()}</div>
           )}
         </motion.div>
       </AnimatePresence>

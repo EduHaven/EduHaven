@@ -14,7 +14,9 @@ export default function OnlineUsers() {
           ))}
         </div>
       )}
-      <h2 className="font-semibold txt">{onlineUsers.length} online</h2>
+      <h2 className="font-semibold txt whitespace-nowrap">
+        {`${onlineUsers.length} online`}
+      </h2>
     </div>
   );
 }

@@ -122,11 +122,11 @@ function Sidebar() {
 
         <hr className="border-[var(--txt-disabled)] opacity-50 md:my-2.5 2xl:my-4 mx-4" />
         <SidebarLink
-          to="/project-details"
+          to="/about"
           IconComponent={BadgeInfo}
           label="About"
-          isActive={location.pathname === "/project-details"}
-          ref={(el) => (linkRefs.current["/project-details"] = el)}
+          isActive={location.pathname === "/about"}
+          ref={(el) => (linkRefs.current["/about"] = el)}
         />
       </div>
 

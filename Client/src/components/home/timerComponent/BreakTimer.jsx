@@ -6,11 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Clock12, Coffee, RotateCcw, Edit3, Check } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
 
+import { useTitleUpdater } from "@/hooks/useTitleUpdater";
+
 function BreakTimer() {
   const [breakTime, setBreakTime] = useState(600); // Default break time in seconds (10 min)
   const [isRunning, setIsRunning] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [customBreakTime, setCustomBreakTime] = useState(10);
+
+  useTitleUpdater({
+    timeLeft: breakTime,
+    isPaused: !isRunning,
+    isBreakMode: true,
+  });
 
   useEffect(() => {
     let interval;
@@ -33,7 +41,9 @@ function BreakTimer() {
   const handleReset = () => {
     setIsRunning(false);
     setBreakTime(customBreakTime * 60);
+    document.title = "EduHaven - Premium Study Platform";
   };
+
   const handleEditClick = () => setIsEditing(true);
   const handleApplyBreakTime = () => {
     setBreakTime(customBreakTime * 60);
@@ -70,6 +80,7 @@ function BreakTimer() {
             </motion.button>
           </div>
         )}
+
         {!isEditing && (
           <motion.button
             onClick={handleEditClick}

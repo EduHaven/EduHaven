@@ -1,14 +1,12 @@
 import { useEffect, useCallback, useRef } from "react";
-import { motion } from "framer-motion";
 import { Clock12, PlayCircle, RotateCcw } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
-import axiosInstance from "@/utils/axios";
 import { Button } from "@/components/ui/button";
 import { useTimerStore } from "@/stores/timerStore";
 import { usePostStudySession } from "@/queries/timerQueries";
+import { useTitleUpdater } from "@/hooks/useTitleUpdater";
 
 function StudyTimer() {
-  // Get state and actions from the global store
   const {
     time,
     isRunning,
@@ -27,16 +25,19 @@ function StudyTimer() {
     resetTimer,
   } = useTimerStore();
 
-  // Use TanStack Query mutation
   const { mutate: postSession, isLoading: isPosting } = usePostStudySession();
 
-  // Refs for event handlers (needed for cleanup functions)
+  useTitleUpdater({
+    timeLeft: time.hours * 3600 + time.minutes * 60 + time.seconds,
+    isPaused: !isRunning,
+    isBreakMode: false,
+  });
+
   const isRunningRef = useRef(isRunning);
   const timeRef = useRef(time);
   const startTimeRef = useRef(startTime);
   const hasPostedRef = useRef(hasPosted);
 
-  // Update refs when state changes
   useEffect(() => {
     isRunningRef.current = isRunning;
     timeRef.current = time;
@@ -44,10 +45,8 @@ function StudyTimer() {
     hasPostedRef.current = hasPosted;
   }, [isRunning, time, startTime, hasPosted]);
 
-  // Utility: Calculate total time in seconds
   const getTotalSeconds = (t) => t.hours * 3600 + t.minutes * 60 + t.seconds;
 
-  // Timer logic - moved to an effect that works with the store
   useEffect(() => {
     if (!isRunning) return;
 
@@ -68,13 +67,13 @@ function StudyTimer() {
 
         return { hours: h, minutes: m, seconds: s };
       });
+
       setLastUpdate(new Date().toISOString());
     }, 1000);
 
     return () => clearInterval(interval);
   }, [isRunning, setTime, setLastUpdate]);
 
-  // Handle posting session
   const handlePostSession = useCallback(
     (endTime) => {
       const totalMinutes = getTotalSeconds(time) / 60;
@@ -102,7 +101,6 @@ function StudyTimer() {
     [startTime, time, postSession, setHasPosted, setLastSavedSeconds]
   );
 
-  // Auto post session
   useEffect(() => {
     if (!isRunning || hasPosted || !startTime) return;
 
@@ -125,7 +123,6 @@ function StudyTimer() {
     handlePostSession,
   ]);
 
-  // Save unsaved progress function
   const saveUnsavedProgress = useCallback(() => {
     if (!startTimeRef.current || hasPostedRef.current) return;
 
@@ -141,7 +138,6 @@ function StudyTimer() {
     }
   }, [postSession]);
 
-  // Save on exit or tab hidden
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       const totalSeconds = getTotalSeconds(timeRef.current);
@@ -170,25 +166,19 @@ function StudyTimer() {
     };
   }, [saveUnsavedProgress]);
 
-  // Start / Pause toggle
   const handleStartPause = () => {
     if (!isRunning) {
-      // Starting a new timer or resuming a paused one
       if (!startTime) {
-        // New timer session
         setStartTime(new Date().toISOString());
         setHasPosted(false);
         setLastSavedSeconds(0);
       }
-      // Use the store's startTimer action instead of just setIsRunning
       startTimer();
     } else {
-      // Pause an active timer
       pauseTimer();
     }
   };
 
-  // Reset timer with confirmation
   const handleReset = async () => {
     const totalSeconds = getTotalSeconds(time);
 
@@ -205,7 +195,6 @@ function StudyTimer() {
     resetTimer();
   };
 
-  // Render component (UI remains largely the same)
   return (
     <div className="text-center flex flex-col items-center justify-center h-full">
       <div className="text-6xl font-bold mb-4">
@@ -246,11 +235,8 @@ function StudyTimer() {
           </span>
         </Button>
 
-        {/* Reset button */}
         <Button
           onClick={handleReset}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
           className="hover:bg-red-700 p-2 rounded-lg flex items-center gap-2"
           disabled={isPosting}
         >

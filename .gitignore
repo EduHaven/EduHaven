@@ -1,6 +1,21 @@
-Server/node_modules/
+# Ignore node_modules folders
+node_modules/
 Client/node_modules/
+Server/node_modules/
+
+# Ignore lock files
 package-lock.json
 node_modules
-.vscode
 bun.lock
+
+# Ignore VSCode settings folder
+.vscode
+
+# Ignore env files
+.env
+
+# Ignore specific JS files (agar chahiye toh)
+CLO.js
+dbtest.js
+jut.js
+sendmail.js
