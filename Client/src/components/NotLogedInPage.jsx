@@ -10,7 +10,7 @@ function NotLogedInPage() {
           stats and more, please log in to your account.
         </p>
         <button
-          onClick={() => (window.location.href = "/authenticate")}
+          onClick={() => (window.location.href = "/auth/login")}
           className="px-5 py-2.5 btn text-white rounded-lg hover:btn-hover mt-6 transition-colors"
         >
           Login to Eduhaven

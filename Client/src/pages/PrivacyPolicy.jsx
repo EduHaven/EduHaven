@@ -569,8 +569,8 @@ export default function PrivacyPolicy() {
                     className="mb-4 sm:mb-6"
                     style={{ color: "var(--txt-dim)" }}
                   >
-                    We're here to help! If you have any questions about this
-                    privacy policy or how we handle your data, please don't
+                    We are here to help! If you have any questions about this
+                    privacy policy or how we handle your data, please do not
                     hesitate to reach out.
                   </p>
                   <div

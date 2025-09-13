@@ -19,7 +19,7 @@ import {
   X,
 } from "lucide-react";
 import ToolbarButton from "./ToolbarButton";
-
+import { motion } from "framer-motion";
 const NoteEditor = ({
   selectedNote,
   setSelectedNote,
@@ -31,17 +31,20 @@ const NoteEditor = ({
   insertTable,
 }) => {
   return (
-    <div
+    <motion.div
       className="flex-1 flex flex-col rounded-tl-3xl"
       style={{
         backgroundColor: colors.find((c) => c.name === selectedNote.color)
           ?.style.backgroundColor,
         color: "var(--txt)",
       }}
+      initial={{ x: 100, opacity: 0 }}
+      animate={{ x: 1, opacity: 1 }}
+      transition={{ delay: 0.2 }}
     >
       {/* Editor Header */}
       <div
-        className="p-4 border-b flex flex-col gap-3"
+        className="p-4 pb-0 flex flex-col gap-3"
         style={{ borderColor: "var(--bg-sec)" }}
       >
         <div className="flex items-center justify-between">
@@ -50,7 +53,7 @@ const NoteEditor = ({
             placeholder="Untitled"
             value={selectedNote.title}
             onChange={(e) =>
-              updateNote(selectedNote.id, { title: e.target.value })
+              updateNote(selectedNote._id, { title: e.target.value })
             }
             className="flex-1 border-none outline-none text-2xl font-semibold bg-transparent font-inherit"
             style={{ color: "var(--txt)" }}
@@ -70,10 +73,10 @@ const NoteEditor = ({
 
         {/* Formatting Toolbar */}
         <div
-          className="flex items-center gap-0.5 flex-wrap p-2 bg-red-500"
+          className={`flex items-center gap-0.5 flex-wrap p-1.5 rounded-lg`}
           style={{
-            backgroundColor: "var(--bg-sec)",
-            borderRadius: "var(--radius)",
+            backgroundColor: colors.find((c) => c.name === selectedNote.color)
+              ?.style.backgroundColor,
           }}
         >
           {/* Headings */}
@@ -236,7 +239,7 @@ const NoteEditor = ({
       <div className="flex-1 p-4 overflow-auto">
         <EditorContent editor={editor} className="min-h-full" />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -22,8 +22,12 @@ export default function AllFriends() {
     return friends.filter((user) => {
       const fullName = `${user.FirstName} ${user.LastName || ""}`.toLowerCase();
       if (fullName.includes(term.toLowerCase())) return true;
-      if (user.OtherDetails?.skills?.toLowerCase().includes(term.toLowerCase())) return true;
-      if (user.OtherDetails?.interests?.toLowerCase().includes(term.toLowerCase())) return true;
+      if (user.OtherDetails?.skills?.toLowerCase().includes(term.toLowerCase()))
+        return true;
+      if (
+        user.OtherDetails?.interests?.toLowerCase().includes(term.toLowerCase())
+      )
+        return true;
       return false;
     });
   }, [friends, searchTerm]);

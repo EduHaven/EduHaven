@@ -7,7 +7,7 @@ function NavBar() {
         EduHaven
       </h1>
       <a
-        href="/authenticate"
+        href="/auth/login"
         className="flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm sm:text-base"
         style={{ backgroundColor: "var(--btn)", color: "white" }}
       >

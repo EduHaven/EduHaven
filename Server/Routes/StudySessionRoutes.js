@@ -4,6 +4,7 @@ import {
   getLeaderboard,
   getStudySessionStats,
   getUserStudyStats,
+  getConsolidatedStats,
 } from "../Controller/StudySessionController.js";
 import authMiddleware from "../Middlewares/authMiddleware.js";
 
@@ -21,7 +22,7 @@ router.post(
   "/",
   createStudySessionValidationRules(),
   validate,
-  sanitizeFields(["startTime", "endTime", "duration"]),
+  // sanitizeFields(["startTime", "endTime", "duration"]),
   authMiddleware,
   createStudySession
 );
@@ -34,5 +35,8 @@ router.get("/user-stats", authMiddleware, getUserStudyStats);
 
 // get the leaderboard for the stats page.
 router.get("/leaderboard", authMiddleware, getLeaderboard);
+
+router.get("/consolidated-stats", authMiddleware, getConsolidatedStats);
+router.get("/consolidated-stats/:userId", authMiddleware, getConsolidatedStats);
 
 export default router;

@@ -279,7 +279,7 @@ function TicTacToe() {
 
   return (
     <div className="min-h-screen overflow-hidden bg-[var(--bg-primary)] text-[var(--txt)] font-sans flex flex-col">
-      <style jsx>{`
+      <style>{`
         @keyframes fadeInDown {
           from {
             opacity: 0;

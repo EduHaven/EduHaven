@@ -19,7 +19,7 @@ function CTASection() {
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
             <button
-              onClick={() => navigate("/authenticate")}
+              onClick={() => navigate("/auth/login")}
               className="w-full sm:w-auto flex items-center justify-center sm:justify-start space-x-3 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-white font-semibold text-base sm:text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
               style={{ backgroundColor: "var(--btn)" }}
             >

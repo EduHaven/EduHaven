@@ -13,7 +13,6 @@ function Session() {
   const token = localStorage.getItem("token");
   const [myRooms, setMyRooms] = useState([]);
   const [otherRooms, setOtherRooms] = useState([]);
-  if (!token) return <NotLogedInPage />;
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -29,7 +28,7 @@ function Session() {
     fetchRooms();
   }, [token]);
 
-  // const showSkeletons = !isLoading && sessions.length === 0;
+  if (!token) return <NotLogedInPage />;
 
   return (
     <div className="h-[100vh] w-[calc(100vw-70px)] pb-0 flex ">

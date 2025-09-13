@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import ScientificCalculator from "../popupTools/ScientificCalculator";
 import GraphPlotter from "../popupTools/GraphPlotter";
 import UnitConverter from "../popupTools/UnitConverter";
+import { Button } from "@/components/ui/button";
 
 const Calculator = () => {
   const [isCalcOpen, setIsCalcOpen] = useState(false);
@@ -31,15 +32,17 @@ const Calculator = () => {
   const [activeTool, setActiveTool] = useState("calculator");
   return (
     <>
-      <button
-        className="flex px-3 py-2.5 font-semibold transition duration-200 transform hover:scale-105 bg-sec rounded-lg"
+      <Button
+        size="icon"
+        variant="secondary"
+        className="bg-[var(--bg-sec)] hover:bg-[var(--bg-ter)] rounded-lg"
         onClick={() => {
           const modal = document.getElementById("Calc_Modal");
           modal && modal.showModal();
         }}
       >
         <CalculatorIcon />
-      </button>
+      </Button>
       <motion.div
         id="Calc_Modal"
         variants={panelVariants}

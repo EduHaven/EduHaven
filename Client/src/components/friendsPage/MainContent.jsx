@@ -1,7 +1,7 @@
 import SuggestedFriends from "./tabs/SuggestedFriends.jsx";
-import FriendRequests from "./tabs/FriendRequests";
-import SentRequests from "./tabs/SentRequests";
-import AllFriends from "./tabs/AllFriends";
+import FriendRequests from "./tabs/FriendRequests.jsx";
+import SentRequests from "./tabs/SentRequests.jsx";
+import AllFriends from "./tabs/AllFriends.jsx";
 
 function MainContent({ selectedTab }) {
   const getTitle = () => {
