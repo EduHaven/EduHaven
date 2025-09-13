@@ -18,7 +18,7 @@
 
   .dark {
     --bg-primary: #111827;
-    --bg-sec: #2D3A4F;
+    --bg-sec: #2d3a4f;
     --bg-ter: #374151;
     --txt: #d1d5db;
     --txt-dim: #9ca3af;
@@ -69,7 +69,7 @@
 
   .theme-coffee {
     --bg-primary: #180f09;
-    --bg-sec: #47351E;
+    --bg-sec: #47351e;
     --bg-ter: #463425;
     --txt: #f4e9d8;
     --txt-dim: #d6c4aa;
@@ -95,7 +95,7 @@
   /* Ocean Breeze (Light) */
   .theme-ocean-breeze {
     --bg-primary: #f0f9ff;
-    --bg-sec: #E0F2FF;
+    --bg-sec: #e0f2ff;
     --bg-ter: #ffffff;
     --txt: #0c4a6e;
     --txt-dim: #0369a1;
@@ -123,7 +123,7 @@
   /* Mint Dream (Light) */
   .theme-mint-dream {
     --bg-primary: #f0fdf4;
-    --bg-sec: #BFDBC9;
+    --bg-sec: #bfdbc9;
     --bg-ter: #ffffff;
     --txt: #14532d;
     --txt-dim: #166534;
@@ -276,7 +276,7 @@
   /* Sapphire Dream (Dark) */
   .theme-sapphire-dream {
     --bg-primary: #0a0a2e;
-    --bg-sec: #1C2A4F;
+    --bg-sec: #1c2a4f;
     --bg-ter: #1e3a5f;
     --txt: #87ceeb;
     --txt-dim: #add8e6;
@@ -304,7 +304,7 @@
   /* Deep Purple (Dark) */
   .theme-deep-purple {
     --bg-primary: #100020;
-    --bg-sec: #2D1C45;
+    --bg-sec: #2d1c45;
     --bg-ter: #312557;
     --txt: #ddd6fe;
     --txt-dim: #c4b5fd;
@@ -318,7 +318,7 @@
   /* Arctic Mint (Light) */
   .theme-arctic-mint {
     --bg-primary: #f0fdfa;
-    --bg-sec: #CFFFF5;
+    --bg-sec: #cffff5;
     --bg-ter: #ffffff;
     --txt: #134e4a;
     --txt-dim: #0f766e;
