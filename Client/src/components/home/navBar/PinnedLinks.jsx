@@ -222,16 +222,14 @@ function PinnedLinks() {
 
   return (
     <div className="relative z-50">
-      <Button
+      <button
         ref={buttonRef}
         onClick={() => setShowDropdown(!showDropdown)}
-        variant="link"
-        size="default"
         className="flex gap-3 font-bold text-lg items-center txt"
       >
         <ExternalLink />
         Links
-      </Button>
+      </button>
 
       {/* Dropdown of existing pinned links + add button */}
       {/* <AnimatePresence mode="wait"> */}

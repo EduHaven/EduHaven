@@ -10,6 +10,7 @@ function TimerComponent() {
   return (
     <div className="relative p-6 rounded-3xl flex-1 text-white min-w-72 overflow-hidden">
       {/* Background Layers Crossfading */}
+
       <motion.div
         className="absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-700/60 to-indigo-800"
         initial={{ opacity: isBreakMode ? 0 : 1 }}
@@ -43,14 +44,15 @@ function TimerComponent() {
             )}
           </div>
           <div className="relative">
-            <Button
+            <button
               onClick={() => setIsBreakMode(true)}
               variant="link"
               size="default"
               className={`text-xl transition-colors duration-300 pb-1 ${isBreakMode ? "font-semibold text-white" : "text-gray-300"}`}
             >
               Take a Break
-            </Button>
+            </button>
+
             {isBreakMode && (
               <motion.div
                 layoutId="underline"
