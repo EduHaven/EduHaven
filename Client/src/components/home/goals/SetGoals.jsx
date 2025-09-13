@@ -7,6 +7,7 @@ import "./ReactCustomCalendar.css";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import styles from "./SetGoals.module.css";
+import { Button } from "@/components/ui/button";
 
 const Setgoals = ({ onGoalCreated }) => {
   const [title, setTitle] = useState("");
@@ -67,9 +68,8 @@ const Setgoals = ({ onGoalCreated }) => {
 
   return (
     <div
-      className={`px-4 pt-2 rounded-xl ${
-        title.trim() !== "" ? "bg-ter shadow" : ""
-      }`}
+      className={`px-4 pt-2 rounded-xl ${title.trim() !== "" ? "bg-ter shadow" : ""
+        }`}
       style={{ containerType: "inline-size" }}
     >
       <div className="flex items-center px-2">
@@ -83,17 +83,16 @@ const Setgoals = ({ onGoalCreated }) => {
           className="w-full bg-transparent border-b border-txt-dim txt-dim py-2 px-2 focus:outline-none"
         />
         {title.trim() !== "" && (
-          <motion.button
-            whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
-            whileHover={{ scale: 1.05 }}
-            animate={{ scale: 1, transition: { duration: 0 } }}
+          <Button
             onClick={handleCreate}
-            className={`add-goal-btn ml-2 font-bold shadow focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${styles["add-goal-btn"]}`}
+            variant="default"
+            size="default"
+            className={`ml-2 font-bold shadow focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${styles["add-goal-btn"]}`}
             aria-label="Add Goal"
             type="button"
           >
             Add
-          </motion.button>
+          </Button>
         )}
       </div>
 

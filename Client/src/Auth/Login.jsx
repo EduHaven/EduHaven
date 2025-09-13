@@ -5,6 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 import axiosInstance from "@/utils/axios";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button"
 
 const backendUrl = import.meta.env.VITE_API_URL;
 
@@ -59,14 +60,14 @@ function Login() {
           Sign in to your account
         </p>
       </div>
-      <button
+      <Button
         onClick={handleGoogleLogin}
-        className="flex items-center justify-center  gap-2 border border-gray-400 rounded-xl text-black dark:text-white font-semibold p-2 text-lg w-full"
+        className="flex items-center justify-center gap-2 border border-gray-400 rounded-xl text-black dark:text-white font-semibold p-2 text-lg w-full"
+        variant="default" // Or customize this if needed
       >
         <img src="/GoogleIcon.svg" alt="Google sign-in" className="size-6" />
-
-        <p>Continue with google</p>
-      </button>
+        <p>Continue with Google</p>
+      </Button>
 
       {/* or  */}
       <div className="flex items-center my-6">
@@ -126,13 +127,15 @@ function Login() {
               })}
               className="block w-full rounded-xl bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
             />
-            <button
+            <Button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
               className="absolute inset-y-0 right-4 flex items-center text-gray-500 hover:text-indigo-600"
+              variant="transparent"
+              size="icon"
             >
               {showPassword ? <Eye size={19} /> : <EyeOff size={19} />}
-            </button>
+            </Button>
             {errors.Password && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.Password.message}
@@ -150,17 +153,17 @@ function Login() {
         </div>
 
         <div>
-          <button
+          <Button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full rounded-md py-2 px-4 text-white font-semibold ${
-              isSubmitting
-                ? "opacity-50 cursor-not-allowed bg-gray-400"
-                : "bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600"
-            }`}
+            variant="default"
+            className={`w-full rounded-md py-2 px-4 font-semibold ${isSubmitting
+              ? "opacity-50 cursor-not-allowed bg-gray-400"
+              : "bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              }`}
           >
             {isSubmitting ? "Submitting..." : "Log In"}
-          </button>
+          </Button>
         </div>
       </form>
       <motion.div

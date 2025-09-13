@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Clock4, Flame, BarChart2 } from "lucide-react";
 import { useConsolidatedStats } from "@/queries/timerQueries";
+import { Button } from "@/components/ui/button";
 
 // Variants for dropdown buttons
 const dropdownButtonVariants = {
@@ -23,40 +24,40 @@ function StatsSummary() {
   // Prepare study data from the query response
   const studyData = stats
     ? {
-        Today: `${stats.timePeriods?.today || "0.0"} h`,
-        "This week": `${stats.timePeriods?.thisWeek || "0.0"} h`,
-        "This month": `${stats.timePeriods?.thisMonth || "0.0"} h`,
-        "All time": `${stats.timePeriods?.allTime || "0.0"} h`,
-      }
+      Today: `${stats.timePeriods?.today || "0.0"} h`,
+      "This week": `${stats.timePeriods?.thisWeek || "0.0"} h`,
+      "This month": `${stats.timePeriods?.thisMonth || "0.0"} h`,
+      "All time": `${stats.timePeriods?.allTime || "0.0"} h`,
+    }
     : {
-        Today: "0.0 h",
-        "This week": "0.0 h",
-        "This month": "0.0 h",
-        "All time": "0.0 h",
-      };
+      Today: "0.0 h",
+      "This week": "0.0 h",
+      "This month": "0.0 h",
+      "All time": "0.0 h",
+    };
 
   // Prepare user stats from the query response
   const userStats = stats
     ? {
-        rank: stats.rank || 0,
-        totalUsers: stats.totalUsers || 0,
-        streak: stats.streak || 0,
-        level: stats.level || {
-          name: "Beginner",
-          progress: 0,
-          hoursToNextLevel: "2.0",
-        },
-      }
+      rank: stats.rank || 0,
+      totalUsers: stats.totalUsers || 0,
+      streak: stats.streak || 0,
+      level: stats.level || {
+        name: "Beginner",
+        progress: 0,
+        hoursToNextLevel: "2.0",
+      },
+    }
     : {
-        rank: 0,
-        totalUsers: 0,
-        streak: 0,
-        level: {
-          name: "Beginner",
-          progress: 0,
-          hoursToNextLevel: "2.0",
-        },
-      };
+      rank: 0,
+      totalUsers: 0,
+      streak: 0,
+      level: {
+        name: "Beginner",
+        progress: 0,
+        hoursToNextLevel: "2.0",
+      },
+    };
 
   // Handle click outside dropdown
   useEffect(() => {
@@ -119,12 +120,14 @@ function StatsSummary() {
           <p className="text-red-400 text-sm">
             {error.message || "Failed to load statistics"}
           </p>
-          <button
+          <Button
             onClick={handleRefresh}
+            variant="default"
+            size="default"
             className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors"
           >
             Retry
-          </button>
+          </Button>
         </div>
       </motion.div>
     );
@@ -140,10 +143,11 @@ function StatsSummary() {
     >
       <div className="flex items-center justify-between -mb-3">
         <div ref={dropdownRef} className="relative ml-auto">
-          <motion.button
+          <Button
             onClick={() => setIsOpen(!isOpen)}
+            variant="transparent"
+            size="default"
             className="flex items-center space-x-1 txt-dim hover:txt"
-            transition={{ type: "spring", stiffness: 300 }}
           >
             <span>{selectedTime}</span>
             <motion.span
@@ -152,7 +156,7 @@ function StatsSummary() {
             >
               <ChevronDown className="w-4 h-4" />
             </motion.span>
-          </motion.button>
+          </Button>
           <AnimatePresence>
             {isOpen && (
               <motion.div
@@ -163,20 +167,18 @@ function StatsSummary() {
                 transition={{ duration: 0.2 }}
               >
                 {Object.keys(studyData).map((time) => (
-                  <motion.button
+                  <Button
                     key={time}
-                    className="block w-full text-left px-4 py-2 btn-rad"
-                    variants={dropdownButtonVariants}
-                    initial="initial"
-                    whileHover="hover"
-                    transition={{ duration: 0.2 }}
                     onClick={() => {
                       setSelectedTime(time);
                       setIsOpen(false);
                     }}
+                    variant="default"
+                    size="default"
+                    className="block w-full text-left px-4 py-2 btn-rad"
                   >
                     {time}
-                  </motion.button>
+                  </Button>
                 ))}
               </motion.div>
             )}

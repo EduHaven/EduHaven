@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Button } from "../components/ui/button"
 
 const Delete = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -81,18 +82,16 @@ const Delete = () => {
 
         {/* Buttons */}
         <div className="flex justify-between gap-4">
-          <button
+          <Button
             onClick={() => navigate(-1)}
-            className="w-1/2 px-6 py-3 rounded-lg font-medium bg-gray-200/70 text-gray-800 hover:bg-gray-300 transition-all"
+            variant="secondary"
+            className="font-medium w-1/2"
           >
             Go Back
-          </button>
-          <button
-            onClick={handleProceed}
-            className="w-1/2 px-6 py-3 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700 shadow-md transition-all"
-          >
+          </Button>
+          <Button onClick={handleProceed} variant="destructive" className="w-1/2 font-medium">
             Proceed to Delete
-          </button>
+          </Button>
         </div>
       </motion.div>
 
@@ -129,20 +128,19 @@ const Delete = () => {
                 disabled={isLoading}
               />
               <div className="flex justify-end gap-4">
-                <button
-                  onClick={handleCancel}
-                  className="px-4 py-2 rounded-lg font-medium text-black bg-blue-200 hover:bg-blue-300 transition-all"
-                  disabled={isLoading}
-                >
+
+                <Button onClick={handleCancel} variant="secondary" className="font-medium">
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleConfirmDelete}
                   disabled={confirmText !== "delete my account" || isLoading}
-                  className="px-4 py-2 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
+                  variant="destructive"
+                  className="px-4 py-2 font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   {isLoading ? "Deleting..." : "Delete Account"}
-                </button>
+                </Button>
+
               </div>
             </motion.div>
           </motion.div>

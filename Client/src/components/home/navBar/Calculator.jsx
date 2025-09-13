@@ -67,11 +67,10 @@ const Calculator = () => {
                   key={tool}
                   onClick={() => setActiveTool(tool)}
                   className={`txt-dim font-semibold transition border-b-2 p-1 pt-0
-                      ${
-                        activeTool === tool
-                          ? "border-[var(--btn)] text-[var(--txt)]"
-                          : "border-transparent hover:txt"
-                      }`}
+                      ${activeTool === tool
+                      ? "border-[var(--btn)] text-[var(--txt)]"
+                      : "border-transparent hover:txt"
+                    }`}
                 >
                   {tool === "calculator" ? (
                     <div className="flex gap-2 items-center text-sm">
@@ -94,12 +93,14 @@ const Calculator = () => {
               ))}
             </div>
 
-            <button
+            <Button
               onClick={closeModal}
+              variant="transparent"
+              size="icon"
               className="hover:txt transition txt-dim"
             >
               <X size={20} />
-            </button>
+            </Button>
           </div>
           <div className="flex-1 overflow-auto rounded-md min-h-[60vh]">
             {activeTool === "calculator" && <ScientificCalculator />}

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import bgImg from "../assets/LoginBackground.jpg";
+import { Button } from "@/components/ui/button"
 
 // const backendUrl = import.meta.env.VITE_API_URL;
 
@@ -159,8 +160,8 @@ function ResetPassword() {
       );
       toast.error(
         error.response?.data?.message ||
-          error.response?.data?.error ||
-          "Failed to reset password"
+        error.response?.data?.error ||
+        "Failed to reset password"
       );
     }
   };
@@ -189,14 +190,13 @@ function ResetPassword() {
               Redirecting to login page in a few seconds...
             </p>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <Button
             onClick={() => navigate("/auth/login")}
+            variant="default"
             className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600"
           >
             Go to Login Now
-          </motion.button>
+          </Button>
         </div>
       </motion.div>
     );
@@ -233,9 +233,8 @@ function ResetPassword() {
             >
               New Password{" "}
               <span
-                className={`text-sm ml-20 font-semibold ${
-                  strengthLevels[strength - 1]?.color
-                }`}
+                className={`text-sm ml-20 font-semibold ${strengthLevels[strength - 1]?.color
+                  }`}
               >
                 {strengthLevels[strength - 1]?.level}
               </span>
@@ -310,19 +309,17 @@ function ResetPassword() {
             )}
           </div>
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <Button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full rounded-xl py-3 px-4 text-white font-semibold ${
-              isSubmitting
-                ? "opacity-50 cursor-not-allowed bg-gray-400"
-                : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            }`}
+            variant="default"
+            className={`w-full rounded-xl py-3 px-4 font-semibold ${isSubmitting
+              ? "opacity-50 cursor-not-allowed bg-gray-400"
+              : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              }`}
           >
             {isSubmitting ? "Resetting Password..." : "Reset Password"}
-          </motion.button>
+          </Button>
         </form>
       </motion.div>
     </motion.div>

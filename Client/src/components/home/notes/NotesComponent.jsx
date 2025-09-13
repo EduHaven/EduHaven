@@ -10,6 +10,7 @@ import {
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import { Button } from "@/components/ui/button";
 
 function NotesComponent() {
   const [notes, setNotes] = useState([]);
@@ -194,7 +195,7 @@ function NotesComponent() {
     } catch (err) {
       setError(
         err.response?.data?.error ||
-          "Failed to delete note try refreshinng page"
+        "Failed to delete note try refreshinng page"
       );
     }
   };
@@ -270,33 +271,35 @@ function NotesComponent() {
       <div className="flex justify-between px-3">
         <div className="flex gap-4 items-center">
           <h3 className="text-2xl font-semibold">Notes</h3>
-          <button
-            className="p-1.5 rounded-full hover:bg-ter"
+          <Button
             onClick={addNewPage}
+            variant="transparent"
+            size="icon"
+            className="p-1.5 rounded-full hover:bg-ter"
           >
             <Plus />
-          </button>
+          </Button>
         </div>
         <div className="flex space-x-2 items-center">
           <span className="opacity-90 text-lg">
             {notes.length > 0 ? `${currentPage + 1}/${notes.length}` : "1/1"}
           </span>
-          <button
+          <Button
             onClick={goToPreviousPage}
-            className={`p-1.5 rounded-full hover:bg-ter ${
-              currentPage === 0 ? "txt-dim" : ""
-            }`}
+            variant="transparent"
+            size="icon"
+            className={`p-1.5 rounded-full hover:bg-ter ${currentPage === 0 ? "txt-dim" : ""}`}
           >
             <ChevronLeft />
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={goToNextPage}
-            className={`p-1.5 rounded-full hover:bg-ter ${
-              currentPage === notes.length - 1 ? "txt-dim" : ""
-            }`}
+            variant="transparent"
+            size="icon"
+            className={`p-1.5 rounded-full hover:bg-ter ${currentPage === notes.length - 1 ? "txt-dim" : ""}`}
           >
             <ChevronRight />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -318,7 +321,11 @@ function NotesComponent() {
         </div>
 
         {!isSynced && (
-          <button className="text-black text-lg hover:bg-yellow-300 rounded-full mx-3 py-0.5 px-4 bg-yellow-400 flex items-center gap-2 transition-transform transform opacity-100">
+          <Button
+            variant="default"
+            size="default"
+            className="text-black text-lg hover:bg-yellow-300 rounded-full mx-3 py-0.5 px-4 flex items-center gap-2 transition-transform transform opacity-100"
+          >
             sync
             <div
               className="h-4"
@@ -329,13 +336,18 @@ function NotesComponent() {
             >
               <RefreshCcwDot className="h-4" />
             </div>
-          </button>
+          </Button>
         )}
         {notes[currentPage]?.content !== "" &&
           notes[currentPage]?.title !== "" && (
-            <button onClick={() => handleDeleteNote(notes[currentPage]?._id)}>
-              <Trash className="h-5 txt-dim hover:text-red-500" />
-            </button>
+            <Button
+              onClick={() => handleDeleteNote(notes[currentPage]?._id)}
+              variant="transparent"
+              size="icon"
+              className="txt-dim hover:text-red-500"
+            >
+              <Trash className="h-5" />
+            </Button>
           )}
       </div>
 
@@ -371,11 +383,11 @@ function NotesComponent() {
       <div className="absolute bottom-4 right-12 txt-dim bg-sec flex justify-between">
         {notes[currentPage]?.createdAt
           ? new Date(notes[currentPage].createdAt).toLocaleDateString() +
-            "\u00A0\u00A0\u00A0" +
-            new Date(notes[currentPage].createdAt).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+          "\u00A0\u00A0\u00A0" +
+          new Date(notes[currentPage].createdAt).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
           : "No date available"}
       </div>
     </div>

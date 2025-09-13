@@ -3,6 +3,7 @@ import axiosInstance from "@/utils/axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
 
 const EventPopup = ({ date, onClose, refreshEvents }) => {
   const [event, setEvent] = useState(null);
@@ -111,12 +112,14 @@ const EventPopup = ({ date, onClose, refreshEvents }) => {
               </h2>
               <p className="text-sm txt-dim">{date}</p>
             </div>
-            <button
+            <Button
               onClick={onClose}
+              variant="transparent"
+              size="icon"
               className="txt-dim hover:txt transition mb-auto"
             >
               <X size={24} />
-            </button>
+            </Button>
           </div>
           <div className="mb-4">
             <input
@@ -137,19 +140,23 @@ const EventPopup = ({ date, onClose, refreshEvents }) => {
           </div>
           <div className="flex space-x-3">
             {event && (
-              <button
+              <Button
                 onClick={handleDelete}
-                className="flex-1 rounded-lg bg-ter py-2 text-center txt font-semibold shadow hover:bg-red-700 transition"
+                variant="destructive"
+                size="default"
+                className="flex-1 text-center txt font-semibold shadow"
               >
                 Delete
-              </button>
+              </Button>
             )}
-            <button
+            <Button
               onClick={handleCreateOrUpdate}
-              className="btn flex-1 m-auto w-min rounded-lg py-2 text-center text-white font-semibold shadow transition"
+              variant="default"
+              size="default"
+              className="flex-1 m-auto w-min text-center font-semibold shadow"
             >
               {event ? "Update" : "Create"}
-            </button>
+            </Button>
           </div>
         </motion.div>
       </motion.div>

@@ -14,6 +14,7 @@ import Setgoals from "./SetGoals.jsx";
 import DeadlinePickerModal from "./DeadlinePickerModal.jsx";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
 
 const GoalsComponent = () => {
   const [todos, setTodos] = useState([]);
@@ -84,10 +85,10 @@ const GoalsComponent = () => {
       prev.map((todo) =>
         todo._id === id
           ? {
-              ...todo,
-              completed: !todo.completed,
-              status: todo.completed ? "open" : "closed",
-            }
+            ...todo,
+            completed: !todo.completed,
+            status: todo.completed ? "open" : "closed",
+          }
           : todo
       )
     );
@@ -294,9 +295,8 @@ const GoalsComponent = () => {
       ) : (
         <div className="flex-grow">
           <span
-            className={`text-lg ${
-              todo.completed ? "line-through txt-dim" : "txt-dim"
-            }`}
+            className={`text-lg ${todo.completed ? "line-through txt-dim" : "txt-dim"
+              }`}
           >
             {todo.title}
           </span>
@@ -313,18 +313,22 @@ const GoalsComponent = () => {
 
       {editingId === todo._id ? (
         <div className="flex gap-4">
-          <button
+          <Button
             onClick={handleSave}
+            variant="transparent"
+            size="icon"
             className="text-green-500 hover:text-green-400 transition-colors"
           >
             <Check />
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleCancel}
+            variant="transparent"
+            size="icon"
             className="txt-dim hover:txt transition-colors"
           >
             <X />
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="flex items-center space-x-2">
@@ -333,45 +337,50 @@ const GoalsComponent = () => {
           </span>
           <div className="hidden group-hover:flex gap-2">
             {/* Repeat Toggle */}
-            <button
+            <Button
               onClick={() => handleToggleRepeat(todo._id)}
-              className={`p-1 rounded ${
-                todo.repeatEnabled
-                  ? "text-blue-500 bg-blue-100/10"
-                  : "txt-dim hover:text-blue-500"
-              } transition-colors`}
+              variant="transparent"
+              size="icon"
+              className={`p-1 rounded transition-colors ${todo.repeatEnabled ? "text-blue-500 bg-blue-100/10" : "txt-dim hover:text-blue-500"
+                }`}
               title={todo.repeatEnabled ? "Disable repeat" : "Enable repeat"}
             >
               <Repeat className="h-4 w-4" />
-            </button>
+            </Button>
 
             {/* Calendar Icon - deadline setting */}
-            <button
+            <Button
               onClick={() => openDeadlineModal(todo)}
+              variant="transparent"
+              size="icon"
               className="txt-dim hover:text-purple-500 transition-colors p-1"
               title="Set deadline"
             >
               <Calendar className="h-4 w-4" />
-            </button>
+            </Button>
 
             {/* Edit */}
-            <button
+            <Button
               onClick={() => {
                 setEditingId(todo._id);
                 setEditedTitle(todo.title);
               }}
+              variant="transparent"
+              size="icon"
               className="txt-dim hover:text-blue-500 transition-colors p-1"
             >
               <Pencil className="h-4 w-4" />
-            </button>
+            </Button>
 
             {/* Delete */}
-            <button
+            <Button
               onClick={() => handleDelete(todo._id)}
+              variant="transparent"
+              size="icon"
               className="txt-dim hover:text-red-500 transition-colors p-1"
             >
               <Trash className="h-4 w-4" />
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -380,21 +389,21 @@ const GoalsComponent = () => {
 
   const renderSection = (title, items, sectionKey) => (
     <div className="mb-2.5">
-      <button
+      <Button
         onClick={() => toggleSection(sectionKey)}
+        variant="transparent"
+        size="default"
         className="flex items-center justify-between w-full px-2"
       >
         <div className="flex items-center gap-1">
           <ChevronRight
             size={20}
-            className={`${
-              collapsedSections[sectionKey] ? "" : "rotate-90"
-            } transition duration-300`}
+            className={`${collapsedSections[sectionKey] ? "" : "rotate-90"} transition duration-300`}
           />
           <h3 className="font-medium text-sm">{title}</h3>
           <span className="txt-dim text-sm">({items.length})</span>
         </div>
-      </button>
+      </Button>
 
       {!collapsedSections[sectionKey] && (
         <motion.div

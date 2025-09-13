@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, Calendar as CalendarIcon, Clock } from "lucide-react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import { Button } from "@/components/ui/button";
 
 const DeadlinePickerModal = ({
   isOpen,
@@ -41,12 +42,14 @@ const DeadlinePickerModal = ({
             <CalendarIcon className="h-5 w-5" />
             Set Deadline
           </h3>
-          <button
+          <Button
             onClick={onClose}
+            variant="transparent"
+            size="icon"
             className="txt-dim hover:txt transition-colors"
           >
             <X className="h-5 w-5" />
-          </button>
+          </Button>
         </div>
 
         {/* Todo Title */}
@@ -95,18 +98,22 @@ const DeadlinePickerModal = ({
 
         {/* Action Buttons */}
         <div className="flex gap-3">
-          <button
+          <Button
             onClick={handleRemoveDeadline}
-            className="flex-1 px-4 py-2 border border-txt-dim rounded-lg txt-dim hover:bg-ter transition-colors"
+            variant="secondary"
+            size="default"
+            className="flex-1 px-4 py-2 rounded-lg txt-dim hover:bg-ter"
           >
             Remove Deadline
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSave}
-            className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+            variant="default"
+            size="default"
+            className="flex-1 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white"
           >
             Set Deadline
-          </button>
+          </Button>
         </div>
       </div>
     </div>

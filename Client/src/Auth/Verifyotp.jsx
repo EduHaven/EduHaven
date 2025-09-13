@@ -2,6 +2,7 @@ import { ArrowLeft, CheckCircle, Mail, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
 
 const backendUrl = import.meta.env.VITE_API_URL;
 
@@ -120,8 +121,8 @@ const OtpInput = () => {
           const error = await response.json();
           setError(
             error.message ||
-              error.error ||
-              "Verification failed. Please try again."
+            error.error ||
+            "Verification failed. Please try again."
           );
           setOtp(["", "", "", "", "", ""]);
           inputRefs.current[0]?.focus();
@@ -241,12 +242,13 @@ const OtpInput = () => {
     <div className="relative rounded-3xl max-w-md w-full transition-colors">
       {/* Back Button */}
       <div className="flex items-center justify-center mb-6 relative">
-        <button
+        <Button
           onClick={handleGoBack}
+          variant="transparent"
           className="absolute left-0 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 transition-colors shadow-lg"
         >
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-200" />
-        </button>
+        </Button>
 
         <div className="w-16 h-16 bg-gray-800 dark:bg-gray-200 rounded-full flex items-center justify-center shadow-lg">
           <Mail className="w-8 h-8 text-white dark:text-gray-900" />
@@ -275,13 +277,12 @@ const OtpInput = () => {
               onKeyDown={(e) => handleKeyDown(index, e)}
               maxLength="1"
               className={`w-12 h-12 text-center text-xl font-bold border-2 rounded-xl transition-all duration-200
-                  ${
-                    digit
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200"
-                      : error
-                        ? "border-red-300 bg-red-50 dark:bg-red-900"
-                        : "border-gray-300 dark:border-gray-600 hover:border-blue-300 focus:border-blue-500"
-                  } focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800`}
+                  ${digit
+                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200"
+                  : error
+                    ? "border-red-300 bg-red-50 dark:bg-red-900"
+                    : "border-gray-300 dark:border-gray-600 hover:border-blue-300 focus:border-blue-500"
+                } focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800`}
               disabled={isVerifying}
             />
           ))}
@@ -294,9 +295,10 @@ const OtpInput = () => {
       </div>
 
       {/* Verify Button */}
-      <button
+      <Button
         onClick={handleVerifyOtp}
         disabled={isVerifying || otp.join("").length !== 6}
+        variant="default" // Use the default variant or create a custom variant
         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed mb-4"
       >
         {isVerifying ? (
@@ -307,19 +309,20 @@ const OtpInput = () => {
         ) : (
           "Verify OTP"
         )}
-      </button>
+      </Button>
 
       {/* Resend OTP */}
 
       <div className="text-center mb-4">
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Did not receive the code?{" "}
-          <button
+          <Button
             onClick={handleResendOtp}
+            variant="link" // Use 'link' variant for text-like button
             className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
           >
             Resend OTP
-          </button>
+          </Button>
         </p>
       </div>
       {/* Tip */}
