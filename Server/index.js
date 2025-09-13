@@ -53,7 +53,10 @@ const PORT = Number(process.env.PORT) || 3000;
 const NODE_ENV = process.env.NODE_ENV || "development";
 
 // Allowed origins
-const allowedOrigins = ["http://localhost:5173", "https://yourproductionfrontend.com"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://yourproductionfrontend.com",
+];
 
 // ---- Middlewares ----
 app.use(compression());
@@ -190,7 +193,9 @@ process.on("SIGINT", async () => {
   if (shuttingDown || sigintPromptActive) return;
   sigintPromptActive = true;
   try {
-    const answer = await waitForKeypress("\nAre you sure you want to exit? (Y/N): ");
+    const answer = await waitForKeypress(
+      "\nAre you sure you want to exit? (Y/N): "
+    );
     sigintPromptActive = false;
     if (answer === "y" || answer === "yes") {
       await doGracefulShutdown("SIGINT");
