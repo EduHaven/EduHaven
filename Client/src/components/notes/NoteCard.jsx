@@ -41,7 +41,7 @@ const NoteCard = ({
       <button
         onClick={(e) => {
           e.stopPropagation();
-          onPin(note?.id);
+          onPin(note?._id);
         }}
         className={`absolute top-2 right-2 p-1 rounded-full bg-black/10 hover:bg-black/20 transition-opacity
         ${

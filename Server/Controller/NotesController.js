@@ -19,7 +19,7 @@ export const getAllNotes = async (req, res) => {
         { "collaborators.user": userId },
         { visibility: "public" },
       ],
-    });
+    }).sort({ pinnedAt: -1, updatedAt: -1 });
 
     res.status(200).json({ success: true, data: notes });
   } catch (error) {
@@ -78,7 +78,8 @@ export const createNote = async (req, res) => {
 
 export const updateNote = async (req, res) => {
   try {
-    const { title, content, color, visibility, collaborators } = req.body;
+    const { title, content, color, visibility, collaborators, pinnedAt } =
+      req.body;
 
     const userId = req.user._id;
     const note = await Note.findById(req.params.id);
@@ -100,6 +101,11 @@ export const updateNote = async (req, res) => {
     if (content) note.content = content;
     if (color) note.color = color;
     if (visibility) note.visibility = visibility;
+    if (pinnedAt === true) {
+      note.pinnedAt = new Date();
+    } else if (pinnedAt === false) {
+      note.pinnedAt = null;
+    }
     if (isOwner && collaborators) {
       note.collaborators = collaborators;
     }
