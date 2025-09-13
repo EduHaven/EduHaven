@@ -1,129 +1,72 @@
 [![join our group on discord](./Client/public/joinDiscordIcon.png)
-](https://discord.gg/yMBMNdmC)
-
-<!-- GSSoC banner and project insights -->
-<h1 align="center">
-  <img width="64" height="64" alt="LegalHuB Logo" src="Client/public/Logo.svg"/>
-  <br>
-  EduHaven
-</h1>
-
+](https://discord.gg/CbsNFUDC)
 
 <p align="center">
   <b>This project is now OFFICIALLY accepted for:</b>
 </p>
 
 <div align="center">
-  <img src="Client/public/gssoc.png" alt="GSSOC" width="80%">
+  <img src="Client/public/gssoc.png" alt="GSSOC" width="50%">
 </div>
 
-**📊 Project Insights**
-
-<table align="center">
-    <thead align="center">
-        <tr>
-            <td><b>🌟 Stars</b></td>
-            <td><b>🍴 Forks</b></td>
-            <td><b>🐛 Issues</b></td>
-            <td><b>🔔 Open PRs</b></td>
-            <td><b>🔕 Closed PRs</b></td>
-            <td><b>🛠️ Languages</b></td>
-            <td><b>👥 Contributors</b></td>
-        </tr>
-     </thead>
-    <tbody>
-         <tr>
-            <td><img alt="Stars" src="https://img.shields.io/github/stars/EduHaven/EduHaven?style=flat&logo=github"/></td>
-            <td><img alt="Forks" src="https://img.shields.io/github/forks/EduHaven/EduHaven?style=flat&logo=github"/></td>
-            <td><img alt="Issues" src="https://img.shields.io/github/issues/EduHaven/EduHaven?style=flat&logo=github"/></td>
-            <td><img alt="Open PRs" src="https://img.shields.io/github/issues-pr/EduHaven/EduHaven?style=flat&logo=github"/></td>
-            <td><img alt="Closed PRs" src="https://img.shields.io/github/issues-pr-closed/EduHaven/EduHaven?style=flat&color=critical&logo=github"/></td>
-            <td><img alt="Languages Count" src="https://img.shields.io/github/languages/count/EduHaven/EduHaven?style=flat&color=green&logo=github"></td>
-            <td><img alt="Contributors Count" src="https://img.shields.io/github/contributors/EduHaven/EduHaven?style=flat&color=blue&logo=github"/></td>
-        </tr>
-    </tbody>
-</table>
-
-# EduHaven
+# Eduhaven
 
 ![image](https://github.com/user-attachments/assets/970c84bf-ac78-4583-af73-d2b8b4b393b0)
 
 ## Overview
 
-**EduHaven** is a platform designed to assist students in their academic journey by providing a productivity-focused environment. With features like task management, note-making, real-time study rooms, and a social touch, it aims to simplify and enhance the learning process. The project is built with the **MERN stack** and incorporates real-time collaboration, analytics, and optional AI-powered tools.
+**EduHaven** is a platform designed to assist students by providing a productivity-focused environment. It aims to provide a space where students can Learn and grow together by socialising with friends. It incorporates real-time collaboration, task management, analytics, AI-chatbot, note-making, gamification and more.
 
 ## Features
 
-- ### User Dashboard
+- #### User Dashboard (home page)
+  - Study & break timer for focus, see your stats summary
+  - Add and manage notes
+  - Set your goals, set repeat / deadline etc.
+  - Integrated calendars for event planning
+  - The tools like AI chat, calculator, convertor and graph to help with studies
 
-  - Track tasks completed, study time, and productivity stats  
-  - Add and manage notes directly from dashboard  
-  - Integrated calendars for event planning  
-  - Quick access to stats and insights  
+- #### Real-Time Study Rooms
 
-- ### Calendar & Events
+  - Join or create study rooms to study with your fiends
+  - Video/audio controls
+  - Control who can join your study room
+  - Chat and discussion features.
 
-  - **User-Specific Events**: Each user can only view and manage their own calendar events  
-  - **Event Management**: Create, edit, and delete personal events with date/time  
-  - **Privacy & Security**: Secure authentication ensures event privacy across users  
+- #### See Realtime  stats:
+  - View Stats of your study time
+  - View your streaks, max streak
+  - See your rank globally and also within your friends
+  - Earn badges show-off to your friends.
+  - See the analytics of friends.
+  - See your goals completion rate.
 
-- ### Enhanced Goals System
+- #### Realtime Chat
+  - Chat in Realtime with peers. share notes and study materials
+  - Private messaging
+  - Online/offline presence indicators
 
-  - **Data Persistence**: All goals persist in database across sessions  
-  - **Smart Organization**: Three collapsible sections (Daily Habits, Other Goals, Closed Goals)  
-  - **Repeat Functionality**: Daily habits automatically recreate when completed  
-  - **Deadline Tracking**: Visual indicators for time left, due today, or overdue  
+- #### Friends and Social Features
+  - Add friends, invite them to study rooms
+  - Track their online/offline status
+  - Share study goals and progress
 
-- ### To-Do List : Helps users organize and manage their tasks efficiently.
-  
-
--  ### Note-Making: Rich-text editor to create, edit, and organize notes.
-
-
-- ### Real-Time Study Rooms
-
-  - Join or create study rooms for collaboration  
-  - Video/audio controls using WebRTC  
-  - Session tracking and collaboration tools  
-
-- ### Realtime Chat 
-
-  - Chat with peers inside study rooms  
-  - Private messaging and group chat support  
-  - Online/offline presence indicators  
-
-- ### Chatbot : Provides productivity tips and answers academic questions.  
-
-
-- ### Friends and Social Features
-
-  - Add friends, invite them to study rooms  
-  - Track their online/offline status  
-  - Share study goals and progress  
-
-- ### Analytics: Visualize progress with charts and insights.
-
-
-- ### Gamification
-
-  - Earn badges and rewards for task completion  
-  - Track streaks to stay motivated  
-  - Leaderboards for friendly competition  
+- #### Gamification
+  - Earn badges and rewards for task completion
+  - Track streaks to stay motivated
+  - Leaderboards for friendly competition
+  - Also an additional games page, to refresh your mind
 
 ## Tech Stack
 
-- **Frontend**: React.js with CSS (or Tailwind CSS)  
-- **Backend**: Node.js with Express  
-- **Database**: MongoDB  
-- **Real-Time Communication**: Socket.IO, WebRTC  
+- **Frontend**: React.js, Tailwind, Zustand, Tansack-query
+- **Backend**: Node.js with Express
+- **Database**: MongoDB, Cloudinary
+- **Real-Time Communication**: Socket.IO, WebRTC
 
 ## Installation and Setup
-
-### Prerequisites
-
-- Node.js  
-- MongoDB  
-- Git  
+- Make sure you've joined our [discord server](https://discord.gg/CbsNFUDC) so you can connect in case you face any issues.
+- **Prerequisites:** Node.js, MongoDB, Git
 
 ### Steps to Run Locally
 
@@ -132,6 +75,8 @@
    ```bash
    git clone https://github.com/<your-username>/EduHaven.git
    cd EduHaven
+
+   ```
 
 2. Install dependencies:
 
@@ -156,6 +101,9 @@
      - Create a `.env` file in the `/Server` directory.
      - Follow the instructions provided in `.env.example` file to create a new `.env` file for backend.
 
+    🔴 **make sure the contents of `.env.example` file must remain untouched.**
+
+
 4. Start the development servers:
 
    ```bash
@@ -170,8 +118,8 @@
 
 ## Contribution Guidelines
 
-1. You must get assigned to the issue so others know you're working on it. leave comment to get issue assigned.
-2. Code must be properly formatted. (use preetier)
+1. You must get assigned to the issue before you start working on it. leave comment to get issue assigned.
+2. Code must be properly formatted. (use preetier configuration provided)
 3. Commits should generally be minimal
 4. The body of the commit message should explain why and how the change was made.It should provide clear context for all changes mage that will help both a reviewer now, and a developer looking at your changes a year later, understand the motivation behind your decisions.
 
@@ -183,11 +131,12 @@ We welcome contributions to make **EduHaven** better for students everywhere! He
    git checkout -b feature-name
    ```
 3. Make your changes and test them thoroughly.
+
 - For frontend changes, also run:
   ```bash
   npm run build
   ```
-  and verify there are no build errors. 
+  and verify there are no build errors.
 
 4. Commit and push your changes:
    ```bash
@@ -197,13 +146,6 @@ We welcome contributions to make **EduHaven** better for students everywhere! He
    ```
 5. Before pushing frontend changes, **run** `npm run build` locally to ensure the project builds successfully. Catch & solve any potential deployment issues early, if any.
 6. Create a Pull Request (PR) with a detailed explanation of your changes.
-
-## Roadmap
-
-1. **Phase 1**: Core features - User authentication, to-do list, note-making.
-2. **Phase 2**: Real-time study rooms, chatbot integration, and social features.
-3. **Phase 3**: Analytics, gamification, and AI-powered enhancements.
-4. **Phase 4**: Mobile app development and premium features.
 
 ## License
 
@@ -216,16 +158,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-
 ## Preventing Backend Cold Starts
+
 The backend is hosted on Render Free Tier and may go to sleep after short inactivity.  
-We have implemented a keep-alive solution using [cron-job.org](https://cron-job.org/) to ping the backend every 1 minute:
-
-- URL: https://eduhaven-backend.onrender.com/
-- Interval: Every 1 minute
-- Purpose: Prevents backend cold starts for faster response times.
-
+We;re keeping it alive using [cron-job.org](https://cron-job.org/) to ping the backend every 1 minute.
 For full details, see [`KEEP_ALIVE.md`](KEEP_ALIVE.md).
+- Backend URL: https://eduhaven-backend.onrender.com/
 
-
-For any further queries, feel free to reach out on our [Discord](https://discord.gg/yMBMNdmC) group. Let’s make learning fun and productive!
+For any further queries, feel free to reach out on our [Discord](https://discord.gg/CbsNFUDC) group. Let’s make learning fun and productive!
