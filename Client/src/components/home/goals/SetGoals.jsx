@@ -85,9 +85,9 @@ const Setgoals = ({ onGoalCreated }) => {
         {title.trim() !== "" && (
           <Button
             onClick={handleCreate}
-            variant="default"
-            size="default"
-            className={`ml-2 font-bold shadow focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${styles["add-goal-btn"]}`}
+            variant="secondary"
+            size="sm"
+            className={`ml-2 font-bold transition-all`}
             aria-label="Add Goal"
             type="button"
           >

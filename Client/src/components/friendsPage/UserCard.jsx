@@ -76,13 +76,12 @@ function UserCard({ user, selectedTab }) {
         {selectedTab === "suggested" && user.requestSent && (
           <Button
             onClick={() => cancelRequest(user._id)}
-            variant="destructive"
+            variant="secondary"
             size="default"
             className="w-full text-sm txt"
           >
             Cancel Request
           </Button>
-
         )}
 
         {selectedTab === "friendRequests" && (
