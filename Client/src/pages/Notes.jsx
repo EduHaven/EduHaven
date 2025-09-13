@@ -11,15 +11,25 @@ import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
 import Typography from "@tiptap/extension-typography";
 import Underline from "@tiptap/extension-underline";
+
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import NoteEditor from "@/components/notes/NoteEditor.jsx";
 import NoteHeader from "@/components/notes/NoteHeader.jsx";
 import NotesList from "@/components/notes/NotesList.jsx";
 
+import {
+  useCreateNote,
+  useDeleteNote,
+  useNotes,
+  useUpdateNote,
+} from "@/queries/NoteQueries";
+
 import "@/components/notes/note.css";
+import axiosInstance from "@/utils/axios";
+import { toast } from "react-toastify";
 
 const colors = [
   { name: "default", style: { backgroundColor: "var(--note-default)" } },
@@ -33,20 +43,17 @@ const colors = [
 ];
 
 const Notes = () => {
-  const [notes, setNotes] = useState([
-    {
-      id: 1,
-      title: "Welcome to Eduhaven Notes!",
-      content: `<h1>Welcome to Eduhaven Notes!</h1><p>This is a modern notes feature with rich text editing capabilities, similar to Notion.</p><p>You can:</p><ul><li>Create <strong>bold</strong> and <em>italic</em> text</li><li>Add headers, lists, and more</li><li>Use the toolbar above for formatting</li><li>Create task lists</li></ul><p>Try selecting text and using the formatting toolbar above!</p>`,
-      createdAt: new Date().toISOString(),
-      isPinned: false,
-      color: "default",
-    },
-  ]);
+  const { data: notes = [], isLoading } = useNotes();
+
+  const createNoteMutation = useCreateNote();
+  const updateNoteMutation = useUpdateNote();
+  const deleteNoteMutation = useDeleteNote();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNote, setSelectedNote] = useState(null);
   const [showColorPicker, setShowColorPicker] = useState(null);
+
+  const typingTimeoutRef = useRef(null);
 
   const editor = useEditor({
     extensions: [
@@ -99,10 +106,14 @@ const Notes = () => {
     ],
     content: selectedNote?.content || "",
     onUpdate: ({ editor }) => {
-      if (selectedNote) {
-        const content = editor.getHTML();
-        updateNote(selectedNote.id, { content });
-      }
+      if (!selectedNote) return;
+
+      const content = editor.getHTML();
+
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => {
+        updateNote(selectedNote._id, { content });
+      }, 1500); // waits 1500ms after last keystroke
     },
     editorProps: {
       attributes: {
@@ -111,6 +122,97 @@ const Notes = () => {
     },
     shouldRerenderOnTransaction: true,
   });
+
+  const handleImageUpload = async (editor, files, pos) => {
+    const replacePlaceholder = (placeholder, replacement) => {
+      const { doc } = editor.state;
+      let replaced = false;
+
+      doc.descendants((node, posNode) => {
+        if (replaced) return false; // stop early if already replaced
+        if (node.isText && node.text && node.text.includes(placeholder)) {
+          const idx = node.text.indexOf(placeholder);
+          const from = posNode + idx;
+          const to = from + placeholder.length;
+
+          editor
+            .chain()
+            .focus()
+            .deleteRange({ from, to })
+            .insertContentAt({ from, to: from }, replacement)
+            .run();
+
+          replaced = true;
+          return false;
+        }
+        return true;
+      });
+
+      return replaced;
+    };
+
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) continue;
+
+      const safePos =
+        typeof pos === "number" ? pos : editor.state.selection.from;
+      const uploadId =
+        "Uploading-Image" +
+        Date.now() +
+        "-" +
+        Math.random().toString(6).slice(2, 6);
+      const placeholder = `[${uploadId}]`;
+
+      editor
+        .chain()
+        .focus()
+        .insertContentAt({ from: safePos, to: safePos }, placeholder)
+        .run();
+
+      try {
+        const formData = new FormData();
+        formData.append("noteImage", file);
+
+        const { data } = await axiosInstance.post("/note/upload", formData);
+        const imageUrl = data.noteImageUrl;
+
+        const didReplace = replacePlaceholder(placeholder, {
+          type: "image",
+          attrs: { src: imageUrl, alt: file.name || "Image" },
+        });
+
+        if (!didReplace) {
+          const insertPos = editor.state.selection.from;
+          editor
+            .chain()
+            .focus()
+            .insertContentAt(
+              { from: insertPos, to: insertPos },
+              {
+                type: "image",
+                attrs: { src: imageUrl, alt: file.name || "Image" },
+              }
+            )
+            .run();
+        }
+      } catch (err) {
+        const didReplace = replacePlaceholder(
+          placeholder,
+          "Failed to upload image"
+        );
+        if (!didReplace) {
+          editor
+            .chain()
+            .focus()
+            .insertContentAt(
+              editor.state.selection.from,
+              "Failed to upload image"
+            )
+            .run();
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     if (editor && selectedNote) {
@@ -122,36 +224,37 @@ const Notes = () => {
   }, [selectedNote, editor]);
 
   const createNewNote = () => {
-    const newNote = {
-      id: Date.now(),
-      title: "",
-      content: "",
-      createdAt: new Date().toISOString(),
-      isPinned: false,
-      color: "default",
-    };
-    setNotes([newNote, ...notes]);
-    setSelectedNote(newNote);
+    createNoteMutation.mutate(
+      {
+        title: `Note ${notes.length + 1}`,
+        content: "Write here...",
+        color: "default",
+        isPinned: false,
+      },
+      {
+        onSuccess: (newNote) => setSelectedNote(newNote),
+      }
+    );
   };
 
   const updateNote = (id, updates) => {
-    setNotes(
-      notes.map((note) => (note.id === id ? { ...note, ...updates } : note))
-    );
-    if (selectedNote && selectedNote.id === id) {
+    updateNoteMutation.mutate({ id, ...updates });
+    if (selectedNote && selectedNote._id === id) {
       setSelectedNote({ ...selectedNote, ...updates });
     }
   };
 
   const deleteNote = (id) => {
-    setNotes(notes.filter((note) => note.id !== id));
-    if (selectedNote && selectedNote.id === id) {
-      setSelectedNote(null);
-    }
+    deleteNoteMutation.mutate(id, {
+      onSuccess: () => {
+        toast.success("Note deleted!");
+        if (selectedNote?._id === id) setSelectedNote(null);
+      },
+    });
   };
 
   const togglePin = (id) => {
-    const note = notes.find((n) => n.id === id);
+    const note = notes.find((n) => n._id === id);
     updateNote(id, { isPinned: !note.isPinned });
   };
 
@@ -161,14 +264,14 @@ const Notes = () => {
   };
 
   const duplicateNote = (note) => {
-    const newNote = {
-      ...note,
-      id: Date.now(),
-      title: note.title + " (Copy)",
-      createdAt: new Date().toISOString(),
-      isPinned: false,
-    };
-    setNotes([newNote, ...notes]);
+    // const newNote = {
+    //   ...note,
+    //   id: Date.now(),
+    //   title: note.title + " (Copy)",
+    //   createdAt: new Date().toISOString(),
+    //   isPinned: false,
+    // };
+    // setNotes([newNote, ...notes]);
   };
 
   const exportNote = (note) => {
@@ -235,40 +338,46 @@ const Notes = () => {
     return matchesSearch;
   });
 
-  const pinnedNotes = filteredNotes.filter((note) => note.isPinned);
-  const unpinnedNotes = filteredNotes.filter((note) => !note.isPinned);
+  const pinnedNotes = (notes || []).filter((note) => note.isPinned);
+  const unpinnedNotes = (notes || []).filter((note) => !note.isPinned);
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div
       className="min-h-screen font-sans"
       style={{ backgroundColor: "var(--bg-primary)", color: "var(--txt)" }}
     >
-      {/* Header */}
-      <NoteHeader
-        createNewNote={createNewNote}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
-
-      <div className="flex" style={{ height: "calc(100vh - 73px)" }}>
-        {/* Notes List */}
-        <NotesList
-          selectedNote={selectedNote}
-          pinnedNotes={pinnedNotes}
-          unpinnedNotes={unpinnedNotes}
-          filteredNotes={filteredNotes}
-          searchTerm={searchTerm}
-          setSelectedNote={setSelectedNote}
-          togglePin={togglePin}
-          deleteNote={deleteNote}
-          duplicateNote={duplicateNote}
-          exportNote={exportNote}
-          changeColor={changeColor}
-          showColorPicker={showColorPicker}
-          setShowColorPicker={setShowColorPicker}
-          colors={colors}
-          getPlainTextPreview={getPlainTextPreview}
-        />
+      <div className="flex h-screen">
+        {/* notes page (also works as sidebar} */}
+        <div
+          className={`${selectedNote ? "w-80" : "w-full"} overflow-auto p-4`}
+        >
+          <NoteHeader
+            selectedNote={selectedNote}
+            createNewNote={createNewNote}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
+          <NotesList
+            pinnedNotes={pinnedNotes}
+            unpinnedNotes={unpinnedNotes}
+            filteredNotes={filteredNotes}
+            searchTerm={searchTerm}
+            setSelectedNote={setSelectedNote}
+            togglePin={togglePin}
+            deleteNote={deleteNote}
+            duplicateNote={duplicateNote}
+            exportNote={exportNote}
+            changeColor={changeColor}
+            showColorPicker={showColorPicker}
+            setShowColorPicker={setShowColorPicker}
+            colors={colors}
+            getPlainTextPreview={getPlainTextPreview}
+          />
+        </div>
 
         {/* Note Editor */}
         {selectedNote && (

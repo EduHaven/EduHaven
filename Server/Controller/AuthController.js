@@ -125,6 +125,7 @@ const verifyUser = async (req, res) => {
       LastName: verify.user.LastName,
       Email: verify.user.Email,
       Password: verify.user.Password,
+      ProfilePicture: `https://api.dicebear.com/9.x/initials/svg?seed=${verify.user.FirstName}`,
     });
 
     return res.status(200).json({ message: "User Signup Successfully" });
@@ -217,7 +218,6 @@ const signup = async (req, res) => {
       LastName,
       Email,
       Password: haspass, // Store hashed password
-      ProfilePicture: "https://cdn-icons-png.flaticon.com/512/219/219986.png", // Default profile picture
     };
 
     const otp = Math.floor(Math.random() * 1000000)
@@ -234,9 +234,7 @@ const signup = async (req, res) => {
       }
     );
 
-    await sendMail(Email, FirstName, otp,'signup');
-
-    const token = generateAuthToken(user);
+    await sendMail(Email, FirstName, otp, "signup");
 
     res.cookie("activationToken", activationToken, {
       expires: new Date(Date.now() + 86400000),
@@ -245,7 +243,6 @@ const signup = async (req, res) => {
 
     return res.status(201).json({
       message: "OTP sent to your email.",
-      token,
       activationToken,
     });
   } catch (error) {
@@ -262,13 +259,17 @@ const forgotPassword = async (req, res) => {
 
     // Validate input
     if (!Email) {
-      return res.status(422).json({ error: "Please provide your email address" });
+      return res
+        .status(422)
+        .json({ error: "Please provide your email address" });
     }
 
     // Check if user exists
     const user = await User.findOne({ Email });
     if (!user) {
-      return res.status(404).json({ error: "User not found with this email address" });
+      return res
+        .status(404)
+        .json({ error: "User not found with this email address" });
     }
     // check if user logged in with google
 
@@ -281,21 +282,21 @@ const forgotPassword = async (req, res) => {
     const otp = Math.floor(Math.random() * 1000000)
       .toString()
       .padStart(6, "0");
-   
+
     // Create reset token with user email and OTP
     const resetToken = jwt.sign(
       {
         email: Email,
         otp,
       },
-      process.env.Activation_Secret, 
+      process.env.Activation_Secret,
       {
-        expiresIn: "15m", 
+        expiresIn: "15m",
       }
     );
 
     // Send OTP via email
-    await sendMail(Email, user.FirstName, otp,'reset');
+    await sendMail(Email, user.FirstName, otp, "reset");
     // Set cookie with reset token
     res.cookie("resetToken", resetToken, {
       expires: new Date(Date.now() + 900000), // 15 minutes
@@ -332,8 +333,8 @@ const verifyResetOTP = async (req, res) => {
     }
 
     if (!otp) {
-      return res.status(422).json({ 
-        error: "Please provide the OTP" 
+      return res.status(422).json({
+        error: "Please provide the OTP",
       });
     }
 
@@ -374,9 +375,9 @@ const verifyResetOTP = async (req, res) => {
       }
     );
 
-    return res.status(200).json({ 
+    return res.status(200).json({
       message: "OTP verified successfully",
-      verifiedResetToken
+      verifiedResetToken,
     });
   } catch (error) {
     console.error("Error verifying reset OTP:", error);
@@ -386,7 +387,7 @@ const verifyResetOTP = async (req, res) => {
   }
 };
 
-// Reset Password 
+// Reset Password
 const resetPassword = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -406,9 +407,9 @@ const resetPassword = async (req, res) => {
       });
     }
 
-    if ( !newPassword) {
-      return res.status(422).json({ 
-        error: "Please provide new password" 
+    if (!newPassword) {
+      return res.status(422).json({
+        error: "Please provide new password",
       });
     }
 
@@ -422,8 +423,6 @@ const resetPassword = async (req, res) => {
         message: "Invalid or expired reset token",
       });
     }
-
-  
 
     // Find user by email
     const user = await User.findOne({ Email: verify.email });
@@ -440,8 +439,9 @@ const resetPassword = async (req, res) => {
     // Clear reset token cookie
     res.clearCookie("resetToken");
 
-    return res.status(200).json({ 
-      message: "Password reset successfully. Please login with your new password." 
+    return res.status(200).json({
+      message:
+        "Password reset successfully. Please login with your new password.",
     });
   } catch (error) {
     console.error("Error resetting password:", error);
@@ -501,11 +501,29 @@ const deleteAccount = async (req, res) => {
     await User.updateMany({ friends: userId }, { $pull: { friends: userId } });
 
     // 2. Delete all related data
+    await User.updateMany(
+      { friendRequests: userId },
+      { $pull: { friendRequests: userId } }
+    );
+    await User.updateMany(
+      { sentRequests: userId },
+      { $pull: { sentRequests: userId } }
+    );
+    await User.updateMany(
+      { kudosGiven: userId },
+      { $pull: { kudosGiven: userId } }
+    );
+
+    await Note.updateMany(
+      { "collaborators.user": userId },
+      { $pull: { collaborators: { user: userId } } }
+    );
+
     await Promise.all([
-      Note.deleteMany({ user: userId }),
+      Note.deleteMany({ owner: userId }),
       Event.deleteMany({ createdBy: userId }),
-      TimerSession.deleteMany({ userId }),
-      SessionRoom.deleteMany({ host: userId }),
+      TimerSession.deleteMany({ user: userId }),
+      SessionRoom.deleteMany({ createdBy: userId }),
       Task.deleteMany({ user: userId }),
     ]);
 
@@ -532,5 +550,5 @@ export {
   refreshAccessToken,
   signup,
   verifyUser,
-  verifyResetOTP
+  verifyResetOTP,
 };

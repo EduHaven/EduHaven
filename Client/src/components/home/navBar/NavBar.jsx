@@ -27,7 +27,7 @@ function NavBar() {
         {!isLoggedIn && (
           <Link
             className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg flex items-center gap-2"
-            to="/authenticate"
+            to="/auth/login"
           >
             <User className="w-5 h-5" />
             Login

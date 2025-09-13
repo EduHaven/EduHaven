@@ -5,16 +5,14 @@ import Home from "./pages/Home.jsx";
 import Stats from "./pages/Stats"; // Updated import name
 import GameRoom from "./routes/GameRoutes.jsx";
 import Signout from "./Auth/Signout";
-// import SignUp from "./Auth/Authenticate.jsx";
 import PageNotFound from "../src/pages/PageNotFound";
-import ProjectInfo from "../src/pages/ProjectInfo";
+import About from "./pages/AboutPage";
 import Session from "./pages/Sessions.jsx";
 import StudyRoom from "./pages/SessionRoom";
 import OtpInput from "./Auth/Verifyotp.jsx";
 import Settings from "./pages/Settings";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import GoogleRedirect from "./Auth/GoogleRedirect";
-import Auth from "./Auth/Auth";
 import ForgotPassword from "./Auth/ForgotPassword";
 import ResetPassword from "./Auth/ResetPassword";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -23,9 +21,12 @@ import FriendsPage from "./pages/FriendsPage.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Notes from "./pages/Notes";
-import Delete from "./components/settings/Delete";
+import Delete from "./Auth/DeleteAccount";
 import Chats from "./pages/Chats";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import AuthLayout from "./components/AuthLayout";
+import Login from "./Auth/Login";
+import SignUp from "./Auth/SignUp";
 
 function App() {
   const queryClient = new QueryClient();
@@ -46,25 +47,30 @@ function App() {
                 />
                 <Route path="games/*" element={<GameRoom />} />
                 <Route path="notes" element={<Notes />} />
-                <Route path="project-details" element={<ProjectInfo />} />
+                <Route path="about" element={<About />} />
                 <Route path="settings/" element={<Settings />} />
                 <Route path="friends" element={<FriendsPage />} />
                 <Route path="chat" element={<Chats />} />
                 <Route path="*" element={<PageNotFound />} />
               </Route>
 
-              <Route path="session/:id" element={<StudyRoom />} />
-              <Route path="/signout" element={<Signout />} />
-              <Route path="/verify" element={<OtpInput />} />
-              <Route path="/authenticate" element={<Auth />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/verify-reset-otp" element={<OtpInput />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/auth" element={<AuthLayout />}>
+                <Route path="login" element={<Login />} />
+                <Route path="signup" element={<SignUp />} />
+                <Route path="verify" element={<OtpInput />} />
+                <Route path="delete-account" element={<Delete />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="verify-reset-otp" element={<OtpInput />} />
+                <Route path="reset-password" element={<ResetPassword />} />
+              </Route>
+
               <Route
                 path="/auth/google/callback"
                 element={<GoogleRedirect />}
               />
-              <Route path="/delete-account" element={<Delete />} />
+
+              <Route path="/signout" element={<Signout />} />
+              <Route path="session/:id" element={<StudyRoom />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>

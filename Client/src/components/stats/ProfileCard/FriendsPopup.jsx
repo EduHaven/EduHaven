@@ -12,17 +12,14 @@ const FriendsPopup = ({
   return (
     <div className="relative flex items-center mb-4 gap-4">
       <div className="w-28 h-28 rounded-full shadow-lg overflow-hidden">
-        {user.ProfilePicture ? (
-          <img
-            src={user.ProfilePicture}
-            alt="Profile"
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full bg-indigo-600/50 flex items-center justify-center">
-            <User className="w-16 h-16 text-white/70" />
-          </div>
-        )}
+        <img
+          src={
+            user?.ProfilePicture ||
+            `https://api.dicebear.com/9.x/initials/svg?seed=${user.FirstName}`
+          }
+          alt="Profile"
+          className="w-full h-full object-cover"
+        />
       </div>
       <div className="text-center flex-1">
         <span className="block text-2xl font-bold text-[var(--text-primary)]">

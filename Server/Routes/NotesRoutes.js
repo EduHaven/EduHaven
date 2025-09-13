@@ -1,10 +1,14 @@
 import express from "express";
+import fs from "fs";
+import multer from "multer";
+import path from "path";
 import {
   getAllNotes,
   getNoteById,
   createNote,
   updateNote,
   deleteNote,
+  uploadNoteImage,
 } from "../Controller/NotesController.js";
 
 import authMiddleware from "../Middlewares/authMiddleware.js";
@@ -20,8 +24,45 @@ import { sanitizeFields } from "../security/sanitizeMiddleware.js";
 
 const router = express.Router();
 
-// Route to create a new note
-// router.post("/",authMiddleware, createNote);
+const uploadDir = "uploads/";
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(
+        null,
+        file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
+      );
+    },
+  }),
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/tiff",
+      "image/webp",
+    ];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type. Only images are allowed."), false);
+    }
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB file size limit
+  },
+});
+
 router.post(
   "/",
   authMiddleware,
@@ -50,5 +91,12 @@ router.put(
 
 // Route to delete a specific note by its ID
 router.delete("/:id", authMiddleware, deleteNote);
+
+router.post(
+  "/upload",
+  authMiddleware,
+  upload.single("noteImage"),
+  uploadNoteImage
+);
 
 export default router;

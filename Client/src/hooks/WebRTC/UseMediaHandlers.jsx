@@ -106,7 +106,9 @@ export const UseMediaHandlers = (
       try {
         let tracks = localVideoref.current.srcObject.getTracks();
         tracks.forEach((track) => track.stop());
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 

@@ -122,22 +122,22 @@ function Sidebar() {
 
         <hr className="border-[var(--txt-disabled)] opacity-50 md:my-2.5 2xl:my-4 mx-4" />
         <SidebarLink
-          to="/project-details"
+          to="/about"
           IconComponent={BadgeInfo}
           label="About"
-          isActive={location.pathname === "/project-details"}
-          ref={(el) => (linkRefs.current["/project-details"] = el)}
+          isActive={location.pathname === "/about"}
+          ref={(el) => (linkRefs.current["/about"] = el)}
         />
       </div>
 
       <div className="space-y-2 w-full">
         {!token && (
           <SidebarLink
-            to="/authenticate"
+            to="/auth/login"
             IconComponent={LogIn}
             label="Login"
-            isActive={location.pathname === "/authenticate"}
-            ref={(el) => (linkRefs.current["/authenticate"] = el)}
+            isActive={location.pathname === "/auth/login"}
+            ref={(el) => (linkRefs.current["/auth/login"] = el)}
           />
         )}
         <SidebarLink

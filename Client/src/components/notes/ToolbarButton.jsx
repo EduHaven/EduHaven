@@ -10,7 +10,7 @@ const ToolbarButton = ({ onClick, isActive, icon, title }) => (
     }}
     onMouseEnter={(e) => {
       if (!isActive) {
-        e.target.style.backgroundColor = "var(--bg-primary)";
+        e.target.style.backgroundColor = "";
       }
     }}
     onMouseLeave={(e) => {

@@ -44,7 +44,7 @@ function App() {
       <br />
       <h1>Added this for testing</h1>
       <h1>Test graph by saving custom timings without timer.</h1>
-      <h1>I'll remove it later.</h1>
+      <h1>I will remove it later.</h1>
       <br />
       <h1>Study Session Tracker</h1>
 

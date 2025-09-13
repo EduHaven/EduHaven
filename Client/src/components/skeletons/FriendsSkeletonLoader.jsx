@@ -1,7 +1,8 @@
 import React from "react";
 import UserCardSkeleton from "./UserCardSkeleton";
 
-const FriendsSkeletonLoader = ({ count = 9 }) => { // Using 9 to create a full 3x3 grid
+const FriendsSkeletonLoader = ({ count = 9 }) => {
+  // Using 9 to create a full 3x3 grid
   return (
     // --- UPDATED FOR 3-COLUMN LAYOUT ---
     // We now use CSS Grid instead of Flexbox.

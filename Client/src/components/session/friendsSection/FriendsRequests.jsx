@@ -4,7 +4,6 @@ import {
   useRejectRequest,
 } from "@/queries/friendQueries";
 import { Link } from "react-router-dom";
-import Avatar from "../../Avatar";
 
 function FriendRequests() {
   let { data: friendRequests = [], isLoading } = useFriendRequests();
@@ -60,7 +59,13 @@ function FriendRequests() {
               className="flex items-center space-x-2"
               to={`/user/${user._id}`}
             >
-              <Avatar src={user.ProfilePicture} alt={"Profile"} />
+              <img
+                src={
+                  user?.ProfilePicture ||
+                  `https://api.dicebear.com/9.x/initials/svg?seed=${user.FirstName}`
+                }
+                alt={"Profile"}
+              />
               <div>
                 <h1 className="text-lg font-medium line-clamp-1 txt hover:underline">
                   {user.FirstName

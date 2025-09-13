@@ -10,16 +10,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js for Client
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: Client/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install Client dependencies
+        run: |
+          cd Client
+          npm ci
 
-      - name: Run ESLint
-        run: npx eslint .
-        # If you want to automatically fix linting issues, use the following line instead:
-        # run: npx eslint . --fix 
-        # Note: Using --fix will modify files, which may not be desirable in a CI context.
+      - name: Run ESLint on Client
+        run: |
+          cd Client
+          npx eslint . --max-warnings=100
+
+      - name: Setup Node.js for Server
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: Server/package-lock.json
+
+      - name: Install Server dependencies
+        run: |
+          cd Server
+          npm ci
+
+      - name: Run ESLint on Server
+        run: |
+          cd Server
+          npx eslint . --max-warnings=0

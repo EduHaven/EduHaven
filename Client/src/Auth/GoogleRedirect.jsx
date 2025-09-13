@@ -18,7 +18,7 @@ export default function GoogleRedirect() {
       navigate("/", { replace: true });
       toast.success("Login successful! Welcome back.");
     } else {
-      navigate("/authenticate");
+      navigate("/auth/login");
     }
   }, [navigate, search]);
 

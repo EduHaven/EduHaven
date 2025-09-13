@@ -15,7 +15,7 @@ const UserSchema = new mongoose.Schema(
     oauthProvider: { type: String }, // e.g., "google", "github"
     oauthId: { type: String },
 
-    ProfilePicture: { type: String },
+    ProfilePicture: { type: String, default: "" },
     Bio: { type: String, maxlength: 500 },
     Gender: {
       type: String,

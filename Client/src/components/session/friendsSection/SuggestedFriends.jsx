@@ -2,7 +2,6 @@ import { MoreVertical, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Link } from "react-router-dom";
-import Avatar from "../../Avatar";
 
 import { useSendRequest, useUsersInfinite } from "@/queries/friendQueries";
 
@@ -98,7 +97,14 @@ function SuggestedFriends({ onViewSentRequests }) {
                     to={`/user/${user._id}`}
                     className="flex items-center hover:brightness-110"
                   >
-                   <Avatar src={user.ProfilePicture} alt={"Profile"} />
+                    <img
+                      src={
+                        user?.ProfilePicture ||
+                        `https://api.dicebear.com/9.x/initials/svg?seed=${user.FirstName}`
+                      }
+                      className="size-12 rounded-full transition cursor-pointer"
+                      alt={"Profile"}
+                    />
                     <div className="ml-4 flex-1 overflow-hidden">
                       <div className="text-lg font-medium line-clamp-1 txt">
                         {user.FirstName

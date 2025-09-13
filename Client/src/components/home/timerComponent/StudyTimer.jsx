@@ -1,24 +1,43 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useCallback, useRef } from "react";
 import { Clock12, PlayCircle, RotateCcw } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
-import axiosInstance from "@/utils/axios";
+import { Button } from "@/components/ui/button";
+import { useTimerStore } from "@/stores/timerStore";
+import { usePostStudySession } from "@/queries/timerQueries";
+import { useTitleUpdater } from "@/hooks/useTitleUpdater";
 
 function StudyTimer() {
-  const [time, setTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
-  const [isRunning, setIsRunning] = useState(false);
-  const [startTime, setStartTime] = useState("");
-  const [lastUpdate, setLastUpdate] = useState(new Date().toISOString());
-  const [hasPosted, setHasPosted] = useState(false);
-  const [lastSavedSeconds, setLastSavedSeconds] = useState(0);
+  const {
+    time,
+    isRunning,
+    startTime,
+    lastUpdate,
+    hasPosted,
+    lastSavedSeconds,
+    setTime,
+    setIsRunning,
+    setStartTime,
+    setLastUpdate,
+    setHasPosted,
+    setLastSavedSeconds,
+    startTimer,
+    pauseTimer,
+    resetTimer,
+  } = useTimerStore();
 
-  // Refs to access current state in event handlers
-  const isRunningRef = useRef(false);
-  const timeRef = useRef({ hours: 0, minutes: 0, seconds: 0 });
-  const startTimeRef = useRef("");
-  const hasPostedRef = useRef(false);
+  const { mutate: postSession, isLoading: isPosting } = usePostStudySession();
 
-  // Update refs when state changes
+  useTitleUpdater({
+    timeLeft: time.hours * 3600 + time.minutes * 60 + time.seconds,
+    isPaused: !isRunning,
+    isBreakMode: false,
+  });
+
+  const isRunningRef = useRef(isRunning);
+  const timeRef = useRef(time);
+  const startTimeRef = useRef(startTime);
+  const hasPostedRef = useRef(hasPosted);
+
   useEffect(() => {
     isRunningRef.current = isRunning;
     timeRef.current = time;
@@ -26,63 +45,11 @@ function StudyTimer() {
     hasPostedRef.current = hasPosted;
   }, [isRunning, time, startTime, hasPosted]);
 
-  // Utility: Calculate total time in seconds
   const getTotalSeconds = (t) => t.hours * 3600 + t.minutes * 60 + t.seconds;
 
-  // Restore session and catch up
-  useEffect(() => {
-    const saved = localStorage.getItem("studyTimer");
-    if (!saved) return;
-
-    const {
-      time: savedTime,
-      isRunning,
-      startTime,
-      lastUpdate,
-      lastSavedSeconds,
-    } = JSON.parse(saved);
-    let total = savedTime ? getTotalSeconds(savedTime) : 0;
-
-    if (isRunning && lastUpdate) {
-      const now = Date.now();
-      const last = new Date(lastUpdate).getTime();
-      const diff = Math.floor((now - last) / 1000);
-      total += diff;
-    }
-
-    setTime({
-      hours: Math.floor(total / 3600),
-      minutes: Math.floor((total % 3600) / 60),
-      seconds: total % 60,
-    });
-
-    if (isRunning) setIsRunning(true);
-    if (startTime) setStartTime(startTime);
-    if (lastUpdate) setLastUpdate(lastUpdate);
-    if (lastSavedSeconds) setLastSavedSeconds(lastSavedSeconds);
-  }, []);
-
-  // Save session to localStorage
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      localStorage.setItem(
-        "studyTimer",
-        JSON.stringify({
-          time,
-          isRunning,
-          startTime,
-          lastUpdate,
-          lastSavedSeconds,
-        })
-      );
-    }, 300);
-
-    return () => clearTimeout(timeout);
-  }, [time, isRunning, startTime, lastUpdate, lastSavedSeconds]);
-
-  // Timer logic
   useEffect(() => {
     if (!isRunning) return;
+
     const interval = setInterval(() => {
       setTime((prev) => {
         let s = prev.seconds + 1;
@@ -100,65 +67,49 @@ function StudyTimer() {
 
         return { hours: h, minutes: m, seconds: s };
       });
+
       setLastUpdate(new Date().toISOString());
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning]);
+  }, [isRunning, setTime, setLastUpdate]);
 
-  // Periodic lastUpdate refresher
-  useEffect(() => {
-    if (!isRunning) return;
-
-    const interval = setInterval(() => {
-      setLastUpdate(new Date().toISOString());
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, [isRunning]);
-
-  // Post to backend with better error handling
   const handlePostSession = useCallback(
-    async (endTime) => {
+    (endTime) => {
       const totalMinutes = getTotalSeconds(time) / 60;
-      if (totalMinutes < 1) return false;
+      if (totalMinutes < 1 || !startTime) return false;
 
-      try {
-        const res = await axiosInstance.post(`study-sessions`, {
+      postSession(
+        {
           startTime,
           endTime,
           duration: Math.round(totalMinutes),
-        });
-
-        const result = await res.data;
-        setHasPosted(true);
-        setLastSavedSeconds(getTotalSeconds(time));
-        return true;
-      } catch (err) {
-        console.error("Failed to save session:", err);
-        return false;
-      }
+        },
+        {
+          onSuccess: () => {
+            setHasPosted(true);
+            setLastSavedSeconds(getTotalSeconds(time));
+            return true;
+          },
+          onError: (err) => {
+            console.error("Failed to save session:", err);
+            return false;
+          },
+        }
+      );
     },
-    [startTime, time]
+    [startTime, time, postSession, setHasPosted, setLastSavedSeconds]
   );
 
-  // Auto post session every 30 seconds after 1 min
   useEffect(() => {
     if (!isRunning || hasPosted || !startTime) return;
 
-    const interval = setInterval(async () => {
+    const interval = setInterval(() => {
       const totalSeconds = getTotalSeconds(time);
       const totalMinutes = totalSeconds / 60;
 
-      // Save every 30 seconds if there's at least 30 seconds of new progress
       if (totalMinutes >= 1 && totalSeconds - lastSavedSeconds >= 30) {
-        const success = await handlePostSession(new Date().toISOString());
-        if (success) {
-          console.log(
-            "🔄 Auto-saved to database at",
-            new Date().toLocaleTimeString()
-          );
-        }
+        handlePostSession(new Date().toISOString());
       }
     }, 30000);
 
@@ -172,43 +123,29 @@ function StudyTimer() {
     handlePostSession,
   ]);
 
-  // Save unsaved progress function
-  const saveUnsavedProgress = useCallback(async () => {
+  const saveUnsavedProgress = useCallback(() => {
     if (!startTimeRef.current || hasPostedRef.current) return;
 
     const currentTime = timeRef.current;
     const totalSeconds = getTotalSeconds(currentTime);
 
     if (totalSeconds >= 60) {
-      try {
-        const res = await axiosInstance.post("study-sessions", {
-          startTime: startTimeRef.current,
-          endTime: new Date().toISOString(),
-          duration: Math.round(totalSeconds / 60),
-        });
-
-        if (res.status === 200) {
-          console.log("Saved progress before leaving");
-          localStorage.removeItem("studyTimer");
-        }
-      } catch (err) {
-        console.error("Failed to save on exit:", err);
-      }
+      postSession({
+        startTime: startTimeRef.current,
+        endTime: new Date().toISOString(),
+        duration: Math.round(totalSeconds / 60),
+      });
     }
-  }, []);
+  }, [postSession]);
 
-  // Save on exit or tab hidden
   useEffect(() => {
     const handleBeforeUnload = (e) => {
-      const currentTime = timeRef.current;
-      const totalSeconds = getTotalSeconds(currentTime);
+      const totalSeconds = getTotalSeconds(timeRef.current);
 
       if (isRunningRef.current && totalSeconds >= 60 && !hasPostedRef.current) {
         e.preventDefault();
         e.returnValue =
           "You have unsaved study progress. Are you sure you want to leave?";
-
-        // Attempt to save in background
         saveUnsavedProgress();
         return e.returnValue;
       }
@@ -220,44 +157,28 @@ function StudyTimer() {
       }
     };
 
-    // Handle SPA navigation
-    const handlePopState = () => {
-      if (
-        isRunningRef.current &&
-        getTotalSeconds(timeRef.current) >= 60 &&
-        !hasPostedRef.current
-      ) {
-        const confirmLeave = window.confirm(
-          "You have unsaved study progress. Do you want to save it before leaving?"
-        );
-        if (confirmLeave) {
-          saveUnsavedProgress();
-        }
-      }
-    };
-
     window.addEventListener("beforeunload", handleBeforeUnload);
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("popstate", handlePopState);
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("popstate", handlePopState);
     };
   }, [saveUnsavedProgress]);
 
-  // Start / Pause toggle
   const handleStartPause = () => {
-    if (!isRunning && !startTime) {
-      setStartTime(new Date().toISOString());
-      setHasPosted(false);
-      setLastSavedSeconds(0);
+    if (!isRunning) {
+      if (!startTime) {
+        setStartTime(new Date().toISOString());
+        setHasPosted(false);
+        setLastSavedSeconds(0);
+      }
+      startTimer();
+    } else {
+      pauseTimer();
     }
-    setIsRunning((prev) => !prev);
   };
 
-  // Reset timer with confirmation
   const handleReset = async () => {
     const totalSeconds = getTotalSeconds(time);
 
@@ -267,17 +188,11 @@ function StudyTimer() {
       );
 
       if (confirmReset) {
-        await handlePostSession(new Date().toISOString());
+        handlePostSession(new Date().toISOString());
       }
     }
 
-    setTime({ hours: 0, minutes: 0, seconds: 0 });
-    setIsRunning(false);
-    setStartTime("");
-    setLastUpdate(new Date().toISOString());
-    setHasPosted(false);
-    setLastSavedSeconds(0);
-    localStorage.removeItem("studyTimer");
+    resetTimer();
   };
 
   return (
@@ -293,15 +208,14 @@ function StudyTimer() {
       </div>
 
       <div className="flex gap-4 justify-center mt-4">
-        <motion.button
+        <Button
           onClick={handleStartPause}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className={`relative px-6 py-2 rounded-lg flex items-center gap-2 transition-colors duration-300 ease-in-out ${
+          className={`relative ${
             isRunning
               ? "bg-black/20 hover:bg-black/30"
               : "bg-purple-600 hover:bg-purple-700"
           }`}
+          disabled={isPosting}
         >
           <span
             className={`flex items-center gap-2 transition-opacity duration-300 ${
@@ -312,22 +226,22 @@ function StudyTimer() {
             <span>Start Studying</span>
           </span>
           <span
-            className={`absolute inset-0 flex items-center justify-center gap-2 transition-opacity duration-300 ${
+            className={`absolute flex items-center justify-center gap-2 transition-opacity duration-300 ${
               isRunning ? "opacity-100" : "opacity-0"
             }`}
           >
             <Clock12 className="w-5 h-5 animate-spin" />
             <span>Pause</span>
           </span>
-        </motion.button>
-        <motion.button
+        </Button>
+
+        <Button
           onClick={handleReset}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
           className="hover:bg-red-700 p-2 rounded-lg flex items-center gap-2"
+          disabled={isPosting}
         >
           <RotateCcw className="w-5 h-5" />
-        </motion.button>
+        </Button>
       </div>
     </div>
   );
