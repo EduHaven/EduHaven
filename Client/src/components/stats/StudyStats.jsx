@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdownmenu";
 import { useParams } from "react-router-dom";
 import { useConsolidatedStats } from "@/queries/timerQueries";
 

@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdownmenu";
 import axiosInstance from "@/utils/axios";
 import { useParams } from "react-router-dom";
 
