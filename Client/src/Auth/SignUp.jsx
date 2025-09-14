@@ -49,9 +49,12 @@ function SignUp() {
         navigate("/auth/login");
       }
     } catch (error) {
-      console.error(`Signup failed:`, error.response?.data || error.message);
-      toast.error(error.response?.data?.error || "An error occurred");
-    }
+        if (error.response?.data?.errors?.length) {
+          error.response.data.errors.forEach((err) => toast.error(err.msg));
+        } else {
+          toast.error(error.response?.data?.error || "An error occurred");
+        }
+      };  
   };
 
   const password = watch("Password", "");
@@ -152,6 +155,14 @@ function SignUp() {
                 placeholder="John"
                 {...register("FirstName", {
                   required: "First Name is required",
+                  minLength: {
+                    value: 2,
+                    message: "First name should be at least 2 characters long",
+                  },
+                  pattern: {
+                    value: /^[A-Za-z]+$/i,
+                    message: "First name must contain only letters",
+                  },
                 })}
                 className="block w-full rounded-xl border bg-transparent border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
               />
@@ -176,6 +187,14 @@ function SignUp() {
                 placeholder="Doe"
                 {...register("LastName", {
                   required: "Last Name is required",
+                  minLength: {
+                    value: 2,
+                    message: "Last name should be at least 2 characters long",
+                  },
+                  pattern: {
+                    value: /^[A-Za-z]+$/i,
+                    message: "Last name must contain only letters",
+                  },
                 })}
                 className="block w-full rounded-xl border bg-transparent border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
               />

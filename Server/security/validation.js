@@ -8,7 +8,7 @@ export const signupValidationRules = () => [
     .notEmpty()
     .withMessage("First name is required")
     .isLength({ min: 2, max: 50 })
-    .withMessage("First name must be 2-50 characters")
+    .withMessage("First name should be at least 2 characters long")
     .matches(/^[a-zA-Z\s]+$/)
     .withMessage("First name must contain only letters"),
 
@@ -17,7 +17,7 @@ export const signupValidationRules = () => [
     .notEmpty()
     .withMessage("Last name is required")
     .isLength({ min: 2, max: 50 })
-    .withMessage("Last name must be 2-50 characters")
+    .withMessage("Last name should be at least 2 characters long")
     .matches(/^[a-zA-Z\s]+$/)
     .withMessage("Last name must contain only letters"),
 
