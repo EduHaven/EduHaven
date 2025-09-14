@@ -1,45 +1,112 @@
-name: ESLint Check
+name: CI - Lint, Build & Test
 
 on:
   pull_request:
     branches: [ main ]
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  eslint:
+  determine-changes:
+    name: Determine changed paths
+    runs-on: ubuntu-latest
+    outputs:
+      client: ${{ steps.filter.outputs.client }}
+      server: ${{ steps.filter.outputs.server }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect changed paths
+        id: filter
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            client:
+              - 'Client/**'
+              - 'client/**'
+            server:
+              - 'Server/**'
+              - 'server/**'
+            workflows:
+              - '.github/workflows/**'
+
+  lint:
+    name: Lint (ESLint) — run across repo
+    needs: determine-changes
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js for Client
+      - name: Setup Node.js (root)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Run Client ESLint (if present)
+        run: |
+          if [ -d Client ] && [ -f Client/package.json ]; then
+            cd Client
+            npm ci
+            npm run lint --if-present
+          fi
+
+      - name: Run Server ESLint (if present)
+        run: |
+          if [ -d Server ] && [ -f Server/package.json ]; then
+            cd Server
+            npm ci
+            npm run lint --if-present
+          fi
+
+  client-build:
+    name: Client — install, lint & build (runs only if Client files changed)
+    needs: determine-changes
+    if: ${{ needs.determine-changes.outputs.client == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (Client)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
           cache: 'npm'
           cache-dependency-path: Client/package-lock.json
 
-      - name: Install Client dependencies
+      - name: Install and build Client
         run: |
           cd Client
           npm ci
+          npm run lint --if-present
+          npm run build --if-present
 
-      - name: Run ESLint on Client
-        run: |
-          cd Client
-          npx eslint . --max-warnings=100
+  server-checks:
+    name: Server — install, lint & test (runs only if Server files changed)
+    needs: determine-changes
+    if: ${{ needs.determine-changes.outputs.server == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js for Server
+      - name: Setup Node.js (Server)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
           cache: 'npm'
           cache-dependency-path: Server/package-lock.json
 
-      - name: Install Server dependencies
+      - name: Install and run Server checks
         run: |
           cd Server
           npm ci
-
-      - name: Run ESLint on Server
-        run: |
-          cd Server
-          npx eslint . --max-warnings=0
+          npm run lint --if-present
+          npm test --if-present

@@ -25,6 +25,10 @@ const noteSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    pinnedAt: {
+      type: Date,
+      default: null,
+    },
     collaborators: [
       {
         user: {
