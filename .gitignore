@@ -13,3 +13,9 @@ bun.lock
 
 # Ignore env files
 .env
+
+# Ignore specific JS files (agar chahiye toh)
+CLO.js
+dbtest.js
+jut.js
+sendmail.js

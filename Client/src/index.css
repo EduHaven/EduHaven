@@ -18,7 +18,7 @@
 
   .dark {
     --bg-primary: #111827;
-    --bg-sec: #2d3a4f;
+    --bg-sec: #1f2937;
     --bg-ter: #374151;
     --txt: #d1d5db;
     --txt-dim: #9ca3af;
@@ -31,7 +31,7 @@
   }
   .theme-space-black {
     --bg-primary: #000000;
-    --bg-sec: #343436;
+    --bg-sec: #181818;
     --bg-ter: #1f1f1f;
     --txt: #e5e5e5;
     --txt-dim: #a3a3a3;
@@ -43,7 +43,7 @@
   }
   .theme-cyberpunk {
     --bg-primary: #0f0f0f;
-    --bg-sec: #404040;
+    --bg-sec: #1f1f1f;
     --bg-ter: #2e2e2e;
     --txt: #00ffe0;
     --txt-dim: #00c6ff;
@@ -56,7 +56,7 @@
 
   .theme-forest {
     --bg-primary: #07110e;
-    --bg-sec: #214232;
+    --bg-sec: #12241c;
     --bg-ter: #1d4635;
     --txt: #e0ffe0;
     --txt-dim: #a3d8a3;
@@ -69,7 +69,7 @@
 
   .theme-coffee {
     --bg-primary: #180f09;
-    --bg-sec: #47351e;
+    --bg-sec: #2c2013;
     --bg-ter: #463425;
     --txt: #f4e9d8;
     --txt-dim: #d6c4aa;
@@ -81,7 +81,7 @@
   }
   .theme-neon-sunset {
     --bg-primary: #0a0a0f;
-    --bg-sec: #2d1851;
+    --bg-sec: #1a0e2e;
     --bg-ter: #2d1b47;
     --txt: #ff6b9d;
     --txt-dim: #ff9a00;
@@ -95,7 +95,7 @@
   /* Ocean Breeze (Light) */
   .theme-ocean-breeze {
     --bg-primary: #f0f9ff;
-    --bg-sec: #e0f2ff;
+    --bg-sec: #e0f2fe;
     --bg-ter: #ffffff;
     --txt: #0c4a6e;
     --txt-dim: #0369a1;
@@ -109,7 +109,7 @@
   /* Volcanic (Dark) */
   .theme-volcanic {
     --bg-primary: #140700;
-    --bg-sec: #452514;
+    --bg-sec: #29160c;
     --bg-ter: #3b261c;
     --txt: #ffe2d8;
     --txt-dim: #ffc386;
@@ -123,7 +123,7 @@
   /* Mint Dream (Light) */
   .theme-mint-dream {
     --bg-primary: #f0fdf4;
-    --bg-sec: #bfdbc9;
+    --bg-sec: #dcfce7;
     --bg-ter: #ffffff;
     --txt: #14532d;
     --txt-dim: #166534;
@@ -136,7 +136,7 @@
   /* Rose Gold (Light) */
   .theme-rose-gold {
     --bg-primary: #fef7f7;
-    --bg-sec: #ffd4d4;
+    --bg-sec: #fce7e7;
     --bg-ter: #ffd1d1;
     --txt: #7c2d12;
     --txt-dim: #a3542f;
@@ -150,7 +150,7 @@
   /* Matrix (Dark) */
   .theme-matrix {
     --bg-primary: #000000;
-    --bg-sec: #023802;
+    --bg-sec: #012201;
     --bg-ter: #003500;
     --txt: #21ff21;
     --txt-dim: #00a700;
@@ -178,7 +178,7 @@
   /* Midnight Blue (Dark) */
   .theme-midnight-blue {
     --bg-primary: #020617;
-    --bg-sec: #1c2b4f;
+    --bg-sec: #0f172a;
     --bg-ter: #1e293b;
     --txt: #cbd5e1;
     --txt-dim: #94a3b8;
@@ -220,7 +220,7 @@
   /* Obsidian (Dark) */
   .theme-obsidian {
     --bg-primary: #0c0c0c;
-    --bg-sec: #373737;
+    --bg-sec: #1c1c1c;
     --bg-ter: #2c2c2c;
     --txt: #e5e5e5;
     --txt-dim: #b3b3b3;
@@ -276,7 +276,7 @@
   /* Sapphire Dream (Dark) */
   .theme-sapphire-dream {
     --bg-primary: #0a0a2e;
-    --bg-sec: #1c2a4f;
+    --bg-sec: #16213e;
     --bg-ter: #1e3a5f;
     --txt: #87ceeb;
     --txt-dim: #add8e6;
@@ -304,7 +304,7 @@
   /* Deep Purple (Dark) */
   .theme-deep-purple {
     --bg-primary: #100020;
-    --bg-sec: #2d1c45;
+    --bg-sec: rgb(32, 20, 49);
     --bg-ter: #312557;
     --txt: #ddd6fe;
     --txt-dim: #c4b5fd;
@@ -318,7 +318,7 @@
   /* Arctic Mint (Light) */
   .theme-arctic-mint {
     --bg-primary: #f0fdfa;
-    --bg-sec: #cffff5;
+    --bg-sec: #ccfbf1;
     --bg-ter: #ffffff;
     --txt: #134e4a;
     --txt-dim: #0f766e;

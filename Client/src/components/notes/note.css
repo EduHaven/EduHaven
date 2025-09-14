@@ -163,7 +163,7 @@ body {
 
 .ProseMirror hr {
   border: none;
-  border-top: 2px solid var(--bg-sec);
+  border-top: 2px solid var(--txt);
   margin: 2em 0;
 }
 
