@@ -63,6 +63,12 @@ const UserSchema = new mongoose.Schema(
         earnedAt: { type: Date, default: Date.now },
       },
     ],
+    // Ephemeral fields for secure destructive actions (e.g., account deletion)
+    deletionOTP: {
+      code: { type: String },
+      expiresAt: { type: Date },
+      verified: { type: Boolean, default: false },
+    },
   },
   {
     timestamps: true,

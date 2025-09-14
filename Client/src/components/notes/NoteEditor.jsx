@@ -1,4 +1,4 @@
-import { EditorContent } from "@tiptap/react";
+import { EditorContent, } from "@tiptap/react";
 import {
   Bold,
   Code,
@@ -29,7 +29,8 @@ const NoteEditor = ({
   insertLink,
   insertImage,
   insertTable,
-}) => {
+}) => 
+  { 
   return (
     <motion.div
       className="flex-1 flex flex-col rounded-tl-3xl"

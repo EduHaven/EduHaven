@@ -497,6 +497,20 @@ const deleteAccount = async (req, res) => {
 
     const userId = req.user._id;
 
+    // Ensure deletion OTP was verified and still valid
+    const currentUser = await User.findById(userId);
+    if (!currentUser?.deletionOTP?.verified) {
+      return res
+        .status(403)
+        .json({ error: "Deletion OTP not verified or missing" });
+    }
+    if (
+      currentUser.deletionOTP.expiresAt &&
+      currentUser.deletionOTP.expiresAt < new Date()
+    ) {
+      return res.status(403).json({ error: "Deletion OTP expired" });
+    }
+
     // 1. Remove user from other users' friend lists
     await User.updateMany({ friends: userId }, { $pull: { friends: userId } });
 
@@ -539,8 +553,61 @@ const deleteAccount = async (req, res) => {
   }
 };
 
+// Request deletion OTP (email)
+const requestDeletionOTP = async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const code = Math.floor(Math.random() * 1000000)
+      .toString()
+      .padStart(6, "0");
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+
+    user.deletionOTP = { code, expiresAt, verified: false };
+    await user.save();
+
+    await sendMail(user.Email, user.FirstName, code, "reset"); // reuse reset template
+
+    return res.status(200).json({ message: "Deletion OTP sent" });
+  } catch (error) {
+    console.error("Error requesting deletion OTP:", error);
+    return res.status(500).json({ error: "Failed to send deletion OTP" });
+  }
+};
+
+// Verify deletion OTP
+const verifyDeletionOTP = async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+    const { otp } = req.body;
+    if (!otp) return res.status(422).json({ error: "OTP required" });
+
+    const user = await User.findById(req.user._id);
+    if (!user?.deletionOTP?.code) {
+      return res.status(400).json({ error: "No deletion OTP requested" });
+    }
+    if (user.deletionOTP.expiresAt < new Date()) {
+      return res.status(400).json({ error: "OTP expired" });
+    }
+    if (user.deletionOTP.code !== otp) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    user.deletionOTP.verified = true;
+    await user.save();
+    return res.status(200).json({ message: "Deletion OTP verified" });
+  } catch (error) {
+    console.error("Error verifying deletion OTP:", error);
+    return res.status(500).json({ error: "Failed to verify deletion OTP" });
+  }
+};
+
 export {
   deleteAccount,
+  requestDeletionOTP,
+  verifyDeletionOTP,
   googleAuth,
   googleCallback,
   login,

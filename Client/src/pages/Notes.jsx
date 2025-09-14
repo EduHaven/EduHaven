@@ -229,7 +229,7 @@ const Notes = () => {
         title: `Note ${notes.length + 1}`,
         content: "Write here...",
         color: "default",
-        isPinned: false,
+        pinnedAt: false,
       },
       {
         onSuccess: (newNote) => setSelectedNote(newNote),
@@ -255,7 +255,7 @@ const Notes = () => {
 
   const togglePin = (id) => {
     const note = notes.find((n) => n._id === id);
-    updateNote(id, { isPinned: !note.isPinned });
+    updateNote(id, { pinnedAt: !note.pinnedAt });
   };
 
   const changeColor = (id, color) => {
@@ -338,8 +338,8 @@ const Notes = () => {
     return matchesSearch;
   });
 
-  const pinnedNotes = (notes || []).filter((note) => note.isPinned);
-  const unpinnedNotes = (notes || []).filter((note) => !note.isPinned);
+  const pinnedNotes = (notes || []).filter((note) => note.pinnedAt);
+  const unpinnedNotes = (notes || []).filter((note) => !note.pinnedAt);
 
   if (isLoading) {
     return <p>Loading...</p>;
