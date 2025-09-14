@@ -229,7 +229,7 @@ const Notes = () => {
         title: `Note ${notes.length + 1}`,
         content: "Write here...",
         color: "default",
-        isPinned: false,
+        pinnedAt: false,
       },
       {
         onSuccess: (newNote) => setSelectedNote(newNote),
