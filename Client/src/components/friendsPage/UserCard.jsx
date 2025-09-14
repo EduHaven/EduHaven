@@ -108,7 +108,7 @@ function UserCard({ user, selectedTab }) {
         {selectedTab === "sentRequests" && (
           <Button
             onClick={() => cancelRequest(user._id)}
-            variant="destructive"
+            variant="cancel"
             size="default"
             className="w-full text-sm txt flex items-center justify-center gap-1"
           >
