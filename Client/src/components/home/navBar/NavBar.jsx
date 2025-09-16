@@ -6,15 +6,16 @@ import PinnedLinks from "./PinnedLinks.jsx";
 import Slogan from "./Slogan.jsx";
 import OnlineUsers from "./OnlineUsers.jsx";
 import Calculator from "./Calculator.jsx";
+import { useUserProfile } from "../../../contexts/UserProfileContext.jsx";
 
 function NavBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedId, setSelectedId] = useState(""); // for AI, do not remove
-
+  const { token } = useUserProfile();
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) setIsLoggedIn(true);
-  }, []);
+    const currentToken = token;
+    if (currentToken) setIsLoggedIn(true);
+  }, [token]);
 
   return (
     <div className="flex justify-between items-center bg-transparent z-10">

@@ -12,14 +12,14 @@ const Badges = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userId, setUserId] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const { user, fetchUserDetails } = useUserProfile();
+  const { user, fetchUserDetails, token } = useUserProfile();
 
   // Get user ID from token
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    const currentToken = token;
+    if (currentToken) {
       try {
-        const decoded = jwtDecode(token);
+        const decoded = jwtDecode(currentToken);
         setUserId(decoded.id);
 
         // Fetch user details if not already loaded
@@ -30,16 +30,16 @@ const Badges = () => {
         console.error("Error decoding token:", error);
       }
     }
-  }, [user, fetchUserDetails]);
+  }, [user, fetchUserDetails, token]);
 
   // Fetch badges from backend API instead of client-side calculation
   const fetchBadgesFromServer = async () => {
     if (!userId) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const currentToken = token;
       const response = await axiosInstance.get(`/user/badges`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${currentToken}` },
       });
 
       if (response.data.badges) {

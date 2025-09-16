@@ -15,6 +15,7 @@ import FriendsPopup from "./FriendsPopup";
 import ProfileDetails from "./ProfileDetails";
 import ProfileHeader from "./ProfileHeader";
 import ProfileSkeleton from "./ProfileSkeleton";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 const ProfileCard = ({ isCurrentUser = false }) => {
   // ... keep all your state & logic here
@@ -27,6 +28,8 @@ const ProfileCard = ({ isCurrentUser = false }) => {
   const [hasGivenKudos, setHasGivenKudos] = useState(false);
   const [friendRequestStatus, setFriendRequestStatus] = useState("Add Friend");
   const [isFriendRequestLoading, setIsFriendRequestLoading] = useState(false);
+
+  const { token } = useUserProfile();
 
   const { mutate: sendRequest } = useSendRequest();
   const { mutate: cancelRequest } = useCancelRequest();
@@ -156,9 +159,9 @@ const ProfileCard = ({ isCurrentUser = false }) => {
     const fetchUserProfile = async () => {
       try {
         let response;
-        let token = localStorage.getItem("token");
+        let currentToken = token;
         if (isCurrentUser) {
-          const decoded = jwtDecode(token);
+          const decoded = jwtDecode(currentToken);
           response = await axiosInstance.get(`/user/details?id=${decoded.id}`);
         } else {
           response = await axiosInstance.get(`/user/details?id=${userId}`);
@@ -177,7 +180,7 @@ const ProfileCard = ({ isCurrentUser = false }) => {
       }
     };
     fetchUserProfile();
-  }, [isCurrentUser, userId]);
+  }, [isCurrentUser, userId, token]);
 
   useEffect(() => {
     if (showPopup) {

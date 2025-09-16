@@ -2,18 +2,19 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
 import { RotateCcw } from "lucide-react";
+import { useUserProfile } from "../../../contexts/UserProfileContext";
 
 function Slogan() {
   const [quote, setQuote] = useState("Stay hungry; stay foolish.");
   const [author, setAuthor] = useState("");
   const [displayMode, setDisplayMode] = useState("greeting");
   const [firstName, setFirstName] = useState("User");
-
+  const { token } = useUserProfile();
   const getFirstNameFromJWT = () => {
-    const token = localStorage.getItem("token");
-    if (!token) return "User";
+    const currentToken = token;
+    if (!currentToken) return "User";
 
-    const decoded = jwtDecode(token);
+    const decoded = jwtDecode(currentToken);
     return decoded?.FirstName || "User";
   };
 

@@ -14,7 +14,7 @@ import AdCard from "@/components/AdCard";
 
 const Stats = ({ isCurrentUser = false }) => {
   const { userId } = useParams();
-  const { user: currentUser, fetchUserDetails } = useUserProfile();
+  const { user: currentUser, fetchUserDetails, token } = useUserProfile();
   const [userStats, setUserStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -22,10 +22,10 @@ const Stats = ({ isCurrentUser = false }) => {
     const fetchStats = async () => {
       try {
         if (isCurrentUser) {
-          const token = localStorage.getItem("token");
-          if (!token) return;
+          const currentToken = token;
+          if (!currentToken) return;
 
-          const decoded = jwtDecode(token);
+          const decoded = jwtDecode(currentToken);
           await fetchUserDetails(decoded.id);
 
           setUserStats({
@@ -73,7 +73,7 @@ const Stats = ({ isCurrentUser = false }) => {
     };
 
     fetchStats();
-  }, [isCurrentUser, userId, currentUser, fetchUserDetails]);
+  }, [isCurrentUser, userId, currentUser, fetchUserDetails, token]);
 
   if (isCurrentUser && !currentUser) {
     return <NotLogedInPage />;

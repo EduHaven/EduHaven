@@ -10,13 +10,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
 import { useLeaderboard } from "@/queries/timerQueries";
+import { useUserProfile } from "../../contexts/UserProfileContext";
 
 const Leaderboard = () => {
   const [view, setView] = useState("weekly");
   const [friendsOnly, setFriendsOnly] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const { userId } = useParams();
-
+  const { token } = useUserProfile();
   // Replace direct axios call with TanStack Query hook
   const {
     data: leaderboard = [],
@@ -26,15 +27,15 @@ const Leaderboard = () => {
 
   // Extract currentUserId from JWT token (keep this part)
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    const currentToken = token;
+    if (!currentToken) return;
     try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
+      const payload = JSON.parse(atob(currentToken.split(".")[1]));
       setCurrentUserId(payload.id);
     } catch (err) {
       console.error("Invalid token", err);
     }
-  }, []);
+  }, [token]);
 
   const handleDropdownClick = (viewType) => setView(viewType);
   const handleFriendsOnlyToggle = () => setFriendsOnly((prev) => !prev);

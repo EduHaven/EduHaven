@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import { useUserProfile } from "@/contexts/UserProfileContext";
 const Delete = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -11,15 +11,15 @@ const Delete = () => {
   const [otpRequested, setOtpRequested] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [otp, setOtp] = useState("");
-
+  const { token, clearToken } = useUserProfile();
   // redirect if no token
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    const currentToken = token;
+    if (!currentToken) {
       toast.info("Please login first");
       navigate("/auth/login");
     }
-  }, [navigate]);
+  }, [navigate, token]);
   const navigate = useNavigate();
 
   const handleProceed = () => {
@@ -72,7 +72,7 @@ const Delete = () => {
       if (res.status !== 200)
         throw new Error(data.error || "Failed to delete account");
       toast.success(data.message || "Account deleted successfully");
-      localStorage.removeItem("token");
+      clearToken();
       localStorage.removeItem("refreshToken");
       setTimeout(() => navigate("/"), 1500);
     } catch (e) {
@@ -184,7 +184,9 @@ const Delete = () => {
                       type="text"
                       maxLength={6}
                       value={otp}
-                      onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ""))}
+                      onChange={(e) =>
+                        setOtp(e.target.value.replace(/[^0-9]/g, ""))
+                      }
                       placeholder="Enter 6-digit OTP"
                       className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       disabled={isLoading}
@@ -199,7 +201,9 @@ const Delete = () => {
                   </div>
                 )}
                 {otpVerified && (
-                  <p className="text-sm text-green-600 font-medium text-center">OTP verified ✔</p>
+                  <p className="text-sm text-green-600 font-medium text-center">
+                    OTP verified ✔
+                  </p>
                 )}
               </div>
               <div className="flex justify-end gap-4">

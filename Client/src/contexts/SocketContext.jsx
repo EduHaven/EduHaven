@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import UseSocket from "../hooks/UseSocket.jsx";
 import { jwtDecode } from "jwt-decode";
+import { useUserProfile } from "./UserProfileContext.jsx";
 
 const SocketContext = createContext();
 
@@ -10,20 +11,20 @@ const UseSocketContext = () => {
 
 export const SocketProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-
+  const token = useUserProfile();
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    const decoded = jwtDecode(token);
+    const currentToken = token;
+    if (!currentToken) return;
+    const decoded = jwtDecode(currentToken);
 
     const userData = {
-      token: token,
+      token: currentToken,
       id: decoded.id,
       name: `${decoded.FirstName} ${decoded?.LastName ?? ""}`,
       profileImage: decoded.profileImage,
     };
     setUser(userData);
-  }, []);
+  }, [token]);
 
   const { socket, isConnected, onlineUsers } = UseSocket(user);
 

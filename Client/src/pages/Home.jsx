@@ -6,11 +6,11 @@ import GoalsComponent from "@/components/home/goals/GoalsComponent.jsx";
 import NavBar from "@/components/home/navBar/NavBar";
 import PinnedRooms from "@/components/home/PinnedRooms";
 import LandingPage from "./LandingPage";
-import { useUserProfile } from "../contexts/UserProfileContext";
+import { useUserProfile } from "../contexts/UserProfileContext.jsx";
 import { Link } from "react-router-dom";
 
 function StudyRoom() {
-  const token = localStorage.getItem("token");
+  const { token } = useUserProfile();
   const { isProfileComplete } = useUserProfile();
 
   if (!token) {
@@ -56,9 +56,9 @@ function StudyRoom() {
             </p>
             <Link
               to="/settings"
-              className="inline-block px-5 py-2 rounded-xl font-semibold 
-                 bg-gradient-to-r from-red-600 to-pink-600 text-white 
-                 hover:from-red-500 hover:to-pink-500 
+              className="inline-block px-5 py-2 rounded-xl font-semibold
+                 bg-gradient-to-r from-red-600 to-pink-600 text-white
+                 hover:from-red-500 hover:to-pink-500
                  transition shadow-[0_0_18px_rgba(255,0,0,0.8)]"
             >
               Complete Now →

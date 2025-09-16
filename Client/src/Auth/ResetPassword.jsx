@@ -74,8 +74,6 @@ function ResetPassword() {
   useEffect(() => {
     // Get email from localStorage
     const email = localStorage.getItem("resetEmail");
-    const resetToken = localStorage.getItem("resetToken");
-    const otpVerified = localStorage.getItem("otpVerified");
     if (email) {
       setResetEmail(email);
     } else {

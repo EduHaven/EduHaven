@@ -5,12 +5,12 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 import axiosInstance from "@/utils/axios";
 import { motion } from "framer-motion";
-
+import { useUserProfile } from "@/contexts/UserProfileContext";
 const backendUrl = import.meta.env.VITE_API_URL;
 
 function Login() {
   const navigate = useNavigate();
-
+  const { setToken } = useUserProfile();
   const handleGoogleLogin = () => {
     window.location.href = `${backendUrl}/auth/google`;
   };
@@ -29,12 +29,12 @@ function Login() {
     try {
       const url = `/auth/login`;
       const response = await axiosInstance.post(url, data);
-      console.log(response.data);
+      // console.log(response.data);
       reset();
       const { token, refreshToken } = response.data;
 
       if (token) {
-        localStorage.setItem("token", token);
+        setToken(token);
       }
       if (refreshToken) {
         localStorage.setItem("refreshToken", refreshToken);

@@ -12,9 +12,10 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 function Sidebar() {
-  const token = localStorage.getItem("token");
+  const { token } = useUserProfile();
   const location = useLocation();
   const isHome = location.pathname === "/";
   const sidebarRef = useRef(null);

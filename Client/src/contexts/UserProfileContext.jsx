@@ -1,88 +1,107 @@
-import { createContext, useContext, useState } from "react";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import axiosInstance from "@/utils/axios";
 
-const UserProfileContext = createContext({
-  user: null,
-  setUser: () => {},
-  fetchUserDetails: () => Promise.resolve(null),
-  isProfileComplete: () => false,
-  isBasicInfoComplete: () => Promise.resolve(false),
-  isEduSkillsComplete: () => Promise.resolve(false),
-});
+const useUserProfile = create(
+  persist(
+    (set, get) => ({
+      // State
+      user: null,
+      token: null,
 
-// Provider component
-export const UserProfileProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+      // Actions
+      setUser: (user) => set({ user }),
 
-  const isProfileComplete = () => {
-    if (!user) return false;
+      setToken: (token) => set({ token }),
 
-    const requiredFields = [
-      "FirstName",
-      "LastName",
-      "Email",
-      "Bio",
-      "Gender",
-      "University",
-      "Country",
-      "FieldOfStudy",
-      "GraduationYear",
-    ];
+      clearUser: () => set({ user: null }),
 
-    return requiredFields.every((field) => {
-      const value = user[field];
-      return value !== null && value !== undefined && value !== "";
-    });
-  };
+      clearToken: () => set({ token: null }),
 
-  const isBasicInfoComplete = () => {
-    if (!user) return false;
-    const basicFields = ["FirstName", "LastName", "Country", "Bio", "Gender"];
-    return basicFields.every((f) => user[f]);
-  };
+      clearAll: () => set({ user: null, token: null }),
 
-  const isEduSkillsComplete = () => {
-    if (!user) return false;
-    const eduFields = ["University", "FieldOfStudy", "GraduationYear"];
-    return eduFields.every((f) => user[f]);
-  };
+      // Helper functions
+      isProfileComplete: () => {
+        const { user } = get();
+        if (!user) return false;
 
-  const fetchUserDetails = async (userId) => {
-    try {
-      const response = await axiosInstance.get(`/user/details?id=${userId}`);
-      const userData = response.data;
-      setUser(userData);
-      return userData;
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-      return null;
+        const requiredFields = [
+          "FirstName",
+          "LastName",
+          "Email",
+          "Bio",
+          "Gender",
+          "University",
+          "Country",
+          "FieldOfStudy",
+          "GraduationYear",
+        ];
+
+        return requiredFields.every((field) => {
+          const value = user[field];
+          return value !== null && value !== undefined && value !== "";
+        });
+      },
+
+      isBasicInfoComplete: () => {
+        const { user } = get();
+        if (!user) return false;
+
+        const basicFields = [
+          "FirstName",
+          "LastName",
+          "Country",
+          "Bio",
+          "Gender",
+        ];
+        return basicFields.every((f) => user[f]);
+      },
+
+      isEduSkillsComplete: () => {
+        const { user } = get();
+        if (!user) return false;
+
+        const eduFields = ["University", "FieldOfStudy", "GraduationYear"];
+        return eduFields.every((f) => user[f]);
+      },
+
+      // Async actions
+
+      fetchUserDetails: async (userId) => {
+        try {
+          const response = await axiosInstance.get(
+            `/user/details?id=${userId}`
+          );
+
+          // Extract and store token
+          const token = response.config.headers.Authorization.replace(
+            "Bearer ",
+            ""
+          );
+          // console.log("User Details Token:", token);
+
+          const userData = response.data;
+          console.log("User Data:", userData, token);
+
+          // Update both user and token in store
+          set({ user: userData });
+
+          return userData;
+        } catch (error) {
+          console.error("Error fetching user details:", error);
+          return null;
+        }
+      },
+    }),
+    {
+      name: "user-profile-storage", // Storage key
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+      }), // Only persist user and token
     }
-  };
-
-  return (
-    <UserProfileContext.Provider
-      value={{
-        user,
-        setUser,
-        fetchUserDetails,
-        isProfileComplete,
-        isBasicInfoComplete,
-        isEduSkillsComplete,
-      }}
-    >
-      {children}
-    </UserProfileContext.Provider>
-  );
-};
-
-// Custom hook for using user profile context
-export const useUserProfile = () => {
-  const context = useContext(UserProfileContext);
-  if (!context) {
-    throw new Error("useUserProfile must be used within a UserProfileProvider");
-  }
-  return context;
-};
+  )
+);
 
 /**
  * Fetches the full public stats of a user by userId.
@@ -104,3 +123,5 @@ export const fetchUserStats = async (userId) => {
     throw error;
   }
 };
+
+export { useUserProfile };

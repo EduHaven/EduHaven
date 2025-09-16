@@ -12,20 +12,20 @@ import NotLogedInPage from "@/components/NotLogedInPage";
 import { useSearchParams } from "react-router-dom";
 
 const Settings = () => {
-  const { user, fetchUserDetails } = useUserProfile();
+  const { user, fetchUserDetails, token } = useUserProfile();
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    const currentToken = token;
+    if (currentToken) {
       try {
-        const decoded = jwtDecode(token);
+        const decoded = jwtDecode(currentToken);
         fetchUserDetails(decoded.id);
       } catch (error) {
         console.error("Error decoding token:", error);
       }
     }
-  }, []);
+  }, [token, fetchUserDetails]);
 
   const validTabs = [
     "basic-info",
