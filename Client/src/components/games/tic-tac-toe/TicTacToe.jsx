@@ -240,7 +240,7 @@ function TicTacToe() {
       }, 250);
       return () => clearTimeout(timer);
     }
-  }, [xIsNext, squares, gameMode, difficulty, winner]);
+  }, [xIsNext, squares, gameMode, difficulty, winner, handleMove]);
 
   const handleMove = (i) => {
     if (squares[i] || winner) return;

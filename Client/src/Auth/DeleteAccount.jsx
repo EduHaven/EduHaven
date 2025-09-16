@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { Button } from "../components/ui/button";
+
 const Delete = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -12,6 +14,9 @@ const Delete = () => {
   const [otpVerified, setOtpVerified] = useState(false);
   const [otp, setOtp] = useState("");
   const { token, clearToken } = useUserProfile();
+
+  const navigate = useNavigate();
+
   // redirect if no token
   useEffect(() => {
     const currentToken = token;
@@ -19,12 +24,9 @@ const Delete = () => {
       toast.info("Please login first");
       navigate("/auth/login");
     }
-  }, [navigate, token]);
-  const navigate = useNavigate();
+  }, [navigate]);
 
-  const handleProceed = () => {
-    setShowConfirmModal(true);
-  };
+  const handleProceed = () => setShowConfirmModal(true);
 
   const requestOtp = async () => {
     try {
@@ -91,7 +93,7 @@ const Delete = () => {
     <div className="flex items-center justify-center relative bg-cover bg-center">
       {/* Card Container */}
       <motion.div
-        className="w-full max-w-lg  rounded-3xl"
+        className="w-full max-w-lg rounded-3xl"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
@@ -120,19 +122,21 @@ const Delete = () => {
 
         {/* Buttons */}
         <div className="flex justify-between gap-4">
-          <button
+          <Button
             onClick={() => navigate(-1)}
-            className="w-1/2 px-6 py-3 rounded-lg font-medium bg-gray-200/70 text-gray-800 hover:bg-gray-300 transition-all"
+            variant="secondary"
+            className="w-1/2 font-medium"
           >
             Go Back
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleProceed}
-            className="w-1/2 px-6 py-3 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700 shadow-md transition-all disabled:opacity-60"
+            variant="destructive"
             disabled={isLoading}
+            className="w-1/2 font-semibold"
           >
             Proceed to Delete
-          </button>
+          </Button>
         </div>
       </motion.div>
 
@@ -147,7 +151,7 @@ const Delete = () => {
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className="bg-white rounded-2xl p-9 max-w-md shadow-xl"
+              className="bg-white dark:bg-gray-900 rounded-2xl p-9 max-w-md shadow-xl"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
@@ -167,16 +171,18 @@ const Delete = () => {
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 mb-6 text-gray-900 dark:text-gray-100 bg-transparent"
                 disabled={isLoading}
               />
+
               {/* OTP Section */}
               <div className="space-y-3 mb-6">
                 {!otpRequested && (
-                  <button
+                  <Button
                     onClick={requestOtp}
                     disabled={isLoading}
-                    className="w-full px-4 py-2 rounded-lg font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60"
+                    variant="default"
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
                   >
                     {isLoading ? "Sending OTP..." : "Request OTP"}
-                  </button>
+                  </Button>
                 )}
                 {otpRequested && !otpVerified && (
                   <div className="flex gap-2 items-center">
@@ -191,13 +197,14 @@ const Delete = () => {
                       className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       disabled={isLoading}
                     />
-                    <button
+                    <Button
                       onClick={verifyOtp}
                       disabled={isLoading || otp.length !== 6}
-                      className="px-4 py-2 rounded-lg font-semibold bg-green-600 text-white hover:bg-green-700 disabled:opacity-60"
+                      variant="default"
+                      className="bg-green-600 hover:bg-green-700 text-white"
                     >
                       {isLoading ? "Verifying..." : "Verify"}
-                    </button>
+                    </Button>
                   </div>
                 )}
                 {otpVerified && (
@@ -206,25 +213,28 @@ const Delete = () => {
                   </p>
                 )}
               </div>
+
               <div className="flex justify-end gap-4">
-                <button
+                <Button
                   onClick={handleCancel}
-                  className="px-4 py-2 rounded-lg font-medium text-gray-900 dark:text-gray-100 bg-blue-200 dark:bg-blue-800 hover:bg-blue-300 dark:hover:bg-blue-700 transition-all"
+                  variant="secondary"
+                  className="font-medium"
                   disabled={isLoading}
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleConfirmDelete}
+                  variant="destructive"
+                  className="font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
                   disabled={
                     confirmText !== "delete my account" ||
                     isLoading ||
                     !otpVerified
                   }
-                  className="px-4 py-2 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
                 >
                   {isLoading ? "Deleting..." : "Delete Account"}
-                </button>
+                </Button>
               </div>
             </motion.div>
           </motion.div>

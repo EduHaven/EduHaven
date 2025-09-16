@@ -10,7 +10,7 @@ import { useUserProfile } from "../../../contexts/UserProfileContext.jsx";
 
 function NavBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [selectedId, setSelectedId] = useState(""); // for AI, do not remove
+  const [, setSelectedId] = useState(""); // for AI, do not remove
   const { token } = useUserProfile();
   useEffect(() => {
     const currentToken = token;

@@ -7,8 +7,8 @@ import {
 } from "@/queries/friendQueries";
 import { UserPlus } from "lucide-react";
 import PropTypes from "prop-types";
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 function UserCard({ user, selectedTab }) {
   const { mutate: sendRequest } = useSendRequest();
@@ -16,8 +16,6 @@ function UserCard({ user, selectedTab }) {
   const { mutate: rejectRequest } = useRejectRequest();
   const { mutate: acceptRequest } = useAcceptRequest();
   const { mutate: removeFriend } = useRemoveFriend();
-
-  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div className="bg-sec p-3 pt-4 rounded-3xl flex-1 basis-[250px] max-w-sm flex flex-col justify-between">
@@ -37,9 +35,7 @@ function UserCard({ user, selectedTab }) {
           <div className="text-lg font-semibold overflow-hidden whitespace-nowrap text-ellipsis w-full">
             {`${user.FirstName} ${user.LastName || ""}`}
           </div>
-          <p className={`text-sm txt-dim ${isExpanded ? "" : "line-clamp-2"}`}>
-            {user.Bio}
-          </p>
+          <p className={"text-sm txt-dim line-clamp-2"}>{user.Bio}</p>
 
           <div className="mt-2 mb-1">
             {user.OtherDetails?.interests && (
@@ -60,57 +56,69 @@ function UserCard({ user, selectedTab }) {
 
       <div>
         {selectedTab === "suggested" && !user.requestSent && (
-          <button
+          <Button
             onClick={() => sendRequest(user._id)}
-            className="w-full bg-[var(--btn)] text-sm px-3 py-2 rounded-lg flex items-center justify-center gap-1 transition text-white hover:bg-[var(--btn-hover)] txt"
+            variant="default"
+            size="default"
+            className="w-full text-sm txt"
           >
             <UserPlus className="w-5 h-5" />
             Add Friend
-          </button>
+          </Button>
         )}
 
         {selectedTab === "suggested" && user.requestSent && (
-          <button
+          <Button
             onClick={() => cancelRequest(user._id)}
-            className="w-full bg-[var(--btn)] text-sm text-white px-3 py-2 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--btn-hover)] txt"
+            variant="secondary"
+            size="default"
+            className="w-full text-sm txt"
           >
             Cancel Request
-          </button>
+          </Button>
         )}
 
         {selectedTab === "friendRequests" && (
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={() => rejectRequest(user._id)}
-              className="w-1/2 bg-ter text-sm txt px-3 py-2 rounded-lg transition hover:bg-red-700 txt"
+              variant="destructive"
+              size="default"
+              className="w-1/2 text-sm txt"
             >
               Reject
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => acceptRequest(user._id)}
-              className="w-1/2 bg-[var(--btn)] text-white text-sm px-3 py-2 rounded-lg transition hover:bg-[var(--btn-hover)] txt"
+              variant="default"
+              size="default"
+              className="w-1/2 text-sm txt"
             >
               Accept
-            </button>
+            </Button>
           </div>
         )}
 
         {selectedTab === "sentRequests" && (
-          <button
+          <Button
             onClick={() => cancelRequest(user._id)}
-            className="w-full bg-[var(--btn)] text-sm text-white px-3 py-2 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--btn-hover)] txt"
+            variant="cancel"
+            size="default"
+            className="w-full text-sm txt flex items-center justify-center gap-1"
           >
             Cancel Request
-          </button>
+          </Button>
         )}
 
         {selectedTab === "allFriends" && (
-          <button
+          <Button
             onClick={() => removeFriend(user._id)}
-            className="w-full bg-ter text-sm text-white px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--bg-primary)] txt"
+            variant="destructive"
+            size="default"
+            className="w-full text-sm txt flex items-center justify-center gap-1"
           >
             Remove Friend
-          </button>
+          </Button>
         )}
       </div>
     </div>

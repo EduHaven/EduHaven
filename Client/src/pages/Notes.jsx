@@ -21,13 +21,19 @@ import NoteHeader from "@/components/notes/NoteHeader.jsx";
 import NotesList from "@/components/notes/NotesList.jsx";
 
 import {
+  useArchivedNotes,
+  useArchiveNote,
   useCreateNote,
   useDeleteNote,
   useNotes,
+  useRestoreTrashedNote,
+  useTrashedNotes,
+  useTrashNote,
   useUpdateNote,
 } from "@/queries/NoteQueries";
 
 import "@/components/notes/note.css";
+import TrashNotes from "@/components/notes/TrashNote";
 import axiosInstance from "@/utils/axios";
 import { toast } from "react-toastify";
 
@@ -44,14 +50,28 @@ const colors = [
 
 const Notes = () => {
   const { data: notes = [], isLoading } = useNotes();
+  const { data: archiveNotes = [], isLoading: isArchiveLoading } =
+    useArchivedNotes();
+  const { data: trashNotes = [], isLoading: isTrashLoading } =
+    useTrashedNotes();
 
   const createNoteMutation = useCreateNote();
   const updateNoteMutation = useUpdateNote();
   const deleteNoteMutation = useDeleteNote();
+  const archiveNoteMutation = useArchiveNote();
+  const sendToTrashMutation = useTrashNote();
+  const restoreMutation = useRestoreTrashedNote();
 
+  const [status, setStatus] = useState("active"); // active, archive, trash
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNote, setSelectedNote] = useState(null);
   const [showColorPicker, setShowColorPicker] = useState(null);
+
+  const notesObj = {
+    active: notes,
+    archive: archiveNotes,
+    trash: trashNotes,
+  };
 
   const typingTimeoutRef = useRef(null);
 
@@ -195,7 +215,7 @@ const Notes = () => {
             )
             .run();
         }
-      } catch (err) {
+      } catch {
         const didReplace = replacePlaceholder(
           placeholder,
           "Failed to upload image"
@@ -253,9 +273,22 @@ const Notes = () => {
     });
   };
 
-  const togglePin = (id) => {
-    const note = notes.find((n) => n._id === id);
-    updateNote(id, { pinnedAt: !note.pinnedAt });
+  const sendToTrashNote = (id) => {
+    sendToTrashMutation.mutate(id, {
+      onSuccess: () => {
+        if (selectedNote?._id === id) setSelectedNote(null);
+      },
+    });
+  };
+
+  const restoreNote = (id) => {
+    restoreMutation.mutate(id, {
+      onSuccess: () => toast.success("Note restored"),
+    });
+  };
+
+  const togglePin = (id, pinnedAt) => {
+    updateNote(id, { pinnedAt: !pinnedAt });
   };
 
   const changeColor = (id, color) => {
@@ -263,15 +296,12 @@ const Notes = () => {
     setShowColorPicker(null);
   };
 
-  const duplicateNote = (note) => {
-    // const newNote = {
-    //   ...note,
-    //   id: Date.now(),
-    //   title: note.title + " (Copy)",
-    //   createdAt: new Date().toISOString(),
-    //   isPinned: false,
-    // };
-    // setNotes([newNote, ...notes]);
+  const archiveNote = (note) => {
+    archiveNoteMutation.mutate(note._id, {
+      onSuccess: () => {
+        if (selectedNote?._id === note._id) setSelectedNote(null);
+      },
+    });
   };
 
   const exportNote = (note) => {
@@ -330,7 +360,7 @@ const Notes = () => {
     return text.substring(0, 100) + (text.length > 100 ? "..." : "");
   };
 
-  const filteredNotes = notes.filter((note) => {
+  const filteredNotes = notesObj[status].filter((note) => {
     const plainContent = getPlainTextPreview(note.content);
     const matchesSearch =
       note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -338,11 +368,21 @@ const Notes = () => {
     return matchesSearch;
   });
 
-  const pinnedNotes = (notes || []).filter((note) => note.pinnedAt);
-  const unpinnedNotes = (notes || []).filter((note) => !note.pinnedAt);
+  const pinnedNotes = (notesObj[status] || []).filter((note) => note.pinnedAt);
+  const unpinnedNotes = (notesObj[status] || []).filter(
+    (note) => !note.pinnedAt
+  );
 
-  if (isLoading) {
-    return <p>Loading...</p>;
+  if (status == "active" && isLoading) {
+    return <p>Loading notes...</p>;
+  }
+
+  if (status == "archive" && isArchiveLoading) {
+    return <p>Loading archived notes...</p>;
+  }
+
+  if (status == "trash" && isTrashLoading) {
+    return <p>Loading trashed notes...</p>;
   }
 
   return (
@@ -360,23 +400,37 @@ const Notes = () => {
             createNewNote={createNewNote}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
-          />
-          <NotesList
-            pinnedNotes={pinnedNotes}
-            unpinnedNotes={unpinnedNotes}
-            filteredNotes={filteredNotes}
-            searchTerm={searchTerm}
+            setStatus={setStatus}
             setSelectedNote={setSelectedNote}
-            togglePin={togglePin}
-            deleteNote={deleteNote}
-            duplicateNote={duplicateNote}
-            exportNote={exportNote}
-            changeColor={changeColor}
-            showColorPicker={showColorPicker}
-            setShowColorPicker={setShowColorPicker}
-            colors={colors}
-            getPlainTextPreview={getPlainTextPreview}
           />
+
+          {(status == "active" || status == "archive") && (
+            <NotesList
+              pinnedNotes={pinnedNotes}
+              unpinnedNotes={unpinnedNotes}
+              filteredNotes={filteredNotes}
+              searchTerm={searchTerm}
+              setSelectedNote={setSelectedNote}
+              togglePin={togglePin}
+              sendToTrashNote={sendToTrashNote}
+              archiveNote={archiveNote}
+              exportNote={exportNote}
+              changeColor={changeColor}
+              showColorPicker={showColorPicker}
+              setShowColorPicker={setShowColorPicker}
+              colors={colors}
+              getPlainTextPreview={getPlainTextPreview}
+            />
+          )}
+
+          {status == "trash" && (
+            <TrashNotes
+              notes={trashNotes}
+              onDelete={deleteNote}
+              onRestore={restoreNote}
+              getPlainTextPreview={getPlainTextPreview}
+            />
+          )}
         </div>
 
         {/* Note Editor */}

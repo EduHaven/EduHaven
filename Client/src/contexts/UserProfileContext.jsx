@@ -110,6 +110,7 @@ const useUserProfile = create(
  * @returns {Promise<Object>} - Resolves with the user's stats data.
  * @throws {Error} - Throws an error if the API call fails.
  */
+
 export const fetchUserStats = async (userId) => {
   try {
     const response = await axiosInstance.get(`/friends/${userId}/stats`);

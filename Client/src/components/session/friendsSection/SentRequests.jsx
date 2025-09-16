@@ -1,9 +1,9 @@
 import { useSentRequests } from "@/queries/friendQueries";
-import { ArrowLeft, User } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 function SentRequests({ onBack }) {
-  const { data: sentRequests = [], isLoading } = useSentRequests();
+  const { data: sentRequests = [] } = useSentRequests();
 
   const showSkeletons = sentRequests.length === 0;
 

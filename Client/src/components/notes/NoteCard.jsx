@@ -1,12 +1,19 @@
-import { Copy, Download, Palette, Pin, Trash2, UserPlus } from "lucide-react";
-import { useState } from "react";
 import { motion } from "framer-motion";
+import {
+  Archive,
+  Download,
+  Palette,
+  Pin,
+  Trash2,
+  UserPlus,
+} from "lucide-react";
+import { useState } from "react";
 const NoteCard = ({
   note,
   onSelect,
   onPin,
-  onDelete,
-  onDuplicate,
+  onSendToTrash,
+  onArchive,
   onExport,
   onColorChange,
   showColorPicker,
@@ -41,7 +48,7 @@ const NoteCard = ({
       <button
         onClick={(e) => {
           e.stopPropagation();
-          onPin(note?._id);
+          onPin(note?._id, note?.pinnedAt);
         }}
         className={`absolute top-2 right-2 p-1 rounded-full bg-black/10 hover:bg-black/20 transition-opacity
         ${
@@ -99,10 +106,10 @@ const NoteCard = ({
           </button>
 
           <button
-            onClick={() => onDuplicate(note)}
+            onClick={() => onArchive(note)}
             className="p-1 rounded hover:bg-black/10"
           >
-            <Copy size={16} />
+            <Archive size={16} />
           </button>
 
           <button
@@ -120,7 +127,7 @@ const NoteCard = ({
           </button>
 
           <button
-            onClick={() => onDelete(note?._id)}
+            onClick={() => onSendToTrash(note?._id)}
             className="p-1 rounded hover:bg-black/10"
           >
             <Trash2 size={16} />

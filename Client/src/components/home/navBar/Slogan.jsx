@@ -6,7 +6,6 @@ import { useUserProfile } from "../../../contexts/UserProfileContext";
 
 function Slogan() {
   const [quote, setQuote] = useState("Stay hungry; stay foolish.");
-  const [author, setAuthor] = useState("");
   const [displayMode, setDisplayMode] = useState("greeting");
   const [firstName, setFirstName] = useState("User");
   const { token } = useUserProfile();
@@ -160,17 +159,14 @@ function Slogan() {
 
   const forceRefreshQuote = async () => {
     setQuote("Fetching new quote...");
-    setAuthor("");
     try {
       const fetchedData = await fetchQuote();
       setQuote(fetchedData.quote);
-      setAuthor(fetchedData.author);
       localStorage.setItem("dailyQuote", fetchedData.quote);
       localStorage.setItem("quoteAuthor", fetchedData.author);
       localStorage.setItem("quoteTimestamp", Date.now().toString());
     } catch (error) {
       setQuote("Failed to fetch quote.");
-      setAuthor("Try again");
       console.error("Error during refresh:", error);
     }
   };
@@ -183,15 +179,12 @@ function Slogan() {
     setFirstName(getFirstNameFromJWT());
 
     const cachedQuote = localStorage.getItem("dailyQuote");
-    const cachedAuthor = localStorage.getItem("quoteAuthor");
 
     if (cachedQuote && !shouldRefreshQuote()) {
       setQuote(cachedQuote);
-      setAuthor(cachedAuthor || "");
     } else {
       fetchQuote().then((fetchedData) => {
         setQuote(fetchedData.quote);
-        setAuthor(fetchedData.author);
         localStorage.setItem("dailyQuote", fetchedData.quote);
         localStorage.setItem("quoteAuthor", fetchedData.author);
         localStorage.setItem("quoteTimestamp", Date.now().toString());
@@ -235,7 +228,7 @@ function Slogan() {
           className="text-center w-full max-w-full px-2 md:px-4"
         >
           {displayMode === "quote" ? (
-            <div className="hidden md:flex items-center justify-center gap-2 md:gap-4 flex-nowrap whitespace-nowrap overflow-hidden text-ellipsis">
+            <div className="hidden md:flex items-center justify-center gap-2 md:gap-4 flex-nowrap whitespace-nowrap overflow-hidden text-ellipsis text-xl 2xl:text-2xl">
               <div className="font-semibold break-words max-w-full">
                 {quote}
               </div>

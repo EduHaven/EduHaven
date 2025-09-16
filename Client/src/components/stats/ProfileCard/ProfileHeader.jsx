@@ -1,7 +1,6 @@
 // components/ProfileCard/ProfileHeader.jsx
-import { Edit3, Share2, User } from "lucide-react";
+import { Edit3, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useRef } from "react";
 
 const ProfileHeader = ({
   isCurrentUser,
@@ -11,10 +10,6 @@ const ProfileHeader = ({
   toggleLink,
   copyLink,
   shareRef,
-  kudosCount,
-  friendsCount,
-  setShowPopup,
-  popupRef,
 }) => {
   return (
     <div className="flex justify-end gap-6 px-4">

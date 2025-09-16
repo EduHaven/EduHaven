@@ -41,7 +41,7 @@ const UseSocket = (user) => {
       setSocket(null);
       setIsConnected(false);
     };
-  }, [user]);
+  }, [user, backendUrl]);
 
   return {
     socket,

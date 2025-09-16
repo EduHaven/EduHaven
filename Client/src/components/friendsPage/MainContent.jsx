@@ -35,7 +35,7 @@ function MainContent({ selectedTab }) {
   };
 
   return (
-    <div className="flex-1 pt-3 pr-3 2xl:pt-6 2xl:pr-6 pb-8 overflow-y-auto">
+    <div className="ml-3 flex-1 pt-3 pr-3 2xl:pt-6 2xl:pr-6 pb-8 overflow-y-auto">
       <h2 className="text-2xl font-semibold mb-4 text-[var(--txt)]">
         {getTitle()}
       </h2>
