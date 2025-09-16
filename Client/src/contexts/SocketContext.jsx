@@ -11,7 +11,7 @@ const UseSocketContext = () => {
 
 export const SocketProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const token = useUserProfile();
+  const { token } = useUserProfile();
   useEffect(() => {
     const currentToken = token;
     if (!currentToken) return;
