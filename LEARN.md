@@ -217,7 +217,7 @@ Fixes #<issue-number>
 | What if I can't complete an issue? | Leave a comment, and it will be reassigned. |
 | What if my PR is rejected? | Read feedback, revise, and resubmit. |
 | Can beginners contribute? | Absolutely! Start with docs or simple issues. |
-| Where do I ask for help? | [EduHaven Discord](https://discord.gg/r55948xy) or in GitHub issues. |
+| Where do I ask for help? | [EduHaven Discord](https://discord.gg/uZv6ShY345) or in GitHub issues. |
 
 ---
 
@@ -232,7 +232,7 @@ Fixes #<issue-number>
 ---
 
 > 💬 **Still have questions?**
-> - Join our [Discord Community](https://discord.gg/r55948xy)
+> - Join our [Discord Community](https://discord.gg/uZv6ShY345)
 > - Open an issue with your doubt
 > - Or reach out to mentors during contribution events like GSSoC’25
 
