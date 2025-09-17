@@ -134,7 +134,7 @@ function ForgotPassword() {
                 className="block w-full rounded-xl bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm"
               />
               {errors.Email && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-red-600 text-sm mt-1">
                   {errors.Email.message}
                 </p>
               )}

@@ -91,7 +91,7 @@ function ResetPassword() {
   const [strength, setStrength] = useState(0);
 
   const strengthLevels = [
-    { level: "Very Weak", color: "text-red-500" },
+    { level: "Very Weak", color: "text-red-600" },
     { level: "Weak", color: "text-orange-500" },
     { level: "Medium", color: "text-yellow-500" },
     { level: "Strong", color: "text-green-500" },
@@ -262,7 +262,7 @@ function ResetPassword() {
               </button>
             </div>
             {errors.newPassword && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-red-600 text-sm mt-1">
                 {errors.newPassword.message}
               </p>
             )}
@@ -297,7 +297,7 @@ function ResetPassword() {
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-red-600 text-sm mt-1">
                 {errors.confirmPassword.message}
               </p>
             )}
