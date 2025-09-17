@@ -1,5 +1,5 @@
 [![join our group on discord](./Client/public/joinDiscordIcon.png)
-](https://discord.gg/CbsNFUDC)
+](https://discord.gg/uZv6ShY345) 
 
 <p align="center">
   <b>This project is now OFFICIALLY accepted for:</b>
@@ -105,7 +105,7 @@
 
 ## Installation and Setup
 
-- Make sure you've joined our [discord server](https://discord.gg/CbsNFUDC) so you can connect in case you face any issues.
+- Make sure you've joined our [discord server](https://discord.gg/uZv6ShY345) so you can connect in case you face any issues.
 - **Prerequisites:** Node.js, MongoDB, Git
 
 ### Steps to Run Locally
@@ -205,4 +205,4 @@ For full details, see [`KEEP_ALIVE.md`](KEEP_ALIVE.md).
 
 - Backend URL: https://eduhaven-backend.onrender.com/
 
-For any further queries, feel free to reach out on our [Discord](https://discord.gg/CbsNFUDC) group. Let’s make learning fun and productive!
+For any further queries, feel free to reach out on our [Discord](https://discord.gg/uZv6ShY345) group. Let’s make learning fun and productive!
