@@ -6,7 +6,7 @@ import Stats from "./pages/Stats"; // Updated import name
 import GameRoom from "./routes/GameRoutes.jsx";
 import Signout from "./Auth/Signout";
 import PageNotFound from "../src/pages/PageNotFound";
-import ProjectInfo from "../src/pages/ProjectInfo";
+import About from "./pages/AboutPage";
 import Session from "./pages/Sessions.jsx";
 import StudyRoom from "./pages/SessionRoom";
 import OtpInput from "./Auth/Verifyotp.jsx";
@@ -47,7 +47,7 @@ function App() {
                 />
                 <Route path="games/*" element={<GameRoom />} />
                 <Route path="notes" element={<Notes />} />
-                <Route path="project-details" element={<ProjectInfo />} />
+                <Route path="about" element={<About />} />
                 <Route path="settings/" element={<Settings />} />
                 <Route path="friends" element={<FriendsPage />} />
                 <Route path="chat" element={<Chats />} />

@@ -36,7 +36,7 @@ Allow: /settings
 Allow: /games
 Allow: /auth
 Allow: /privacy
-Allow: /project-details
+Allow: /about
 
 # Crawl delay (optional)
 Crawl-delay: 1
