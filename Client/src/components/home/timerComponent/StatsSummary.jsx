@@ -1,62 +1,45 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Clock4, Flame, BarChart2 } from "lucide-react";
-import { useConsolidatedStats } from "@/queries/timerQueries";
-
-// Variants for dropdown buttons
-const dropdownButtonVariants = {
-  initial: { backgroundColor: "transparent" },
-  hover: { backgroundColor: "var(--bg-ter)" },
-};
 
 function StatsSummary() {
   const [selectedTime, setSelectedTime] = useState("Today");
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Use the consolidated TanStack Query hook
-  const { data, isLoading, error, refetch } = useConsolidatedStats();
+  // Mock data for now - replace with actual API call later
+  const stats = {
+    timePeriods: {
+      today: "2.5",
+      thisWeek: "15.0",
+      thisMonth: "60.0",
+      allTime: "200.0"
+    },
+    rank: 42,
+    totalUsers: 1000,
+    streak: 7,
+    level: {
+      name: "Intermediate",
+      progress: 65,
+      hoursToNextLevel: "5.0"
+    }
+  };
 
-  // Extract the user-specific stats from the consolidated data object
-  const stats = data?.userStats;
+  // Prepare study data from the stats
+  const studyData = {
+    Today: `${stats.timePeriods.today} h`,
+    "This week": `${stats.timePeriods.thisWeek} h`,
+    "This month": `${stats.timePeriods.thisMonth} h`,
+    "All time": `${stats.timePeriods.allTime} h`,
+  };
 
-  // Prepare study data from the query response
-  const studyData = stats
-    ? {
-        Today: `${stats.timePeriods?.today || "0.0"} h`,
-        "This week": `${stats.timePeriods?.thisWeek || "0.0"} h`,
-        "This month": `${stats.timePeriods?.thisMonth || "0.0"} h`,
-        "All time": `${stats.timePeriods?.allTime || "0.0"} h`,
-      }
-    : {
-        Today: "0.0 h",
-        "This week": "0.0 h",
-        "This month": "0.0 h",
-        "All time": "0.0 h",
-      };
-
-  // Prepare user stats from the query response
-  const userStats = stats
-    ? {
-        rank: stats.rank || 0,
-        totalUsers: stats.totalUsers || 0,
-        streak: stats.streak || 0,
-        level: stats.level || {
-          name: "Beginner",
-          progress: 0,
-          hoursToNextLevel: "2.0",
-        },
-      }
-    : {
-        rank: 0,
-        totalUsers: 0,
-        streak: 0,
-        level: {
-          name: "Beginner",
-          progress: 0,
-          hoursToNextLevel: "2.0",
-        },
-      };
+  // Prepare user stats from the stats
+  const userStats = {
+    rank: stats.rank,
+    totalUsers: stats.totalUsers,
+    streak: stats.streak,
+    level: stats.level,
+  };
 
   // Handle click outside dropdown
   useEffect(() => {
@@ -69,66 +52,10 @@ function StatsSummary() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle refresh - use refetch from TanStack Query
+  // Handle refresh - placeholder for now
   const handleRefresh = () => {
-    refetch();
+    // TODO: Implement refresh functionality when API is available
   };
-
-  if (isLoading) {
-    // Loading skeleton UI remains the same
-    return (
-      <motion.div
-        className="txt m-4 mt-2 w-[25%] h-full"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="animate-pulse">
-          <div className="h-5 w-5 rounded-full bg-gray-500/20 ml-auto -mb-1" />
-          <div className="flex items-center gap-4 mb-3">
-            <div className="h-12 w-12 rounded-full bg-gray-500/20" />
-            <div className="h-6 w-24 rounded-md bg-gray-500/20" />
-          </div>
-          <div className="flex items-center gap-4 mb-3">
-            <div className="h-12 w-12 rounded-full bg-gray-500/20" />
-            <div className="h-6 w-16 rounded-md bg-gray-500/20" />
-          </div>
-          <div className="flex items-center gap-4 mb-3">
-            <div className="h-12 w-12 rounded-full bg-gray-500/20" />
-            <div className="h-6 w-24 rounded-md bg-gray-500/20" />
-          </div>
-          <div className="h-5 w-40 rounded-md bg-gray-500/20 mb-2" />
-          <div className="relative w-full h-5 rounded-2xl overflow-hidden bg-gray-500/20">
-            <div className="absolute left-0 top-0 h-5 rounded-2xl bg-white/60 dark:bg-gray-600/50" />
-          </div>
-        </div>
-      </motion.div>
-    );
-  }
-
-  if (error) {
-    // Error UI remains the same
-    return (
-      <motion.div
-        className="txt m-4 mt-2 w-[25%] h-full"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex flex-col items-center justify-center h-full gap-2">
-          <p className="text-red-400 text-sm">
-            {error.message || "Failed to load statistics"}
-          </p>
-          <button
-            onClick={handleRefresh}
-            className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors"
-          >
-            Retry
-          </button>
-        </div>
-      </motion.div>
-    );
-  }
 
   // Render content UI - no changes needed here
   return (
@@ -166,9 +93,8 @@ function StatsSummary() {
                   <motion.button
                     key={time}
                     className="block w-full text-left px-4 py-2 btn-rad"
-                    variants={dropdownButtonVariants}
-                    initial="initial"
-                    whileHover="hover"
+                    initial={{ opacity: 0, y: -10 }}
+                    whileHover={{ scale: 1.02 }}
                     transition={{ duration: 0.2 }}
                     onClick={() => {
                       setSelectedTime(time);

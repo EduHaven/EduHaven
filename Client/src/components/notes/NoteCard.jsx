@@ -27,7 +27,8 @@ const NoteCard = ({
     return text.substring(0, limit) + "...";
   };
 
-  const isOptimistic = note?._id?.startsWith("optimistic-") || note?.__optimistic;
+  const isOptimistic =
+    note?._id?.startsWith("optimistic-") || note?.__optimistic;
 
   return (
     <div

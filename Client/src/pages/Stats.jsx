@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { useUserProfile, fetchUserStats } from "@/contexts/UserProfileContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
+import { fetchUserStats } from "@/utils/userUtils";
 import NotLogedInPage from "@/components/NotLogedInPage";
 import ProfileCard from "../components/stats/ProfileCard/ProfileCard";
 import MonthlyLevel from "../components/stats/MonthlyLevel";

@@ -18,11 +18,15 @@ const NotesList = ({
 }) => {
   // When searching, use filtered notes; otherwise use separated pinned/unpinned
   const displayPinnedNotes = searchTerm
-    ? pinnedNotes.filter(note => filteredNotes.some(fn => fn._id === note._id))
+    ? pinnedNotes.filter((note) =>
+        filteredNotes.some((fn) => fn._id === note._id)
+      )
     : pinnedNotes;
 
   const displayUnpinnedNotes = searchTerm
-    ? unpinnedNotes.filter(note => filteredNotes.some(fn => fn._id === note._id))
+    ? unpinnedNotes.filter((note) =>
+        filteredNotes.some((fn) => fn._id === note._id)
+      )
     : unpinnedNotes;
 
   return (

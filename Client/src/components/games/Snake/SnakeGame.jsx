@@ -490,7 +490,7 @@ const SnakeGame = () => {
 
       // REMOVED: OLD JQUERY EVENT HANDLERS FOR CHECKBOXES
     });
-  }, [hiScore]); // ADDED HISCORE TO DEPENDENCY ARRAY
+  }, [hiScore, txtDim]); // ADDED HISCORE AND TXTDIM TO DEPENDENCY ARRAY
 
   return (
     <div className={styles.snakeGame}>

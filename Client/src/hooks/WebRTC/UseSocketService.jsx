@@ -52,6 +52,6 @@ const UseConnectToSocketServer = (
       socket.off("user-left");
       socket.off("user-joined");
     };
-  }, [socket]);
+  }, [socket, roomId, setVideos, socketIdRef, videoRef]);
 };
 export default UseConnectToSocketServer;

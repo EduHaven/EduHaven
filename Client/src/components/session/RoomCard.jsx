@@ -27,7 +27,7 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
     const pinned = JSON.parse(localStorage.getItem("pinnedRooms") || "[]");
     const found = pinned.some((r) => r._id === room._id);
     setIsPinned(found);
-  }, [room?._id]);
+  }, [room]);
 
   useEffect(() => {
     if (!menuOpen) return;

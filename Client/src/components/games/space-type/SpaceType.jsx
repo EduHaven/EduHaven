@@ -67,7 +67,7 @@ const SpaceType = () => {
     return () => window.removeEventListener("resize", updateContainerSize);
   }, []);
 
-  const createParticles = (x, y) => {
+  const createParticles = useCallback((x, y) => {
     const newParticles = Array.from({ length: 8 }, (_, i) => ({
       id: `particle-${Date.now()}-${i}`,
       x,
@@ -79,9 +79,9 @@ const SpaceType = () => {
     setTimeout(() => {
       setParticles((prev) => prev.filter((p) => !newParticles.includes(p)));
     }, 500);
-  };
+  }, [level, setParticles]);
 
-  const fireLaser = (targetEnemy) => {
+  const fireLaser = useCallback((targetEnemy) => {
     if (!targetEnemy || gameContainerSize.width === 0) return;
 
     // Ship position (center of ship)
@@ -127,7 +127,7 @@ const SpaceType = () => {
       setLasers((prev) => prev.filter((l) => l.id !== newLaser.id));
       createParticles(targetX, targetY);
     }, newLaser.travelTime);
-  };
+  }, [gameContainerSize, shipPosition, setLasers, setShipPosition, createParticles]);
 
   const getWordForLevel = useCallback(() => {
     const levelWords = wordList.filter((word) => {
@@ -186,7 +186,7 @@ const SpaceType = () => {
         return prevHighScore;
       });
     }
-  }, [gameOver]);
+  }, [gameOver, score]);
 
   useEffect(() => {
     if (gameContainerSize.width === 0) return;
@@ -282,7 +282,7 @@ const SpaceType = () => {
         setCurrentTarget(null);
       }
     },
-    [enemies, currentWord, gameOver, isPaused, score, level]
+    [enemies, currentWord, gameOver, isPaused, score, level, fireLaser, triggerBomb]
   );
 
   useEffect(() => {
@@ -290,7 +290,7 @@ const SpaceType = () => {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [handleKeyPress]);
 
-  const triggerBomb = () => {
+  const triggerBomb = useCallback(() => {
     if (bombs > 0) {
       setBombs((b) => b - 1);
       // Create explosion effects for all enemies
@@ -301,7 +301,7 @@ const SpaceType = () => {
       setCurrentWord("");
       setCurrentTarget(null);
     }
-  };
+  }, [bombs, enemies, createParticles, setBombs, setEnemies, setCurrentWord, setCurrentTarget]);
 
   const useShield = () => {
     if (shields > 0) {

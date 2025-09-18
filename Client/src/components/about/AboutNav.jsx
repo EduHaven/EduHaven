@@ -5,7 +5,9 @@ import { motion } from "framer-motion";
 function AboutNav() {
   return (
     <nav className="flex items-center justify-between">
-      <h1 className="text-xl md:text-2xl font-semibold txt">Our Open-Source Work</h1>
+      <h1 className="text-xl md:text-2xl font-semibold txt">
+        Our Open-Source Work
+      </h1>
       <motion.a
         href={"https://github.com/EduHaven/EduHaven"}
         target="_blank"

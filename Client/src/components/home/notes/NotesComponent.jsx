@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import axiosInstance from "@/utils/axios";
 import {
   ChevronLeft,
@@ -109,9 +109,9 @@ function NotesComponent() {
       clearTimeout(titleTimeoutRef.current);
       clearTimeout(contentTimeoutRef.current);
     };
-  }, []);
+  }, [fetchNotes]);
 
-  const fetchNotes = async () => {
+  const fetchNotes = useCallback(async () => {
     try {
       const response = await axiosInstance.get(`/note`);
       if (response.data.success) {
@@ -127,7 +127,7 @@ function NotesComponent() {
     } catch (err) {
       setError(err?.response?.data?.error);
     }
-  };
+  }, [addNewPage, setNotes, setError]);
 
   // This function manages whether to update note or create new.
   const handleSync = (title, content) => {
@@ -139,11 +139,11 @@ function NotesComponent() {
     }
   };
 
-  const addNewPage = () => {
+  const addNewPage = useCallback(() => {
     const newNote = { content: "", title: "", date: new Date() };
     setNotes((prevNotes) => [newNote, ...prevNotes]);
     setCurrentPage(0);
-};
+  }, [setNotes, setCurrentPage]);
 
   const goToNextPage = () => {
     if (currentPage < notes.length - 1) {

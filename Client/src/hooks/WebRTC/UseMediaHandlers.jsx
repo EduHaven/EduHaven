@@ -11,7 +11,7 @@
  * - Provides toggle functions for media controls
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { connections, createOfferForConnection } from "./WebRTCConnection.jsx";
 import { createBlackSilence } from "@/utils/mediaUtils.jsx";
 
@@ -31,7 +31,7 @@ export const UseMediaHandlers = (
     socketRef.current = socket;
   }, [socket]);
 
-  const getUserMediaSuccess = (stream) => {
+  const getUserMediaSuccess = useCallback((stream) => {
     try {
       window.localStream.getTracks().forEach((track) => track.stop());
     } catch (e) {
@@ -70,9 +70,9 @@ export const UseMediaHandlers = (
           }
         })
     );
-  };
+  }, [localVideoref, socketIdRef, socketRef]);
 
-  const getUserMedia = async () => {
+  const getUserMedia = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -110,9 +110,9 @@ export const UseMediaHandlers = (
         console.log(e);
       }
     }
-  };
+  }, [videoToggle, audioToggle, localVideoref, setScreenAvailable, getUserMediaSuccess]);
 
-  const getDislayMediaSuccess = (stream) => {
+  const getDislayMediaSuccess = useCallback((stream) => {
     try {
       window.localStream.getTracks().forEach((track) => track.stop());
     } catch (e) {
@@ -147,9 +147,9 @@ export const UseMediaHandlers = (
           getUserMedia();
         })
     );
-  };
+  }, [localVideoref, socketIdRef, socketRef, setScreen, getUserMedia]);
 
-  const getDislayMedia = () => {
+  const getDislayMedia = useCallback(() => {
     if (screen) {
       if (navigator.mediaDevices.getDisplayMedia) {
         navigator.mediaDevices
@@ -159,20 +159,20 @@ export const UseMediaHandlers = (
           .catch((e) => console.log(e));
       }
     }
-  };
+  }, [screen, getDislayMediaSuccess]);
 
   useEffect(() => {
     if (videoToggle !== undefined && audioToggle !== undefined) {
       getUserMedia();
       console.log("SET STATE HAS ", videoToggle, audioToggle);
     }
-  }, [videoToggle, audioToggle]);
+  }, [videoToggle, audioToggle, getUserMedia]);
 
   useEffect(() => {
     if (screen !== undefined) {
       getDislayMedia();
     }
-  }, [screen]);
+  }, [screen, getDislayMedia]);
 
   const handleVideo = () => setVideo(!videoToggle);
   const handleAudio = () => setAudio(!audioToggle);

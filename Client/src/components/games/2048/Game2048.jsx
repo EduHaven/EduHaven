@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ArrowLeft } from "lucide-react";
 import styles from "./Game2048.module.css";
 
@@ -21,7 +21,7 @@ const Game2048 = () => {
     return board;
   }
 
-  function addNewTile(board) {
+  const addNewTile = useCallback((board) => {
     const emptyTiles = [];
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
@@ -35,9 +35,9 @@ const Game2048 = () => {
         emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
       board[x][y] = Math.random() < 0.9 ? 2 : 4;
     }
-  }
+  }, []);
 
-  function moveBoard(direction) {
+  const moveBoard = useCallback((direction) => {
     if (gameOver) return;
     let newBoard = JSON.parse(JSON.stringify(board));
     let moved = false;
@@ -85,14 +85,14 @@ const Game2048 = () => {
       setScore(newScore);
       checkGameOver(finalBoard);
     }
-  }
+  }, [board, gameOver, score, setBoard, setScore, checkGameOver, addNewTile]);
 
   // Rotate 90 degrees clockwise
   function rotate(board) {
     return board[0].map((_, i) => board.map((row) => row[i]).reverse());
   }
 
-  function checkGameOver(board) {
+  const checkGameOver = useCallback((board) => {
     // Check if board is full
     let isFull = true;
     for (let i = 0; i < 4; i++) {
@@ -124,9 +124,9 @@ const Game2048 = () => {
       setHighScore(score);
       localStorage.setItem("hiScore-2048", score);
     }
-  }
+  }, [setGameOver, score, highScore, setHighScore]);
 
-  function handleKeyDown(e) {
+  const handleKeyDown = useCallback((e) => {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
       e.preventDefault(); // ✅ stops page scrolling
     }
@@ -146,7 +146,7 @@ const Game2048 = () => {
       default:
         break;
     }
-  }
+  }, [moveBoard]);
 
   function resetGame() {
     setBoard(getInitialBoard());
@@ -157,7 +157,7 @@ const Game2048 = () => {
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [board, gameOver]);
+  }, [handleKeyDown]);
 
   // Save high score to localStorage whenever it changes
   useEffect(() => {

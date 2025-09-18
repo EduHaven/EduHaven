@@ -1,8 +1,8 @@
 import { Delete } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 
 function UnitConverter() {
-  const units = {
+  const units = useMemo(() => ({
     length: {
       Meter: 1,
       Kilometer: 1000,
@@ -32,7 +32,7 @@ function UnitConverter() {
     },
     volume: { "m³": 1, Liter: 0.001, Milliliter: 0.000001, Gallon: 0.00378541 },
     temperature: ["Celsius", "Fahrenheit", "Kelvin"],
-  };
+  }), []);
 
   const [category, setCategory] = useState("length");
   const [inputUnit, setInputUnit] = useState("Meter");
@@ -49,9 +49,9 @@ function UnitConverter() {
       setInputUnit(categoryUnits[0]);
       setOutputUnit(categoryUnits[1] || categoryUnits[0]);
     }
-  }, [category]);
+  }, [category, units]);
 
-  const convertTemperature = (value, from, to) => {
+  const convertTemperature = useCallback((value, from, to) => {
     if (from === to) return value;
     if (from === "Celsius" && to === "Fahrenheit") return value * 1.8 + 32;
     if (from === "Fahrenheit" && to === "Celsius") return (value - 32) / 1.8;
@@ -62,9 +62,9 @@ function UnitConverter() {
     if (from === "Kelvin" && to === "Fahrenheit")
       return (value - 273.15) * 1.8 + 32;
     return "Unsupported";
-  };
+  }, []);
 
-  const handleConvert = (val) => {
+  const handleConvert = useCallback((val) => {
     if (val === "") {
       setResult("");
       return;
@@ -82,11 +82,11 @@ function UnitConverter() {
       res = baseValue / units[category][outputUnit];
     }
     setResult(Number.isNaN(res) ? "Error" : parseFloat(res.toFixed(6)));
-  };
+  }, [category, inputUnit, outputUnit, units, convertTemperature, setResult]);
 
   useEffect(() => {
     handleConvert(inputValue);
-  }, [inputValue, inputUnit, outputUnit, category]);
+  }, [inputValue, inputUnit, outputUnit, category, handleConvert]);
 
   return (
     <div className="space-y-4 p-4">

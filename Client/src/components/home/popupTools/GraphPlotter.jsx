@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 
 const GraphPlotter = () => {
-  const functionLibrary = {
+  const functionLibrary = useMemo(() => ({
     Trigonometry: {
       Sine: "Math.sin(x)",
       Cosine: "Math.cos(x)",
@@ -30,7 +30,7 @@ const GraphPlotter = () => {
       Ceiling: "Math.ceil(x)",
       Step: "Math.floor(x * 10)",
     },
-  };
+  }), []);
 
   const [category, setCategory] = useState(Object.keys(functionLibrary)[0]);
   const [func, setFunc] = useState(
@@ -44,7 +44,7 @@ const GraphPlotter = () => {
   useEffect(() => {
     const newFunction = Object.values(functionLibrary[category])[0];
     setFunc(newFunction);
-  }, [category]);
+  }, [category, functionLibrary]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

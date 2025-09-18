@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Award, Info } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import axiosInstance from "@/utils/axios";
@@ -33,7 +33,7 @@ const Badges = () => {
   }, [user, fetchUserDetails]);
 
   // Fetch badges from backend API instead of client-side calculation
-  const fetchBadgesFromServer = async () => {
+  const fetchBadgesFromServer = useCallback(async () => {
     if (!userId) return;
 
     try {
@@ -50,7 +50,7 @@ const Badges = () => {
       // Fallback to empty array if server fetch fails
       setEarnedBadges([]);
     }
-  };
+  }, [userId, setEarnedBadges]);
 
   useEffect(() => {
     const initializeBadges = async () => {
@@ -63,7 +63,7 @@ const Badges = () => {
     };
 
     initializeBadges();
-  }, [userId, isInitialLoad]);
+  }, [userId, isInitialLoad, fetchBadgesFromServer]);
 
   const allBadges = getAllBadges();
   const maxDisplayBadges = 10;

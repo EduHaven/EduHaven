@@ -214,11 +214,16 @@ function SignUp() {
                   message: "Password must be at least 6 characters",
                 },
                 validate: (value) => {
-                  if (value.length < 8) return "Password must be at least 8 characters long";
-                  if (!/(?=.*[a-z])/.test(value)) return "Password must contain at least one lowercase letter";
-                  if (!/(?=.*[A-Z])/.test(value)) return "Password must contain at least one uppercase letter";
-                  if (!/(?=.*\d)/.test(value)) return "Password must contain at least one number";
-                  if (!/(?=.*[!@#$%^&*(),.?":{}|<>])/.test(value)) return "Password must contain at least one special character";
+                  if (value.length < 8)
+                    return "Password must be at least 8 characters long";
+                  if (!/(?=.*[a-z])/.test(value))
+                    return "Password must contain at least one lowercase letter";
+                  if (!/(?=.*[A-Z])/.test(value))
+                    return "Password must contain at least one uppercase letter";
+                  if (!/(?=.*\d)/.test(value))
+                    return "Password must contain at least one number";
+                  if (!/(?=.*[!@#$%^&*(),.?":{}|<>])/.test(value))
+                    return "Password must contain at least one special character";
                   return true;
                 },
               })}

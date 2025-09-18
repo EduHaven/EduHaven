@@ -63,13 +63,15 @@ export const useCreateNote = () => {
         queryClient.setQueryData(["notes"], context.previous);
       }
     },
-    onSuccess: (created, variables, context) => {
+    onSuccess: (created, _variables, _context) => {
       // Replace optimistic note with real note at the top
       queryClient.setQueryData(["notes"], (current) => {
         if (!current) return [created];
 
         // Remove any optimistic notes and insert the real note at the top
-        const filtered = current.filter((n) => !String(n._id).startsWith("optimistic-"));
+        const filtered = current.filter(
+          (n) => !String(n._id).startsWith("optimistic-")
+        );
         return [created, ...filtered];
       });
     },

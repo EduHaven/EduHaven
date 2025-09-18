@@ -3,7 +3,7 @@ const moveSound = new Audio("/sounds/move.mp3");
 const winSound = new Audio("/sounds/win.mp3");
 const tieSound = new Audio("/sounds/tie.mp3");
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Volume2, VolumeX, RotateCcw, ArrowLeft } from "lucide-react";
 
 // Game logic functions
@@ -240,9 +240,9 @@ function TicTacToe() {
       }, 250);
       return () => clearTimeout(timer);
     }
-  }, [xIsNext, squares, gameMode, difficulty, winner]);
+  }, [xIsNext, squares, gameMode, difficulty, winner, handleMove]);
 
-  const handleMove = (i) => {
+  const handleMove = useCallback((i) => {
     if (squares[i] || winner) return;
 
     const newSquares = squares.slice();
@@ -266,7 +266,7 @@ function TicTacToe() {
       // 🎵 Play tie sound
       if (isSoundEnabled) tieSound.play();
     }
-  };
+  }, [squares, winner, xIsNext, isSoundEnabled, setSquares, setXIsNext, setScores]);
 
   const renderStatus = () => {
     if (winner === "tie") return "It's a tie!";

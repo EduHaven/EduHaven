@@ -195,7 +195,7 @@ const Notes = () => {
             )
             .run();
         }
-      } catch (err) {
+      } catch (_err) {
         const didReplace = replacePlaceholder(
           placeholder,
           "Failed to upload image"
@@ -225,7 +225,7 @@ const Notes = () => {
 
   const createNewNote = () => {
     // Generate a more user-friendly title
-    const existingTitles = notes.map(note => note.title);
+    const existingTitles = notes.map((note) => note.title);
     let noteNumber = 1;
     while (existingTitles.includes(`Note ${noteNumber}`)) {
       noteNumber++;
@@ -270,11 +270,11 @@ const Notes = () => {
     setShowColorPicker(null);
   };
 
-  const duplicateNote = (note) => {
+  const duplicateNote = (_note) => {
     // const newNote = {
-    //   ...note,
+    //   ..._note,
     //   id: Date.now(),
-    //   title: note.title + " (Copy)",
+    //   title: _note.title + " (Copy)",
     //   createdAt: new Date().toISOString(),
     //   isPinned: false,
     // };

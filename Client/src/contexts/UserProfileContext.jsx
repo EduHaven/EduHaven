@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import axiosInstance from "@/utils/axios";
+import { fetchUserStats } from "@/utils/userUtils";
 
 const UserProfileContext = createContext({
   user: null,
@@ -76,6 +77,7 @@ export const UserProfileProvider = ({ children }) => {
 };
 
 // Custom hook for using user profile context
+// eslint-disable-next-line react-refresh/only-export-components
 export const useUserProfile = () => {
   const context = useContext(UserProfileContext);
   if (!context) {
@@ -91,16 +93,3 @@ export const useUserProfile = () => {
  * @returns {Promise<Object>} - Resolves with the user's stats data.
  * @throws {Error} - Throws an error if the API call fails.
  */
-export const fetchUserStats = async (userId) => {
-  try {
-    const response = await axiosInstance.get(`/friends/${userId}/stats`);
-
-    return response.data;
-  } catch (error) {
-    console.error(
-      "Error fetching user stats:",
-      error.response?.data || error.message
-    );
-    throw error;
-  }
-};
