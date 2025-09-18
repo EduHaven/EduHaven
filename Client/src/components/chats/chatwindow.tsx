@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Send, MoreVertical, Smile, User, Users } from "lucide-react";
 
 // Dummy messages for demonstration

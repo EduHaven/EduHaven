@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import {
   BarChart2,
   Gamepad2,
@@ -37,7 +37,7 @@ function Sidebar() {
     }
   }, [location.pathname]);
 
-  const SidebarLink = React.forwardRef(
+  const SidebarLink = forwardRef(
     ({ to, IconComponent, label, isActive }, ref) => {
       return (
         <Link

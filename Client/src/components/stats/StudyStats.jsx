@@ -165,7 +165,7 @@ const computeSummary = (data) => {
 // Main Component
 // ──────────────────────────────────────────────────────────────
 
-const StudyStats = ({ stats: streakStats = {} }) => {
+const StudyStats = () => {
   const [view, setView] = useState("daily");
   const [isOpen, setIsOpen] = useState(false);
   const [chartStats, setChartStats] = useState([]);

@@ -1,7 +1,7 @@
-import { GitFork, MessageSquare, Star } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { delay, easeInOut, easeOut, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { easeOut, motion } from "framer-motion";
+import { GitFork, MessageSquare, Star } from "lucide-react";
+import { useEffect, useState } from "react";
 
 function Hero({ url, isLoading, stars, forks }) {
   // Hook for handling shuffle effect
@@ -49,7 +49,7 @@ function Hero({ url, isLoading, stars, forks }) {
 
   return (
     <div className="relative h-[calc(100vh-110px)] flex flex-col items-start justify-center pb-12">
-      <div className="hover:bg-ter rounded-lg transition-opacity duration-300 size-28 md:size-32">
+      <div className="size-28 md:size-32">
         <img
           src="./Logo.svg"
           alt="Logo"

@@ -94,12 +94,14 @@ const Calculator = () => {
               ))}
             </div>
 
-            <button
+            <Button
               onClick={closeModal}
+              variant="transparent"
+              size="icon"
               className="hover:txt transition txt-dim"
             >
               <X size={20} />
-            </button>
+            </Button>
           </div>
           <div className="flex-1 overflow-auto rounded-md min-h-[60vh]">
             {activeTool === "calculator" && <ScientificCalculator />}

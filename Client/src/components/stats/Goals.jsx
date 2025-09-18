@@ -55,7 +55,7 @@ const Goals = ({ isCurrentUser = false }) => {
     };
 
     fetchTasks();
-  }, [view]);
+  }, [view, isCurrentUser, userId]);
 
   const handleDropdownClick = (viewType) => {
     setView(viewType);

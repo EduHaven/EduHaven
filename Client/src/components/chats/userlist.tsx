@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Search, User, Users } from "lucide-react";
 
 function UserList({ users, selectedUser, onSelectUser }) {

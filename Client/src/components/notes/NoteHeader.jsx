@@ -1,34 +1,59 @@
-import { FilePenLine, Plus, Search } from "lucide-react";
-import { motion } from "framer-motion";
+import { Archive, FileText, Plus, Search, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { motion } from "framer-motion";
+
 const NoteHeader = ({
   createNewNote,
   searchTerm,
   setSearchTerm,
   selectedNote,
+  setStatus,
+  setSelectedNote,
 }) => {
   return (
     <header
-      className={`flex justify-between  w-full  ${
+      className={`flex justify-between items-center w-full ${
         selectedNote
           ? "flex-col justify-center gap-2 mb-1"
-          : "flex-row items-start gap-8 mb-3"
+          : "flex-row items-start gap-6 mb-3"
       }`}
     >
-      <div className="flex items-center gap-2">
-        <h1 className="m-0 text-2xl font-semibold">Notes</h1>
-      </div>
-
-      {selectedNote && (
+      {/* 🔹 Navigation Tabs */}
+      <div className="flex items-center gap-4">
         <Button
-          variant="transparent"
-          onClick={createNewNote}
-          className="w-full p-2 py-2.5 mt-1 hover:bg-[var(--bg-ter)] rounded-lg cursor-pointer flex items-center gap-2 transition-colors font-semibold"
+          variant="ghost"
+          className="flex items-center gap-2 font-medium text-[var(--txt)] hover:bg-[var(--bg-ter)] px-3 py-2 rounded-lg"
+          onClick={() => {
+            setStatus("active");
+            setSelectedNote(null);
+          }}
         >
-          <FilePenLine size={18} />
-          Create new Note
+          <FileText size={18} />
+          Notes
         </Button>
-      )}
+        <Button
+          variant="ghost"
+          className="flex items-center gap-2 font-medium text-[var(--txt)] hover:bg-[var(--bg-ter)] px-3 py-2 rounded-lg"
+          onClick={() => {
+            setStatus("archive");
+            setSelectedNote(null);
+          }}
+        >
+          <Archive size={18} />
+          Archived
+        </Button>
+        <Button
+          variant="ghost"
+          className="flex items-center gap-2 font-medium text-[var(--txt)] hover:bg-[var(--bg-ter)] px-3 py-2 rounded-lg"
+          onClick={() => {
+            setStatus("trash");
+            setSelectedNote(null);
+          }}
+        >
+          <Trash2 size={18} />
+          Trash
+        </Button>
+      </div>
 
       <div className="flex-1 max-w-2xl relative">
         <Search
@@ -52,16 +77,17 @@ const NoteHeader = ({
       </div>
 
       <div className="flex items-center gap-2">
-        <Button
-          onClick={createNewNote}
-          className={`w-full p-2.5 px-6 cursor-pointer flex items-center justify-center gap-2 bg-[var(--btn)] text-white hover:bg-[var(--btn-hover)] rounded-lg ${
-            selectedNote && "hidden"
-          }`}
-          whileHover={{ scale: 1.1 }}
-        >
-          <Plus size={18} />
-          Create new Note
-        </Button>
+        <motion.div whileHover={{ scale: 1.1 }}>
+          <Button
+            onClick={createNewNote}
+            className={`w-full p-2.5 px-6 cursor-pointer flex items-center justify-center gap-2 bg-[var(--btn)] text-white hover:bg-[var(--btn-hover)] rounded-lg ${
+              selectedNote && "hidden"
+            }`}
+          >
+            <Plus size={18} />
+            New Note
+          </Button>
+        </motion.div>
       </div>
     </header>
   );

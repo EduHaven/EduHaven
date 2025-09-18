@@ -7,8 +7,8 @@ const NotesList = ({
   searchTerm,
   setSelectedNote,
   togglePin,
-  deleteNote,
-  duplicateNote,
+  sendToTrashNote,
+  archiveNote,
   exportNote,
   changeColor,
   showColorPicker,
@@ -48,8 +48,8 @@ const NotesList = ({
                 note={note}
                 onSelect={setSelectedNote}
                 onPin={togglePin}
-                onDelete={deleteNote}
-                onDuplicate={duplicateNote}
+                onSendToTrash={sendToTrashNote}
+                onArchive={archiveNote}
                 onExport={exportNote}
                 onColorChange={changeColor}
                 showColorPicker={showColorPicker}
@@ -85,8 +85,8 @@ const NotesList = ({
                 note={note}
                 onSelect={setSelectedNote}
                 onPin={togglePin}
-                onDelete={deleteNote}
-                onDuplicate={duplicateNote}
+                onSendToTrash={sendToTrashNote}
+                onArchive={archiveNote}
                 onExport={exportNote}
                 onColorChange={changeColor}
                 showColorPicker={showColorPicker}

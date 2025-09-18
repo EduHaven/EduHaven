@@ -3,23 +3,28 @@ import fs from "fs";
 import multer from "multer";
 import path from "path";
 import {
-  getAllNotes,
-  getNoteById,
+  archiveNote,
   createNote,
-  updateNote,
   deleteNote,
+  getAllNotes,
+  getArchivedNotes,
+  getNoteById,
+  getTrashedNotes,
+  moveToTrash,
+  restoreNote,
+  updateNote,
   uploadNoteImage,
 } from "../Controller/NotesController.js";
 
 import authMiddleware from "../Middlewares/authMiddleware.js";
 
 // these are added -> for security --
+import { sanitizeFields } from "../security/sanitizeMiddleware.js";
 import {
-  updateNoteValidationRules,
   createNoteValidationRules,
+  updateNoteValidationRules,
 } from "../security/validation.js";
 import { validate } from "../security/validationMiddleware.js";
-import { sanitizeFields } from "../security/sanitizeMiddleware.js";
 // ------
 
 const router = express.Router();
@@ -75,11 +80,23 @@ router.post(
 // Route to get all notes
 router.get("/", authMiddleware, getAllNotes);
 
-// Route to get a specific note by its ID
+router.post(
+  "/upload",
+  authMiddleware,
+  upload.single("noteImage"),
+  uploadNoteImage
+);
+
+router.get("/archive", authMiddleware, getArchivedNotes);
+router.post("/archive/:id", authMiddleware, archiveNote);
+
+router.get("/trash", authMiddleware, getTrashedNotes);
+router.post("/trash/:id", authMiddleware, moveToTrash);
+
+router.post("/restore/:id", authMiddleware, restoreNote);
+
 router.get("/:id", authMiddleware, getNoteById);
 
-// Route to update a specific note by its ID
-// router.put("/:id", authMiddleware, updateNote);
 router.put(
   "/:id",
   authMiddleware,
@@ -89,14 +106,6 @@ router.put(
   updateNote
 );
 
-// Route to delete a specific note by its ID
 router.delete("/:id", authMiddleware, deleteNote);
-
-router.post(
-  "/upload",
-  authMiddleware,
-  upload.single("noteImage"),
-  uploadNoteImage
-);
 
 export default router;

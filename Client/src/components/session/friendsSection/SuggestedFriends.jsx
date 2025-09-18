@@ -7,8 +7,7 @@ import { useSendRequest, useUsersInfinite } from "@/queries/friendQueries";
 
 function SuggestedFriends({ onViewSentRequests }) {
   const { mutate: sendFriendRequest } = useSendRequest();
-  const { data, fetchNextPage, hasNextPage, isLoading, isFetchingNextPage } =
-    useUsersInfinite(15);
+  const { data, fetchNextPage, hasNextPage, isLoading } = useUsersInfinite(15);
   const suggestedFriends = data?.pages.flatMap((page) => page.users) || [];
 
   const [showDropdown, setShowDropdown] = useState(false);

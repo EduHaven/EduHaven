@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ArrowLeft } from "lucide-react";
 import styles from "./Game2048.module.css";
 
@@ -39,7 +39,6 @@ const Game2048 = () => {
 
   function moveBoard(direction) {
     if (gameOver) return;
-    let newBoard = JSON.parse(JSON.stringify(board));
     let moved = false;
     let newScore = score;
 
@@ -126,27 +125,30 @@ const Game2048 = () => {
     }
   }
 
-  function handleKeyDown(e) {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
-      e.preventDefault(); // ✅ stops page scrolling
-    }
-    switch (e.key) {
-      case "ArrowUp":
-        moveBoard("up");
-        break;
-      case "ArrowDown":
-        moveBoard("down");
-        break;
-      case "ArrowLeft":
-        moveBoard("left");
-        break;
-      case "ArrowRight":
-        moveBoard("right");
-        break;
-      default:
-        break;
-    }
-  }
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault(); // ✅ stops page scrolling
+      }
+      switch (e.key) {
+        case "ArrowUp":
+          moveBoard("up");
+          break;
+        case "ArrowDown":
+          moveBoard("down");
+          break;
+        case "ArrowLeft":
+          moveBoard("left");
+          break;
+        case "ArrowRight":
+          moveBoard("right");
+          break;
+        default:
+          break;
+      }
+    },
+    [moveBoard]
+  );
 
   function resetGame() {
     setBoard(getInitialBoard());
@@ -157,7 +159,7 @@ const Game2048 = () => {
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [board, gameOver]);
+  }, [board, gameOver, handleKeyDown]);
 
   // Save high score to localStorage whenever it changes
   useEffect(() => {

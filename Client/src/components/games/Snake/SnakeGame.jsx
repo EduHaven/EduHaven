@@ -112,7 +112,7 @@ const SnakeGame = () => {
           window.mozRequestAnimationFrame ||
           window.oRequestAnimationFrame ||
           window.msRequestAnimationFrame ||
-          function (callback, element) {
+          function (callback) {
             return window.setTimeout(callback, 1000 / 60);
           }
         );
@@ -490,7 +490,7 @@ const SnakeGame = () => {
 
       // REMOVED: OLD JQUERY EVENT HANDLERS FOR CHECKBOXES
     });
-  }, [hiScore]); // ADDED HISCORE TO DEPENDENCY ARRAY
+  }, [hiScore, txtDim]); // ADDED HISCORE TO DEPENDENCY ARRAY
 
   return (
     <div className={styles.snakeGame}>
@@ -520,7 +520,7 @@ const SnakeGame = () => {
           </div>
           {isOpen && (
             <div className={styles.dropdownList}>
-              {dropdownOptions.map((option, index) => {
+              {dropdownOptions.map((option) => {
                 if (option.type === "setting") {
                   return (
                     <div
