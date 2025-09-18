@@ -13,7 +13,7 @@ jobs:
       - name: Setup Node.js for Client
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
 
       - name: Install Client dependencies
         run: |
@@ -23,12 +23,12 @@ jobs:
       - name: Run Prettier Check on Client
         run: |
           cd Client
-          npx prettier --check .
+          npx prettier --config ../.prettierrc.json --check .
 
       - name: Setup Node.js for Server
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
           cache: 'npm'
           cache-dependency-path: Server/package-lock.json
 
@@ -40,4 +40,4 @@ jobs:
       - name: Run Prettier Check on Server
         run: |
           cd Server
-          npx prettier --check .
+          npx prettier --config ../.prettierrc.json --check .
