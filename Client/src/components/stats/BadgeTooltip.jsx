@@ -1,5 +1,5 @@
 import { Award } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const BadgeTooltip = ({ badge, children }) => {

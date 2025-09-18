@@ -52,7 +52,7 @@ Project maintainers are responsible for clarifying the standards of acceptable b
 
 If you are experiencing or witness any unacceptable behavior, or have other concerns, please reach out privately to the maintainers via:
 
-- 🗨️ Discord: [Join and message moderators](https://discord.gg/r55948xy)
+- 🗨️ Discord: [Join and message moderators](https://discord.gg/uZv6ShY345)
 
 All complaints will be reviewed and investigated promptly and fairly.
 

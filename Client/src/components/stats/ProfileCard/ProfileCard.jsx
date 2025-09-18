@@ -83,7 +83,7 @@ const ProfileCard = ({ isCurrentUser = false }) => {
     }
 
     try {
-      const response = await axiosInstance.post("/user/kudos", {
+      await axiosInstance.post("/user/kudos", {
         receiverId: user._id,
       });
 

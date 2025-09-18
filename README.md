@@ -1,5 +1,5 @@
 [![join our group on discord](./Client/public/joinDiscordIcon.png)
-](https://discord.gg/CbsNFUDC)
+](https://discord.gg/uZv6ShY345) 
 
 <p align="center">
   <b>This project is now OFFICIALLY accepted for:</b>
@@ -17,45 +17,30 @@
 
 **EduHaven** is a platform designed to assist students by providing a productivity-focused environment. It aims to provide a space where students can Learn and grow together by socialising with friends. It incorporates real-time collaboration, task management, analytics, AI-chatbot, note-making, gamification and more.
 
-## Features
+### Features :
 
-- #### User Dashboard (home page)
-  - Study & break timer for focus, see your stats summary
-  - Add and manage notes
-  - Set your goals, set repeat / deadline etc.
-  - Integrated calendars for event planning
-  - The tools like AI chat, calculator, convertor and graph to help with studies
+- **_User Dashboard (Home Page)_**
 
-- #### Real-Time Study Rooms
+  > Study and break timer, stats summary, notes management, goal setting with deadlines, integrated calendar, and study tools like AI chat, calculator, converter, and graph.
 
-  - Join or create study rooms to study with your fiends
-  - Video/audio controls
-  - Control who can join your study room
-  - Chat and discussion features.
+- **_Real-Time Study Rooms_**
 
-- #### See Realtime  stats:
-  - View Stats of your study time
-  - View your streaks, max streak
-  - See your rank globally and also within your friends
-  - Earn badges show-off to your friends.
-  - See the analytics of friends.
-  - See your goals completion rate.
+  > Create or join study rooms with friends, use video/audio controls, manage permissions, and chat for discussions.
 
-- #### Realtime Chat
-  - Chat in Realtime with peers. share notes and study materials
-  - Private messaging
-  - Online/offline presence indicators
+- **_Realtime Stats_**
 
-- #### Friends and Social Features
-  - Add friends, invite them to study rooms
-  - Track their online/offline status
-  - Share study goals and progress
+  > Track study time, streaks, global and friend ranks, badges, goal completion, and friends' analytics.
 
-- #### Gamification
-  - Earn badges and rewards for task completion
-  - Track streaks to stay motivated
-  - Leaderboards for friendly competition
-  - Also an additional games page, to refresh your mind
+- **_Realtime Chat_**
+
+  > Chat with peers, share notes and study materials, send private messages, and see online/offline presence.
+
+- **_Friends and Social Features_**
+
+  > Add friends, invite them to rooms, track their status, and share goals and progress.
+
+- **_Gamification_**
+  > Earn badges and rewards, maintain streaks, climb leaderboards, and play games to refresh your mind.
 
 ## Tech Stack
 
@@ -64,8 +49,63 @@
 - **Database**: MongoDB, Cloudinary
 - **Real-Time Communication**: Socket.IO, WebRTC
 
+## Folder Structure
+
+```
+📦EduHaven/
+├─ 📂.github/                   # 🔧 GitHub workflows, issue & PR templates
+│
+├─ 📂 client/                   # Frontend (React + Vite) =============================
+│  ├─ 📂 src/                   # Main frontend source code
+│  │  ├─ 📂 api/                # API call functions (fetch, axios, etc.)
+│  │  ├─ 📂 assets/             # Images, fonts, icons (bundled in app)
+│  │  ├─ 📂 Auth/               # Authentication pages (login, signup, OTP, password, etc)
+│  │  ├─ 📂 components/         # Reusable UI components (buttons, popups, dropdowns etc.)
+│  │  ├─ 📂 contexts/           # React Context providers (global state)
+│  │  ├─ 📂 hooks/              # Custom React hooks (useAuth, useFetch, etc.)
+│  │  ├─ 📂 lib/
+│  │  ├─ 📂 pages/              # Route-level pages (Home, stats, chat, notes, etc )
+│  │  ├─ 📂 queries/            # Data fetching/mutations (Tanstack Query, etc.)
+│  │  ├─ 📂 routes/             # Route definitions (React Router setup)
+│  │  ├─ 📂 stores/             # State management (Zustand)
+│  │  ├─ 📂 utils/              # Helper utilities (axios, error handlers, etc.)
+│  │  ├─ 📄 App.jsx             # Root React component
+│  │  ├─ 📄 index.css           # Global styles
+│  │  └─ 📄 main.jsx            # Entry point of app
+│  │
+│  ├─ 📂 public/                # Static assets (served directly)
+│  │  ├─ 📂 EduhavenBadges/     # Badge images
+│  │  ├─ 📂 sounds/             # Audio files
+│  │  └─ 📄 .......             # Other media files
+│  │
+│  ├─ 📄 .env.example           # Example frontend env variables
+│  ├─ 📄 .env.extension         # Browser extension config
+│  ├─ 📄 vite.config.js
+│  ├─ 📄 tailwind.config.js
+│  └─ 📄 package.json           # Frontend dependencies & scripts
+│
+├─ 📂 server/                   # Backend (Node.js + Express) ===========================
+│  ├─ 📂 Controller/            # Request handlers
+│  ├─ 📂 Routes/                # API routes
+│  ├─ 📂 Model/                 # Database models/schemas
+│  ├─ 📂 Database/              # Database connection/setup
+│  ├─ 📂 Middlewares/           # Express middlewares
+│  ├─ 📂 Socket/                # WebSocket functionality
+│  ├─ 📂 security/              # Security configurations
+│  ├─ 📂 utils/                 # Helper functions
+│  ├─ 📄 .env.example           # Example backend env variables
+│  ├─ 📄 index.js               # Backend entry point
+│  └─ 📄 API_DOCS.md            # You can view list of all endpoints here
+│
+├─ 📄 CONTRIBUTING.md           # Contribution guidelines
+├─ 📄 CODE_OF_CONDUCT.md        # Code of conduct
+├─ 📄 .prettierrc.json          # Code formatting rules
+└─ 📄 LEARN.md                  # Reference / learning notes
+```
+
 ## Installation and Setup
-- Make sure you've joined our [discord server](https://discord.gg/CbsNFUDC) so you can connect in case you face any issues.
+
+- Make sure you've joined our [discord server](https://discord.gg/uZv6ShY345) so you can connect in case you face any issues.
 - **Prerequisites:** Node.js, MongoDB, Git
 
 ### Steps to Run Locally
@@ -101,8 +141,7 @@
      - Create a `.env` file in the `/Server` directory.
      - Follow the instructions provided in `.env.example` file to create a new `.env` file for backend.
 
-    🔴 **make sure the contents of `.env.example` file must remain untouched.**
-
+   🔴 **make sure the contents of `.env.example` file must remain untouched.**
 
 4. Start the development servers:
 
@@ -163,6 +202,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 The backend is hosted on Render Free Tier and may go to sleep after short inactivity.  
 We;re keeping it alive using [cron-job.org](https://cron-job.org/) to ping the backend every 1 minute.
 For full details, see [`KEEP_ALIVE.md`](KEEP_ALIVE.md).
+
 - Backend URL: https://eduhaven-backend.onrender.com/
 
-For any further queries, feel free to reach out on our [Discord](https://discord.gg/CbsNFUDC) group. Let’s make learning fun and productive!
+For any further queries, feel free to reach out on our [Discord](https://discord.gg/uZv6ShY345) group. Let’s make learning fun and productive!

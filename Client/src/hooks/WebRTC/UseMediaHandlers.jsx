@@ -100,7 +100,7 @@ export const UseMediaHandlers = (
       navigator.mediaDevices
         .getUserMedia({ video: videoToggle, audio: audioToggle })
         .then(getUserMediaSuccess)
-        .then((stream) => {})
+        .then(() => {})
         .catch((e) => console.log(e));
     } else {
       try {
@@ -155,7 +155,7 @@ export const UseMediaHandlers = (
         navigator.mediaDevices
           .getDisplayMedia({ videoToggle: true, audio: true })
           .then(getDislayMediaSuccess)
-          .then((stream) => {})
+          .then(() => {})
           .catch((e) => console.log(e));
       }
     }

@@ -86,7 +86,7 @@ const GraphPlotter = () => {
         }
       }
       ctx.stroke();
-    } catch (e) {
+    } catch {
       setError(
         "Invalid function. Please use valid JavaScript Math syntax (e.g., Math.sin(x))."
       );

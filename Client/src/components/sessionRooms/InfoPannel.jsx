@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Check, Clipboard, User, X } from "lucide-react";
-import useSessionRoom from "@/hooks/useSessionRoom.jsx";
-import { useParams } from "react-router-dom";
 import UseSocketContext from "@/contexts/SocketContext.jsx";
+import useSessionRoom from "@/hooks/useSessionRoom.jsx";
+import { Check, Clipboard, X } from "lucide-react";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import ProfileIcon from "./ProfileIcon.jsx";
 
 function ShowInfo({ setShowInfo }) {

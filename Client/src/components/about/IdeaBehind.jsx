@@ -1,5 +1,4 @@
 import { Lightbulb } from "lucide-react";
-import React from "react";
 
 function IdeaBehindEduhaven() {
   return (

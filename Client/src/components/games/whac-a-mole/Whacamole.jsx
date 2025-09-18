@@ -1,5 +1,5 @@
 // Whacamole.jsx
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { RefreshCw, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import useSound from "use-sound";

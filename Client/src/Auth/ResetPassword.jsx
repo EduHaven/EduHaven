@@ -1,20 +1,11 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import axiosInstance from "@/utils/axios";
+import { motion } from "framer-motion";
+import { CheckCircle, Eye, EyeOff, KeyRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  Eye,
-  EyeOff,
-  Shield,
-  CheckCircle,
-  KeyRound,
-} from "lucide-react";
 import { toast } from "react-toastify";
-import bgImg from "../assets/LoginBackground.jpg";
-
-// const backendUrl = import.meta.env.VITE_API_URL;
 
 const formVariants = {
   initial: {
@@ -48,14 +39,6 @@ const containerVariants = {
   },
 };
 
-const backgroundVariants = {
-  initial: { opacity: 0 },
-  animate: {
-    opacity: 1,
-    transition: { duration: 1 },
-  },
-};
-
 function ResetPassword() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -74,8 +57,6 @@ function ResetPassword() {
   useEffect(() => {
     // Get email from localStorage
     const email = localStorage.getItem("resetEmail");
-    const resetToken = localStorage.getItem("resetToken");
-    const otpVerified = localStorage.getItem("otpVerified");
     if (email) {
       setResetEmail(email);
     } else {
@@ -127,7 +108,7 @@ function ResetPassword() {
       }
 
       const url = `/auth/reset-password`;
-      const response = await axiosInstance.post(
+      await axiosInstance.post(
         url,
         {
           email: resetEmail,
@@ -189,14 +170,13 @@ function ResetPassword() {
               Redirecting to login page in a few seconds...
             </p>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <Button
             onClick={() => navigate("/auth/login")}
+            variant="default"
             className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600"
           >
             Go to Login Now
-          </motion.button>
+          </Button>
         </div>
       </motion.div>
     );
@@ -310,19 +290,18 @@ function ResetPassword() {
             )}
           </div>
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <Button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full rounded-xl py-3 px-4 text-white font-semibold ${
+            variant="default"
+            className={`w-full rounded-xl py-3 px-4 font-semibold ${
               isSubmitting
                 ? "opacity-50 cursor-not-allowed bg-gray-400"
                 : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
             }`}
           >
             {isSubmitting ? "Resetting Password..." : "Reset Password"}
-          </motion.button>
+          </Button>
         </form>
       </motion.div>
     </motion.div>

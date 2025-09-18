@@ -9,7 +9,7 @@ import Calculator from "./Calculator.jsx";
 
 function NavBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [selectedId, setSelectedId] = useState(""); // for AI, do not remove
+  const [, setSelectedId] = useState(""); // for AI, do not remove
 
   useEffect(() => {
     const token = localStorage.getItem("token");

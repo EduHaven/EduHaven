@@ -1,4 +1,3 @@
-import React from "react";
 import { Calendar, Eye, Folder } from "lucide-react";
 
 function Footer({ isLoading, repoData }) {

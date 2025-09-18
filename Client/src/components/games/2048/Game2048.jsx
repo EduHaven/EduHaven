@@ -39,7 +39,6 @@ const Game2048 = () => {
 
   const moveBoard = useCallback((direction) => {
     if (gameOver) return;
-    let newBoard = JSON.parse(JSON.stringify(board));
     let moved = false;
     let newScore = score;
 
@@ -126,27 +125,30 @@ const Game2048 = () => {
     }
   }, [setGameOver, score, highScore, setHighScore]);
 
-  const handleKeyDown = useCallback((e) => {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
-      e.preventDefault(); // ✅ stops page scrolling
-    }
-    switch (e.key) {
-      case "ArrowUp":
-        moveBoard("up");
-        break;
-      case "ArrowDown":
-        moveBoard("down");
-        break;
-      case "ArrowLeft":
-        moveBoard("left");
-        break;
-      case "ArrowRight":
-        moveBoard("right");
-        break;
-      default:
-        break;
-    }
-  }, [moveBoard]);
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault(); // ✅ stops page scrolling
+      }
+      switch (e.key) {
+        case "ArrowUp":
+          moveBoard("up");
+          break;
+        case "ArrowDown":
+          moveBoard("down");
+          break;
+        case "ArrowLeft":
+          moveBoard("left");
+          break;
+        case "ArrowRight":
+          moveBoard("right");
+          break;
+        default:
+          break;
+      }
+    },
+    [moveBoard]
+  );
 
   function resetGame() {
     setBoard(getInitialBoard());

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Cropper from "react-easy-crop";
 import { Dialog } from "@headlessui/react";
 import { X, RotateCw, Check } from "lucide-react";

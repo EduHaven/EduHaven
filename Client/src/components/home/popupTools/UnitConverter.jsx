@@ -1,5 +1,6 @@
 import { Delete } from "lucide-react";
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { Button } from "@/components/ui/button";
 
 function UnitConverter() {
   const units = useMemo(() => ({
@@ -85,6 +86,26 @@ function UnitConverter() {
   }, [category, inputUnit, outputUnit, units, convertTemperature, setResult]);
 
   useEffect(() => {
+    const handleConvert = (val) => {
+      if (val === "") {
+        setResult("");
+        return;
+      }
+      const number = parseFloat(val);
+      if (isNaN(number)) {
+        setResult("Invalid input");
+        return;
+      }
+      let res;
+      if (category === "temperature") {
+        res = convertTemperature(number, inputUnit, outputUnit);
+      } else {
+        const baseValue = number * units[category][inputUnit];
+        res = baseValue / units[category][outputUnit];
+      }
+      setResult(Number.isNaN(res) ? "Error" : parseFloat(res.toFixed(6)));
+    };
+
     handleConvert(inputValue);
   }, [inputValue, inputUnit, outputUnit, category, handleConvert]);
 
@@ -132,16 +153,18 @@ function UnitConverter() {
                 ))}
           </select>
         </div>
-        <button
+        <Button
           onClick={() => {
             const temp = inputUnit;
             setInputUnit(outputUnit);
             setOutputUnit(temp);
           }}
-          className="px-3 py-2 rounded bg-[var(--bg-primary)] txt hover:bg-[var(--bg-ter)] transition"
+          variant="secondary"
+          size="default"
+          className="px-3 py-2 rounded txt hover:bg-[var(--bg-ter)] transition"
         >
           ⇄
-        </button>
+        </Button>
         <div className="flex-1">
           <label className="block mb-1 font-semibold text-[var(--txt)]">
             To
@@ -173,15 +196,17 @@ function UnitConverter() {
           placeholder={`Enter value in ${inputUnit}`}
           className="w-full p-2 rounded bg-[var(--bg-sec)] txt"
         />
-        <button
+        <Button
           onClick={() => {
             setInputValue("");
             setResult("");
           }}
+          variant="destructive"
+          size="default"
           className="flex items-center gap-2 font-semibold p-2 rounded bg-sec txt hover:text-white hover:bg-red-700 transition"
         >
           <Delete /> Clear
-        </button>
+        </Button>
       </div>
     </div>
   );

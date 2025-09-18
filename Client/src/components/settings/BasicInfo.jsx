@@ -6,7 +6,6 @@ import { useUserProfile } from "../../contexts/UserProfileContext";
 import { Camera, User, Trash2 } from "lucide-react";
 import UpdateButton from "./UpdateButton";
 import { CropModal } from "../CropModal";
-import { getCroppedWebpFile } from "@/utils/imageUtils";
 
 export default function BasicInfo() {
   const { user, setUser, fetchUserDetails, isBasicInfoComplete } =

@@ -112,7 +112,7 @@ const SnakeGame = () => {
           window.mozRequestAnimationFrame ||
           window.oRequestAnimationFrame ||
           window.msRequestAnimationFrame ||
-          function (callback, element) {
+          function (callback) {
             return window.setTimeout(callback, 1000 / 60);
           }
         );
@@ -520,7 +520,7 @@ const SnakeGame = () => {
           </div>
           {isOpen && (
             <div className={styles.dropdownList}>
-              {dropdownOptions.map((option, index) => {
+              {dropdownOptions.map((option) => {
                 if (option.type === "setting") {
                   return (
                     <div

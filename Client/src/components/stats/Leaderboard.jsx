@@ -1,28 +1,25 @@
-import { useState, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useParams } from "react-router-dom";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from "react-router-dom";
 import { useLeaderboard } from "@/queries/timerQueries";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Leaderboard = () => {
   const [view, setView] = useState("weekly");
   const [friendsOnly, setFriendsOnly] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const { userId } = useParams();
 
   // Replace direct axios call with TanStack Query hook
-  const {
-    data: leaderboard = [],
-    isLoading,
-    error,
-  } = useLeaderboard(view, friendsOnly);
+  const { data: leaderboard = [], isLoading } = useLeaderboard(
+    view,
+    friendsOnly
+  );
 
   // Extract currentUserId from JWT token (keep this part)
   useEffect(() => {

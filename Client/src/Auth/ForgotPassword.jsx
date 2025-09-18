@@ -4,6 +4,7 @@ import { Mail, Send } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Button } from "../components/ui/button";
 
 // const backendUrl = import.meta.env.VITE_API_URL;
 
@@ -36,14 +37,6 @@ const containerVariants = {
       duration: 0.5,
       ease: "easeOut",
     },
-  },
-};
-
-const backgroundVariants = {
-  initial: { opacity: 0 },
-  animate: {
-    opacity: 1,
-    transition: { duration: 1 },
   },
 };
 
@@ -139,12 +132,12 @@ function ForgotPassword() {
               )}
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <Button
               type="submit"
+              onClick={handleSubmit}
               disabled={isSubmitting}
-              className={`w-full rounded-xl py-3 px-4 text-white font-semibold flex items-center justify-center gap-2 ${
+              variant="default"
+              className={`w-full rounded-xl py-3 px-4 font-semibold flex items-center justify-center gap-2 ${
                 isSubmitting
                   ? "opacity-50 cursor-not-allowed bg-gray-400"
                   : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
@@ -158,17 +151,18 @@ function ForgotPassword() {
                   Send Reset OTP
                 </>
               )}
-            </motion.button>
+            </Button>
           </form>
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Remember your password?{" "}
-              <button
+              <Button
                 onClick={goSignIn}
-                className="font-medium text-blue-600 hover:text-blue-700"
+                variant="link"
+                className="text-blue-600 hover:text-blue-700 font-medium"
               >
                 Sign in
-              </button>
+              </Button>
             </p>
           </div>
         </motion.div>

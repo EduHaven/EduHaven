@@ -1,42 +1,35 @@
 import axiosInstance from "@/utils/axios";
 
-// gets all the incoming friend requests
 export const fetchFriendRequests = async () => {
   const res = await axiosInstance.get("/friends/requests");
   return res.data || [];
 };
 
-// accepts a friend request
 export const acceptFriendRequest = async (friendId) => {
   const res = await axiosInstance.post(`/friends/accept/${friendId}`, null);
   return res.data;
 };
 
-// rejects a friend request
 export const rejectFriendRequest = async (friendId) => {
   const res = await axiosInstance.delete(`/friends/reject/${friendId}`);
   return res.data;
 };
 
-// get all the sent friend requests
 export const fetchSentRequests = async () => {
   const res = await axiosInstance.get("/friends/sent-requests");
   return res.data || [];
 };
 
-// cancels a sent friend request
 export const cancelFriendRequest = async (friendId) => {
   const res = await axiosInstance.delete(`/friends/sent-requests/${friendId}`);
   return res.data;
 };
 
-// get all the friends
 export const fetchAllFriends = async () => {
   const res = await axiosInstance.get("/friends");
   return res.data || [];
 };
 
-// removes a friend
 export const removeFriend = async (friendId) => {
   const res = await axiosInstance.delete(`/friends/${friendId}`);
   return res.data;
