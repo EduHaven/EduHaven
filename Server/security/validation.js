@@ -26,13 +26,63 @@ export const signupValidationRules = () => [
     .notEmpty()
     .withMessage("Email is required")
     .isEmail()
-    .withMessage("Email must be valid"),
+    .withMessage("Email must be valid")
+    .normalizeEmail()
+    .custom(async (value) => {
+      // Check if email already exists
+      const User = (await import('../Model/UserModel.js')).default;
+      const existingUser = await User.findOne({ Email: value });
+      if (existingUser) {
+        throw new Error('Email is already registered');
+      }
+      return true;
+    }),
 
   body("Password")
     .notEmpty()
     .withMessage("Password is required")
-    .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters"),
+    .isLength({ min: 8, max: 128 })
+    .withMessage("Password must be between 8 and 128 characters")
+    .matches(/^(?=.*[a-z])/)
+    .withMessage("Password must contain at least one lowercase letter")
+    .matches(/^(?=.*[A-Z])/)
+    .withMessage("Password must contain at least one uppercase letter")
+    .matches(/^(?=.*\d)/)
+    .withMessage("Password must contain at least one number")
+    .matches(/^(?=.*[!@#$%^&*(),.?":{}|<>])/)
+    .withMessage("Password must contain at least one special character")
+    .custom((value) => {
+      // Check for common weak passwords
+      const commonPasswords = [
+        'password', '12345678', 'qwerty', 'abc123', 'password123',
+        'admin', 'letmein', 'welcome', 'monkey', '123456789'
+      ];
+      if (commonPasswords.includes(value.toLowerCase())) {
+        throw new Error('Password is too common. Please choose a stronger password');
+      }
+      return true;
+    })
+    .custom((value) => {
+      // Check for sequential characters (e.g., 123, abc, qwe)
+      const sequentialPatterns = [
+        /012|123|234|345|456|567|678|789|890/,
+        /abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz/,
+        /qwe|wer|ert|rty|tyu|yui|uio|iop|asd|sdf|dfg|fgh|ghj|hjk|jkl|zxc|xcv|cvb|vbn|bnm/
+      ];
+      for (const pattern of sequentialPatterns) {
+        if (pattern.test(value.toLowerCase())) {
+          throw new Error('Password cannot contain sequential characters');
+        }
+      }
+      return true;
+    })
+    .custom((value) => {
+      // Check for repeated characters (e.g., aaaa, 1111)
+      if (/(.)\1{3,}/.test(value)) {
+        throw new Error('Password cannot contain repeated characters (4 or more in a row)');
+      }
+      return true;
+    }),
 ];
 
 export const loginValidationRules = () => [
@@ -41,9 +91,64 @@ export const loginValidationRules = () => [
     .notEmpty()
     .withMessage("Email is required")
     .isEmail()
-    .withMessage("Email must be valid"),
+    .withMessage("Email must be valid")
+    .normalizeEmail(),
 
-  body("Password").notEmpty().withMessage("Password is required"),
+  body("Password")
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ max: 128 })
+    .withMessage("Password is too long"),
+];
+
+export const forgotPasswordValidationRules = () => [
+  body("Email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Email must be valid")
+    .normalizeEmail()
+    .custom(async (value) => {
+      // Check if email exists in the system
+      const User = (await import('../Model/UserModel.js')).default;
+      const existingUser = await User.findOne({ Email: value });
+      if (!existingUser) {
+        throw new Error('No account found with this email address');
+      }
+      return true;
+    }),
+];
+
+export const resetPasswordValidationRules = () => [
+  body("token")
+    .notEmpty()
+    .withMessage("Reset token is required"),
+
+  body("newPassword")
+    .notEmpty()
+    .withMessage("New password is required")
+    .isLength({ min: 8, max: 128 })
+    .withMessage("Password must be between 8 and 128 characters")
+    .matches(/^(?=.*[a-z])/)
+    .withMessage("Password must contain at least one lowercase letter")
+    .matches(/^(?=.*[A-Z])/)
+    .withMessage("Password must contain at least one uppercase letter")
+    .matches(/^(?=.*\d)/)
+    .withMessage("Password must contain at least one number")
+    .matches(/^(?=.*[!@#$%^&*(),.?":{}|<>])/)
+    .withMessage("Password must contain at least one special character")
+    .custom((value) => {
+      // Check for common weak passwords
+      const commonPasswords = [
+        'password', '12345678', 'qwerty', 'abc123', 'password123',
+        'admin', 'letmein', 'welcome', 'monkey', '123456789'
+      ];
+      if (commonPasswords.includes(value.toLowerCase())) {
+        throw new Error('Password is too common. Please choose a stronger password');
+      }
+      return true;
+    }),
 ];
 
 // -------------------------------Event--------------------

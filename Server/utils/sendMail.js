@@ -9,7 +9,18 @@ global.Request = Request;
 global.Response = Response;
 
 dotenv.config();
-const resend = new Resend(process.env.RESEND_KEY);
+// Safely initialize Resend only if key provided, otherwise fall back to console logging for local dev
+let resend = null;
+if (process.env.RESEND_KEY) {
+  try {
+    resend = new Resend(process.env.RESEND_KEY);
+  } catch (e) {
+    console.warn("RESEND init failed; falling back to console logging only", e);
+    resend = null;
+  }
+} else {
+  console.warn("RESEND_KEY not set. Emails will be logged to console only.");
+}
 
 const sendEmail = async (Email, FirstName, otp, emailType) => {
   try {
@@ -32,6 +43,11 @@ const sendEmail = async (Email, FirstName, otp, emailType) => {
     };
 
     const content = emailContent[emailType] || emailContent.signup;
+
+    if (!resend) {
+      console.log(`[DEV EMAIL LOG] (${emailType}) OTP for ${Email}:`, otp);
+      return;
+    }
 
     const response = await resend.emails.send({
       from: "Eduahaven <noreply@eduhaven.online>",

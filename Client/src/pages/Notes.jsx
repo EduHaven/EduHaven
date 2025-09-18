@@ -224,9 +224,16 @@ const Notes = () => {
   }, [selectedNote, editor]);
 
   const createNewNote = () => {
+    // Generate a more user-friendly title
+    const existingTitles = notes.map(note => note.title);
+    let noteNumber = 1;
+    while (existingTitles.includes(`Note ${noteNumber}`)) {
+      noteNumber++;
+    }
+
     createNoteMutation.mutate(
       {
-        title: `Note ${notes.length + 1}`,
+        title: `Note ${noteNumber}`,
         content: "Write here...",
         color: "default",
         isPinned: false,
@@ -338,8 +345,11 @@ const Notes = () => {
     return matchesSearch;
   });
 
-  const pinnedNotes = (notes || []).filter((note) => note.isPinned);
-  const unpinnedNotes = (notes || []).filter((note) => !note.isPinned);
+  // Calculate pinned and unpinned notes from filtered results when searching
+  // or from all notes when not searching
+  const notesToDisplay = searchTerm ? filteredNotes : notes;
+  const pinnedNotes = (notesToDisplay || []).filter((note) => note.isPinned);
+  const unpinnedNotes = (notesToDisplay || []).filter((note) => !note.isPinned);
 
   if (isLoading) {
     return <p>Loading...</p>;

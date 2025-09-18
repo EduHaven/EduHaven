@@ -197,18 +197,11 @@ const signup = async (req, res) => {
   try {
     const { FirstName, LastName, Email, Password } = req.body;
 
-    // Validate input fields
+    // Basic input validation (additional checks beyond middleware)
     if (!FirstName || !LastName || !Email || !Password) {
       return res.status(422).json({ error: "Please fill all the fields" });
     }
 
-    // Check if user already exists
-    let user = await User.findOne({ Email: Email });
-    if (user) {
-      return res.status(409).json({ error: "User already exists" });
-    }
-    // const imageurl = req.body.imageUrl;
-    // console.log(imageurl)
     // Hash the password
     const haspass = await argon2.hash(Password, { type: argon2.argon2id });
 

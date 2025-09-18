@@ -141,9 +141,9 @@ function NotesComponent() {
 
   const addNewPage = () => {
     const newNote = { content: "", title: "", date: new Date() };
-    setNotes((prevNotes) => [...prevNotes, newNote]);
-    setCurrentPage(notes.length);
-  };
+    setNotes((prevNotes) => [newNote, ...prevNotes]);
+    setCurrentPage(0);
+};
 
   const goToNextPage = () => {
     if (currentPage < notes.length - 1) {

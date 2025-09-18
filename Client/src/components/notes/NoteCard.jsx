@@ -27,14 +27,18 @@ const NoteCard = ({
     return text.substring(0, limit) + "...";
   };
 
+  const isOptimistic = note?._id?.startsWith("optimistic-") || note?.__optimistic;
+
   return (
     <div
-      className="cursor-pointer relative flex flex-col transition-all p-4 rounded-xl group"
+      className={`cursor-pointer relative flex flex-col transition-all p-4 rounded-xl group ${
+        isOptimistic ? "animate-pulse opacity-75" : ""
+      }`}
       style={{
         ...getColorStyle(note?.color),
         minHeight: "140px",
       }}
-      onClick={() => onSelect(note)}
+      onClick={() => !isOptimistic && onSelect(note)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -71,7 +75,11 @@ const NoteCard = ({
           className="text-xs leading-snug"
           style={{ color: "var(--txt-dim)" }}
         >
-          {truncateText(getPlainTextPreview(note?.content), 100)}
+          {isOptimistic ? (
+            <span className="text-blue-500 font-medium">Saving...</span>
+          ) : (
+            truncateText(getPlainTextPreview(note?.content), 100)
+          )}
         </div>
       </div>
 

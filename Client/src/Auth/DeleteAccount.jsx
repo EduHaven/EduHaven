@@ -184,7 +184,9 @@ const Delete = () => {
                       type="text"
                       maxLength={6}
                       value={otp}
-                      onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ""))}
+                      onChange={(e) =>
+                        setOtp(e.target.value.replace(/[^0-9]/g, ""))
+                      }
                       placeholder="Enter 6-digit OTP"
                       className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       disabled={isLoading}
@@ -199,7 +201,9 @@ const Delete = () => {
                   </div>
                 )}
                 {otpVerified && (
-                  <p className="text-sm text-green-600 font-medium text-center">OTP verified ✔</p>
+                  <p className="text-sm text-green-600 font-medium text-center">
+                    OTP verified ✔
+                  </p>
                 )}
               </div>
               <div className="flex justify-end gap-4">

@@ -20,6 +20,8 @@ import { sanitizeFields } from "../security/sanitizeMiddleware.js";
 import {
   loginValidationRules,
   signupValidationRules,
+  forgotPasswordValidationRules,
+  resetPasswordValidationRules,
 } from "../security/validation.js";
 import { validate } from "../security/validationMiddleware.js";
 // ------
@@ -65,9 +67,20 @@ router.post(
 );
 
 // Forgot password flow
-router.post("/forgot-password", forgotPassword);
+router.post(
+  "/forgot-password",
+  forgotPasswordValidationRules(),
+  validate,
+  sanitizeFields(["Email"]),
+  forgotPassword
+);
 router.post("/verify-reset-otp", verifyResetOTP);
-router.post("/reset-password", resetPassword);
+router.post(
+  "/reset-password",
+  resetPasswordValidationRules(),
+  validate,
+  resetPassword
+);
 
 router.post("/logout", logout);
 router.post("/refresh", refreshAccessToken);

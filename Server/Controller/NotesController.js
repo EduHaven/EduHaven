@@ -19,7 +19,9 @@ export const getAllNotes = async (req, res) => {
         { "collaborators.user": userId },
         { visibility: "public" },
       ],
-    });
+    })
+      .sort({ createdAt: -1 }) // newest first for consistent ordering
+      .lean();
 
     res.status(200).json({ success: true, data: notes });
   } catch (error) {

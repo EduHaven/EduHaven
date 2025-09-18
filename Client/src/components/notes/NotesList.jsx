@@ -16,10 +16,19 @@ const NotesList = ({
   colors,
   getPlainTextPreview,
 }) => {
+  // When searching, use filtered notes; otherwise use separated pinned/unpinned
+  const displayPinnedNotes = searchTerm
+    ? pinnedNotes.filter(note => filteredNotes.some(fn => fn._id === note._id))
+    : pinnedNotes;
+
+  const displayUnpinnedNotes = searchTerm
+    ? unpinnedNotes.filter(note => filteredNotes.some(fn => fn._id === note._id))
+    : unpinnedNotes;
+
   return (
     <>
       {/* Pinned notes */}
-      {pinnedNotes.length > 0 && (
+      {displayPinnedNotes.length > 0 && (
         <div className="mb-6">
           <h3
             className="text-xs font-medium uppercase mb-2 mt-0"
@@ -33,7 +42,7 @@ const NotesList = ({
               gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
             }}
           >
-            {pinnedNotes.map((note) => (
+            {displayPinnedNotes.map((note) => (
               <NoteCard
                 key={note?._id}
                 note={note}
@@ -54,9 +63,9 @@ const NotesList = ({
       )}
 
       {/* Unpinned notes */}
-      {unpinnedNotes.length > 0 && (
+      {displayUnpinnedNotes.length > 0 && (
         <div>
-          {pinnedNotes.length > 0 && (
+          {displayPinnedNotes.length > 0 && (
             <h3
               className="text-xs font-medium uppercase mb-2 mt-0"
               style={{ color: "var(--txt-dim)" }}
@@ -70,7 +79,7 @@ const NotesList = ({
               gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
             }}
           >
-            {unpinnedNotes.map((note) => (
+            {displayUnpinnedNotes.map((note) => (
               <NoteCard
                 key={note?._id}
                 note={note}
