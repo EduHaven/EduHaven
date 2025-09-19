@@ -431,7 +431,9 @@ const resetPassword = async (req, res) => {
     }
 
     // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    const hashedPassword = await argon2.hash(newPassword, {
+      type: argon2.argon2id,
+    });
 
     // Update user password
     await User.findByIdAndUpdate(user._id, { Password: hashedPassword });

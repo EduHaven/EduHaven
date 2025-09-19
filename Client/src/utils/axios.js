@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import { useUserProfile } from "@/contexts/UserProfileContext";
 const backendUrl = import.meta.env.VITE_API_URL;
 
 const axiosInstance = axios.create({
@@ -26,9 +26,11 @@ const processQueue = (error, token = null) => {
 // Request interceptor to add token if available
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const { token } = useUserProfile.getState();
+
+    const currentToken = token;
+    if (currentToken) {
+      config.headers.Authorization = `Bearer ${currentToken}`;
     }
     return config;
   },
@@ -40,7 +42,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
+    const { setToken, clearToken } = useUserProfile.getState();
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         // If already refreshing, queue the request
@@ -73,7 +75,7 @@ axiosInstance.interceptors.response.use(
 
         const { token } = response.data;
 
-        localStorage.setItem("token", token);
+        setToken(token);
 
         // Update the authorization header
         axiosInstance.defaults.headers.common["Authorization"] =
@@ -87,7 +89,7 @@ axiosInstance.interceptors.response.use(
         processQueue(refreshError, null);
 
         // Clear tokens and redirect to login
-        localStorage.removeItem("token");
+        clearToken();
         localStorage.removeItem("refreshToken");
 
         // Redirect to login page

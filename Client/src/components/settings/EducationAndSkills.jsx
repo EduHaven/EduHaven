@@ -7,7 +7,7 @@ import { Plus, X, Trash2 } from "lucide-react";
 import UpdateButton from "./UpdateButton";
 
 function EducationAndSkills() {
-  const { user, setUser, fetchUserDetails, isEduSkillsComplete } =
+  const { user, setUser, fetchUserDetails, isEduSkillsComplete, token } =
     useUserProfile();
   const [profileData, setProfileData] = useState({
     University: "",
@@ -29,10 +29,10 @@ function EducationAndSkills() {
   const [hasChanged, setHasChanged] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    const currentToken = token;
+    if (currentToken) {
       try {
-        const decoded = jwtDecode(token);
+        const decoded = jwtDecode(currentToken);
         setUserId(decoded.id);
 
         if (!user) {

@@ -4,6 +4,7 @@ import MainContent from "../components/friendsPage/MainContent";
 import NotLogedInPage from "@/components/NotLogedInPage";
 import { jwtDecode } from "jwt-decode";
 import { useSearchParams } from "react-router-dom";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 function FriendsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,7 +20,7 @@ function FriendsPage() {
     }
   }, [searchParams, setSearchParams]);
 
-  const token = localStorage.getItem("token");
+  const { token } = useUserProfile();
   let decodedUser = null;
   try {
     if (token) decodedUser = jwtDecode(token);

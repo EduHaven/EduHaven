@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import { Button } from "../components/ui/button";
 
 const Delete = () => {
@@ -12,13 +13,14 @@ const Delete = () => {
   const [otpRequested, setOtpRequested] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [otp, setOtp] = useState("");
+  const { token, clearToken } = useUserProfile();
 
   const navigate = useNavigate();
 
   // redirect if no token
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    const currentToken = token;
+    if (!currentToken) {
       toast.info("Please login first");
       navigate("/auth/login");
     }
@@ -72,7 +74,7 @@ const Delete = () => {
       if (res.status !== 200)
         throw new Error(data.error || "Failed to delete account");
       toast.success(data.message || "Account deleted successfully");
-      localStorage.removeItem("token");
+      clearToken();
       localStorage.removeItem("refreshToken");
       setTimeout(() => navigate("/"), 1500);
     } catch (e) {

@@ -7,10 +7,11 @@ import SentRequests from "../components/session/friendsSection/SentRequests.jsx"
 import YourRooms from "@/components/session/YourRooms.jsx";
 import NotLogedInPage from "@/components/NotLogedInPage.jsx";
 import axiosInstance from "@/utils/axios";
+import { useUserProfile } from "@/contexts/UserProfileContext.jsx";
 
 function Session() {
+  const { token } = useUserProfile();
   const [view, setView] = useState("suggested");
-  const token = localStorage.getItem("token");
   const [myRooms, setMyRooms] = useState([]);
   const [otherRooms, setOtherRooms] = useState([]);
 

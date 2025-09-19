@@ -8,7 +8,7 @@ import UpdateButton from "./UpdateButton";
 import { CropModal } from "../CropModal";
 
 export default function BasicInfo() {
-  const { user, setUser, fetchUserDetails, isBasicInfoComplete } =
+  const { user, setUser, fetchUserDetails, isBasicInfoComplete, token } =
     useUserProfile();
   const [profileData, setProfileData] = useState({
     FirstName: "",
@@ -29,10 +29,10 @@ export default function BasicInfo() {
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    const currentToken = token;
+    if (currentToken) {
       try {
-        const decoded = jwtDecode(token);
+        const decoded = jwtDecode(currentToken);
         setUserId(decoded.id);
 
         if (!user) {
