@@ -1,158 +1,103 @@
-import { useState, useRef, useEffect } from "react";
+
+import React, { useState, useRef, useEffect } from "react";
 import { Send, MoreVertical, Smile, User, Users } from "lucide-react";
+import UseSocketContext from '../../contexts/SocketContext';
 
-// Dummy messages for demonstration
-const getDummyMessages = (userId) => {
-  const messageTemplates = {
-    1: [
-      {
-        id: 1,
-        text: "Hey! How's the studying going?",
-        sender: "other",
-        timestamp: "10:30 AM",
-      },
-      {
-        id: 2,
-        text: "Pretty good! Working on calculus problems.",
-        sender: "me",
-        timestamp: "10:32 AM",
-      },
-      {
-        id: 3,
-        text: "Need any help? I'm pretty good with derivatives.",
-        sender: "other",
-        timestamp: "10:33 AM",
-      },
-      {
-        id: 4,
-        text: "That would be awesome! I'm struggling with the chain rule.",
-        sender: "me",
-        timestamp: "10:35 AM",
-      },
-      {
-        id: 5,
-        text: "No problem! Want to hop on a video call?",
-        sender: "other",
-        timestamp: "10:36 AM",
-      },
-    ],
-    2: [
-      {
-        id: 1,
-        text: "Thanks for the study notes!",
-        sender: "other",
-        timestamp: "2:15 PM",
-      },
-      {
-        id: 2,
-        text: "You're welcome! How did the exam go?",
-        sender: "me",
-        timestamp: "2:20 PM",
-      },
-      {
-        id: 3,
-        text: "Really well! Your notes were super helpful.",
-        sender: "other",
-        timestamp: "2:22 PM",
-      },
-    ],
-    3: [
-      {
-        id: 1,
-        text: "Hey, can we reschedule our study session?",
-        sender: "other",
-        timestamp: "Yesterday",
-      },
-      {
-        id: 2,
-        text: "Sure! What time works better for you?",
-        sender: "me",
-        timestamp: "Yesterday",
-      },
-    ],
-    5: [
-      {
-        id: 1,
-        text: "Don't forget about tomorrow's group study at 3 PM",
-        sender: "other",
-        timestamp: "Yesterday",
-      },
-      {
-        id: 2,
-        text: "What topics are we covering?",
-        sender: "me",
-        timestamp: "Yesterday",
-      },
-      {
-        id: 3,
-        text: "Data structures and algorithms",
-        sender: "other",
-        timestamp: "Yesterday",
-      },
-      {
-        id: 4,
-        text: "Perfect! I'll bring my notes on binary trees",
-        sender: "me",
-        timestamp: "Yesterday",
-      },
-    ],
-  };
+function Message({ message, isMe }) {
+  const messageStyle = isMe
+    ? {
+        backgroundColor: "var(--btn)",
+        color: "white",
+        borderRadius: "20px 20px 4px 20px",
+      }
+    : {
+        backgroundColor: "color-mix(in srgb, var(--bg-sec), black 10%)",
+        color: "var(--txt)",
+        borderRadius: "20px 20px 20px 4px",
+      };
 
-  return messageTemplates[userId] || [];
-};
+  const textStyle = isMe ? "text-white" : "txt";
+  const timestampStyle = isMe ? "text-white/70" : "txt-disabled";
 
-function ChatWindow({ selectedUser }) {
+  return (
+    <div className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
+      <div
+        className="max-w-[70%] px-3 py-2 rounded-2xl"
+        style={messageStyle}
+      >
+        <p className={`break-words text-sm sm:text-base ${textStyle}`}>
+          {message.message}
+        </p>
+        <p className={`text-xs mt-1 ${timestampStyle}`}>
+          {new Date(message.timestamp).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default function ChatWindow({ selectedUser }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  
+  // Use the context hook to get the socket and user
+  const { socket, user } = UseSocketContext();
+  
+  // Get the user ID from the user object provided by the context
+  const myUserId = user ? user.id : null;
+  const roomId = selectedUser ? [myUserId, selectedUser.id].sort().join("_") : null;
 
-  // Load messages when user is selected
   useEffect(() => {
-    if (selectedUser) {
-      setMessages(getDummyMessages(selectedUser.id));
+    if (!selectedUser || !socket) {
+      setMessages([]);
+      return;
     }
-  }, [selectedUser]);
 
-  // Auto scroll to bottom when new messages arrive
+    socket.emit("join_room", roomId);
+    socket.emit("get_messages", { roomId, limit: 50, offset: 0 });
+
+    socket.on("messages_history", (data) => {
+      if (data.roomId === roomId) {
+        setMessages(data.messages);
+      }
+    });
+
+    socket.on("new_message", (newMessage) => {
+      if (newMessage.roomId === roomId) {
+        setMessages((prev) => [...prev, newMessage]);
+      }
+    });
+
+    socket.on("user_typing", (data) => {
+      if (data.isTyping && data.userId !== myUserId && data.roomId === roomId) {
+        console.log(`${data.username} is typing...`);
+      }
+    });
+
+    return () => {
+      socket.off("messages_history");
+      socket.off("new_message");
+      socket.off("user_typing");
+      socket.emit("leave_room", roomId);
+    };
+  }, [selectedUser, roomId, socket, myUserId]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSendMessage = () => {
-    if (!message.trim() || !selectedUser) return;
-
-    const newMessage = {
-      id: Date.now(),
-      text: message,
-      sender: "me",
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
+    if (!message.trim() || !selectedUser || !socket) return;
+    socket.emit("send_message", {
+      roomId: roomId,
+      message: message,
+      userId: myUserId
+    });
     setMessage("");
-
-    // TODO: Connect to backend - Send message via socket/API
-    // Example: socket.emit('sendMessage', { userId: selectedUser.id, message: message });
-
-    // Simulate typing indicator and response (remove this in real implementation)
-    setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      const autoReply = {
-        id: Date.now() + 1,
-        text: "Thanks for your message! I'll get back to you soon.",
-        sender: "other",
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
-      setMessages((prev) => [...prev, autoReply]);
-    }, 2000);
   };
 
   const handleKeyPress = (e) => {
@@ -162,15 +107,15 @@ function ChatWindow({ selectedUser }) {
     }
   };
 
-  // Empty state when no user is selected
+  const handleTyping = (e) => {
+    setMessage(e.target.value);
+    // You would emit a "typing_start" event here
+    // And a "typing_stop" event after a timeout
+  };
+
   if (!selectedUser) {
     return (
-      <div
-        className="h-full flex items-center justify-center"
-        style={{
-          backgroundColor: "color-mix(in srgb, var(--bg-ter), black 15%)",
-        }}
-      >
+      <div className="h-full flex items-center justify-center">
         <div className="text-center txt-disabled">
           <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
           <h3 className="text-xl font-medium mb-2">Select a conversation</h3>
@@ -181,186 +126,83 @@ function ChatWindow({ selectedUser }) {
   }
 
   return (
-    <div
-      className="h-full flex flex-col"
-      style={{
-        backgroundColor: "color-mix(in srgb, var(--bg-ter), black 15%)",
-      }}
-    >
-      {/* Chat Header - Responsive */}
-      <div
-        className="p-2 sm:p-3 lg:p-4 border-b border-gray-200/20"
-        style={{
-          backgroundColor: "color-mix(in srgb, var(--bg-sec), black 10%)",
-        }}
-      >
+    <div className="h-full flex flex-col bg-[color-mix(in_srgb,_var(--bg-ter),_black_15%)]">
+      {/* Chat Header */}
+      <div className="p-4 border-b border-gray-200/20 bg-[color-mix(in_srgb,_var(--bg-sec),_black_10%)]">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* User Avatar - Responsive sizing */}
+          <div className="flex items-center gap-3">
             {selectedUser.avatar ? (
               <img
                 src={selectedUser.avatar}
                 alt={selectedUser.name}
-                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
+                className="w-10 h-10 rounded-full object-cover"
               />
             ) : (
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary flex items-center justify-center">
-                {selectedUser.isGroup ? (
-                  <Users className="w-4 h-4 sm:w-5 sm:h-5 txt-dim" />
-                ) : (
-                  <User className="w-4 h-4 sm:w-5 sm:h-5 txt-dim" />
-                )}
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                {selectedUser.isGroup ? <Users className="w-5 h-5 txt-dim" /> : <User className="w-5 h-5 txt-dim" />}
               </div>
             )}
-
-            {/* User Info - Responsive text sizing */}
             <div>
-              <h3 className="font-semibold txt text-sm sm:text-base">
-                {selectedUser.name}
-              </h3>
-              <p className="text-xs sm:text-sm txt-dim">
-                {selectedUser.isGroup
-                  ? `${Math.floor(Math.random() * 20) + 5} members`
-                  : selectedUser.isOnline
-                    ? "Online"
-                    : "Last seen recently"}
-              </p>
+              <h3 className="font-semibold txt text-base">{selectedUser.name}</h3>
+              <p className="text-sm txt-dim">Online</p>
             </div>
           </div>
-
-          {/* Action Buttons - Responsive sizing */}
-          <div className="flex items-center gap-1 sm:gap-2">
-            <button className="p-1.5 sm:p-2 rounded-full hover:opacity-70 transition-colors txt-dim hover:txt">
-              <MoreVertical className="w-4 h-4 sm:w-5 sm:h-5" />
+          <div className="flex items-center gap-2">
+            <button className="p-2 rounded-full hover:opacity-70 transition-colors txt-dim hover:txt">
+              <MoreVertical className="w-5 h-5" />
             </button>
-            {/* TODO: Connect to backend - Add video/voice call functionality */}
           </div>
         </div>
       </div>
 
-      {/* Messages Area - Responsive */}
-      <div className="flex-1 overflow-y-auto p-2 sm:p-3 lg:p-4 space-y-2 sm:space-y-3 lg:space-y-4">
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.length === 0 ? (
-          <div className="text-center txt-disabled mt-6 sm:mt-8">
-            <p className="text-sm sm:text-base">
-              No messages yet. Start the conversation!
-            </p>
+          <div className="text-center txt-disabled mt-8">
+            <p className="text-base">No messages yet. Start the conversation!</p>
           </div>
         ) : (
           messages.map((msg) => (
-            <div
+            <Message
               key={msg.id}
-              className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[70%] px-2 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2 rounded-2xl ${
-                  msg.sender === "me"
-                    ? "bg-[var(--btn)] text-white rounded-br-md"
-                    : "rounded-bl-md txt"
-                }`}
-                style={{
-                  backgroundColor:
-                    msg.sender === "me"
-                      ? "var(--btn)"
-                      : "color-mix(in srgb, var(--bg-sec), black 10%)",
-                }}
-              >
-                <p className="break-words text-xs sm:text-sm lg:text-base">
-                  {msg.text}
-                </p>
-                <p
-                  className={`text-xs mt-1 ${
-                    msg.sender === "me" ? "text-white/70" : "txt-disabled"
-                  }`}
-                >
-                  {msg.timestamp}
-                </p>
-              </div>
-            </div>
+              message={msg}
+              isMe={msg.userId === myUserId}
+            />
           ))
         )}
-
-        {/* Typing Indicator - Responsive */}
-        {isTyping && (
-          <div className="flex justify-start">
-            <div
-              className="txt px-2 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2 rounded-2xl rounded-bl-md"
-              style={{
-                backgroundColor: "color-mix(in srgb, var(--bg-sec), black 10%)",
-              }}
-            >
-              <div className="flex space-x-1">
-                <div
-                  className="w-2 h-2 bg-txt-dim rounded-full animate-bounce"
-                  style={{ animationDelay: "0ms" }}
-                ></div>
-                <div
-                  className="w-2 h-2 bg-txt-dim rounded-full animate-bounce"
-                  style={{ animationDelay: "150ms" }}
-                ></div>
-                <div
-                  className="w-2 h-2 bg-txt-dim rounded-full animate-bounce"
-                  style={{ animationDelay: "300ms" }}
-                ></div>
-              </div>
-            </div>
-          </div>
-        )}
-
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Message Input - Responsive */}
-      <div
-        className="p-2 sm:p-3 lg:p-4 border-t border-gray-200/20"
-        style={{
-          backgroundColor: "color-mix(in srgb, var(--bg-sec), black 10%)",
-        }}
-      >
-        <div className="flex items-end gap-2 sm:gap-3">
-          {/* Message Input */}
-          <div
-            className="flex-1 rounded-2xl border border-gray-200/20 focus-within:border-[var(--btn)] transition-colors"
-            style={{
-              backgroundColor: "color-mix(in srgb, var(--bg-ter), black 12%)",
-            }}
-          >
+      {/* Message Input */}
+      <div className="p-4 border-t border-gray-200/20 bg-[color-mix(in_srgb,_var(--bg-sec),_black_10%)]">
+        <div className="flex items-end gap-3">
+          <div className="flex-1 rounded-2xl border border-gray-200/20 focus-within:border-[var(--btn)] transition-colors bg-[color-mix(in_srgb,_var(--bg-ter),_black_12%)]">
             <textarea
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={handleTyping}
               onKeyDown={handleKeyPress}
               placeholder="Type a message..."
-              className="w-full p-2 sm:p-3 bg-transparent resize-none txt placeholder-txt-disabled focus:outline-none text-sm sm:text-base"
+              className="w-full p-3 bg-transparent resize-none txt placeholder-txt-disabled focus:outline-none text-base"
               rows={1}
               style={{ maxHeight: "120px" }}
             />
           </div>
-
-          {/* Emoji Button */}
           <button className="p-2 rounded-full hover:opacity-70 transition-colors txt-dim hover:txt">
             <Smile className="w-5 h-5" />
           </button>
-
-          {/* Send Button - Responsive */}
           <button
             onClick={handleSendMessage}
             disabled={!message.trim()}
-            className={`p-1.5 sm:p-2 rounded-full transition-colors ${
+            className={`p-2 rounded-full transition-colors ${
               message.trim()
                 ? "bg-[var(--btn)] hover:bg-[var(--btn-hover)] text-white"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
-            <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+            <Send className="w-5 h-5" />
           </button>
         </div>
-
-        {/* TODO: Connect to backend - Add the following features:
-         * 1. Real-time messaging via WebSocket
-         */}
       </div>
     </div>
   );
 }
-
-export default ChatWindow;

@@ -1,3 +1,5 @@
+import React from "react";
+
 import { useState } from "react";
 import { Search, User, Users } from "lucide-react";
 
