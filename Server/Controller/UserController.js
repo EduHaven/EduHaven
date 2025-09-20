@@ -7,6 +7,31 @@ import {
   checkAndAwardRookieBadge,
 } from "../utils/badgeSystem.js";
 
+// =====================
+// Utility Functions
+// =====================
+const sendError = (res, status, message, details = null) => {
+  const errorResponse = { error: message };
+  if (details) errorResponse.details = details;
+  return res.status(status).json(errorResponse);
+};
+
+const validateGraduationYear = (year) => {
+  const currentYear = new Date().getFullYear();
+  return year >= 1900 && year <= currentYear + 10;
+};
+
+const validateBio = (bio) => bio.length <= 500;
+
+const validateOtherDetails = (details) => {
+  if (typeof details !== "object") return false;
+  const MAX_DETAILS_LENGTH = 1000;
+  return Object.entries(details).every(
+    ([, value]) =>
+      !(typeof value === "string" && value.length > MAX_DETAILS_LENGTH)
+  );
+};
+
 // Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dmehndmws",
@@ -15,98 +40,64 @@ cloudinary.config({
     process.env.CLOUDINARY_API_SECRET || "BXpWyZHYKbAexc3conUG88t6TVM",
 });
 
+// =====================
+// Controllers
+// =====================
+
 const updateProfile = async (req, res) => {
   try {
-    console.log("updateProfile called");
-    console.log(
-      "req.user:",
-      req.user ? { id: req.user._id, name: req.user.FirstName } : "No user"
-    );
-    console.log("Request body:", req.body);
-
-    if (!req.user) {
-      console.log("No user in request - auth middleware failed");
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!req.user) return sendError(res, 401, "Unauthorized");
 
     const userId = req.user._id;
-    const updateData = req.body;
+    const updateData = { ...req.body };
 
-    const forbiddenFields = ["_id", "Email", "Password"];
-    forbiddenFields.forEach((field) => {
-      if (updateData[field]) {
-        delete updateData[field];
-      }
-    });
+    // Remove forbidden fields
+    ["_id", "Email", "Password"].forEach((field) => delete updateData[field]);
 
-    if (updateData.GraduationYear) {
-      const currentYear = new Date().getFullYear();
-      if (
-        updateData.GraduationYear < 1900 ||
-        updateData.GraduationYear > currentYear + 10
-      ) {
-        return res.status(400).json({ error: "Invalid graduation year" });
-      }
+    // Validations
+    if (
+      updateData.GraduationYear &&
+      !validateGraduationYear(updateData.GraduationYear)
+    ) {
+      return sendError(res, 400, "Invalid graduation year");
     }
-
-    if (updateData.Bio && updateData.Bio.length > 500) {
-      return res
-        .status(400)
-        .json({ error: "Bio cannot exceed 500 characters" });
+    if (updateData.Bio && !validateBio(updateData.Bio)) {
+      return sendError(res, 400, "Bio cannot exceed 500 characters");
     }
-
-    if (updateData.OtherDetails) {
-      if (typeof updateData.OtherDetails !== "object") {
-        return res
-          .status(400)
-          .json({ error: "OtherDetails must be an object" });
-      }
-      const MAX_DETAILS_LENGTH = 1000;
-      Object.entries(updateData.OtherDetails).forEach(([key, value]) => {
-        if (typeof value === "string" && value.length > MAX_DETAILS_LENGTH) {
-          return res.status(400).json({
-            error: `${key} in OtherDetails cannot exceed ${MAX_DETAILS_LENGTH} characters`,
-          });
-        }
-      });
+    if (
+      updateData.OtherDetails &&
+      !validateOtherDetails(updateData.OtherDetails)
+    ) {
+      return sendError(
+        res,
+        400,
+        "Invalid OtherDetails format or length exceeded"
+      );
     }
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { $set: updateData },
-      {
-        new: true,
-        runValidators: true,
-      }
+      { new: true, runValidators: true }
     ).select("-Password");
 
-    if (!updatedUser) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    if (!updatedUser) return sendError(res, 404, "User not found");
 
-    // Check and award Rookie badge if profile is complete
+    // Award Rookie Badge if applicable
     try {
-      console.log("Profile updated, checking for Rookie badge...");
       const badgeResult = await checkAndAwardRookieBadge(userId);
-      console.log("Badge check result:", badgeResult);
-
       if (badgeResult.success) {
-        console.log(`Rookie badge awarded to user ${userId}`);
-        // Re-fetch user to include the new badge
         const userWithBadge = await User.findById(userId).select("-Password");
         return res.status(200).json(userWithBadge);
       }
-    } catch (badgeError) {
-      console.error("Error checking Rookie badge:", badgeError);
-      // Continue even if badge check fails
+    } catch (err) {
+      console.error("Badge awarding failed:", err.message);
     }
 
     return res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Profile update error:", error);
-    return res
-      .status(500)
-      .json({ error: "Failed to update profile", details: error.message });
+    return sendError(res, 500, "Failed to update profile", error.message);
   }
 };
 
@@ -114,16 +105,11 @@ const getUserDetails = async (req, res) => {
   try {
     const userId = req.query.id;
     if (!userId || userId === "undefined") {
-      return res
-        .status(400)
-        .json({ error: "User ID is required and cannot be undefined" });
+      return sendError(res, 400, "User ID is required and cannot be undefined");
     }
 
     const user = await User.findById(userId).select("-Password").lean();
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    if (!user) return sendError(res, 404, "User not found");
 
     const token = req.headers.authorization?.split(" ")[1];
     if (!token)
@@ -134,7 +120,7 @@ const getUserDetails = async (req, res) => {
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
+    } catch {
       return res
         .status(200)
         .json({ ...user, relationshipStatus: "Add friends" });
@@ -143,51 +129,36 @@ const getUserDetails = async (req, res) => {
     const currUser = await User.findById(decoded.id).select(
       "friends friendRequests sentRequests"
     );
-
-    if (!currUser) {
+    if (!currUser)
       return res.status(200).json({ ...user, relationshipStatus: "unknown" });
-    }
 
-    // Determine relationship from here
     let relationshipStatus = "Add Friend";
-
-    if (currUser.friends.includes(userId)) {
-      relationshipStatus = "Friends";
-    } else if (currUser.sentRequests.includes(userId)) {
+    if (currUser.friends.includes(userId)) relationshipStatus = "Friends";
+    else if (currUser.sentRequests.includes(userId))
       relationshipStatus = "Cancel Request";
-    } else if (currUser.friendRequests.includes(userId)) {
+    else if (currUser.friendRequests.includes(userId))
       relationshipStatus = "Accept Request";
-    }
 
     return res.status(200).json({ ...user, relationshipStatus });
   } catch (error) {
     console.error("Error fetching user details:", error);
-    res.status(500).json({ error: "Failed to fetch user details" });
+    return sendError(res, 500, "Failed to fetch user details", error.message);
   }
 };
 
 const uploadProfilePicture = async (req, res) => {
   try {
-    // Ensure user is authenticated
-    if (!req.user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!req.user) return sendError(res, 401, "Unauthorized");
+    if (!req.file) return sendError(res, 400, "No image uploaded");
 
-    // Check if file is uploaded
-    if (!req.file) {
-      return res.status(400).json({ error: "No image uploaded" });
-    }
-
-    // Upload image to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: "profile_pictures",
       transformation: [
-        { width: 500, height: 500, crop: "limit" }, // Resize and limit image size
-        { quality: "auto" }, // Optimize image quality
+        { width: 500, height: 500, crop: "limit" },
+        { quality: "auto" },
       ],
     });
 
-    // Update user's profile picture URL
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
       { ProfilePicture: result.secure_url },
@@ -201,51 +172,35 @@ const uploadProfilePicture = async (req, res) => {
     });
   } catch (error) {
     console.error("Profile picture upload error:", error);
-    return res.status(500).json({
-      error: "Failed to upload profile picture",
-      details: error.message,
-    });
+    return sendError(
+      res,
+      500,
+      "Failed to upload profile picture",
+      error.message
+    );
   }
 };
 
-// Get user badges
 const getUserBadges = async (req, res) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!req.user) return sendError(res, 401, "Unauthorized");
 
     const userId = req.user._id;
-    console.log("Getting badges for user:", userId);
-
     const user = await User.findById(userId).select("badges");
+    if (!user) return sendError(res, 404, "User not found");
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    console.log("Current user badges:", user.badges);
-
-    // Check for any newly earned badges
     try {
-      console.log("Checking for new badges...");
       const newBadges = await checkAllBadges(userId);
-      console.log("New badges found:", newBadges);
-
       if (newBadges.length > 0) {
-        // Re-fetch user to get updated badges
         const updatedUser = await User.findById(userId).select("badges");
-        console.log("Updated user badges after awarding:", updatedUser.badges);
-
         return res.status(200).json({
           badges: updatedUser.badges || [],
-          newBadges: newBadges,
+          newBadges,
           availableBadges: Object.values(BADGES),
         });
       }
-    } catch (badgeError) {
-      console.error("Error checking badges:", badgeError);
-      // Continue with existing badges if check fails
+    } catch (err) {
+      console.error("Badge check failed:", err.message);
     }
 
     return res.status(200).json({
@@ -255,10 +210,7 @@ const getUserBadges = async (req, res) => {
     });
   } catch (error) {
     console.error("Get badges error:", error);
-    return res.status(500).json({
-      error: "Failed to get badges",
-      details: error.message,
-    });
+    return sendError(res, 500, "Failed to get badges", error.message);
   }
 };
 
@@ -268,22 +220,15 @@ const giveKudos = async (req, res) => {
     const { receiverId } = req.body;
 
     if (giverId === receiverId) {
-      return res
-        .status(400)
-        .json({ message: "You cannot give kudos to yourself." });
+      return sendError(res, 400, "You cannot give kudos to yourself.");
     }
 
     const giver = await User.findById(giverId);
     const receiver = await User.findById(receiverId);
 
-    if (!receiver) {
-      return res.status(404).json({ message: "Receiver not found." });
-    }
-
+    if (!receiver) return sendError(res, 404, "Receiver not found.");
     if (giver.kudosGiven.includes(receiverId)) {
-      return res
-        .status(400)
-        .json({ message: "You have already given kudos to this user." });
+      return sendError(res, 400, "You have already given kudos to this user.");
     }
 
     giver.kudosGiven.push(receiverId);
@@ -292,13 +237,13 @@ const giveKudos = async (req, res) => {
     await giver.save();
     await receiver.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Kudos given successfully!",
       receiverKudos: receiver.kudosReceived,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Give kudos error:", error);
+    return sendError(res, 500, "Server error", error.message);
   }
 };
 
