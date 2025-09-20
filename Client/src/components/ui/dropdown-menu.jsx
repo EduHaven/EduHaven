@@ -24,4 +24,4 @@ const DropdownMenuContent = React.forwardRef(
 );
 DropdownMenuContent.displayName = "DropdownMenuContent";
 
-export default DropdownMenuContent;
+
