@@ -2,6 +2,10 @@ import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/utils";
 
+const DropdownMenu = DropdownMenuPrimitive.Root;
+
+const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+
 const DropdownMenuContent = React.forwardRef(
   ({ className, sideOffset = 4, ...props }, ref) => (
     <DropdownMenuPrimitive.Portal>
@@ -24,4 +28,24 @@ const DropdownMenuContent = React.forwardRef(
 );
 DropdownMenuContent.displayName = "DropdownMenuContent";
 
+const DropdownMenuItem = React.forwardRef(
+  ({ className, inset, ...props }, ref) => (
+    <DropdownMenuPrimitive.Item
+      ref={ref}
+      className={cn(
+        "relative flex cursor-pointer select-none items-center px-3 py-2 text-sm outline-none transition-colors hover:bg-primary focus:none",
+        inset && "pl-8",
+        className
+      )}
+      {...props}
+    />
+  )
+);
+DropdownMenuItem.displayName = "DropdownMenuItem";
 
+export {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+};
