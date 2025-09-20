@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/components/ui/dropdownmenu";
+} from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
 import { useLeaderboard } from "@/queries/timerQueries";
 
