@@ -118,10 +118,11 @@ export default function OtherRoom({ otherRooms, isLoading = false }) {
               onClick={() => !isLoading && setSelectedCategory(cat)}
               variant={selectedCategory === cat ? "default" : "secondary"}
               size="sm"
-              className={`rounded-full border text-sm ${selectedCategory === cat
-                ? "border-[var(--btn)] text-white"
-                : "border-gray-50/20 hover:text-white"
-                }`}
+              className={`rounded-full border text-sm ${
+                selectedCategory === cat
+                  ? "border-[var(--btn)] text-white"
+                  : "border-gray-50/20 hover:text-white"
+              }`}
               disabled={isLoading}
             >
               {cat}

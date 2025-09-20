@@ -90,92 +90,82 @@ const Notes = () => {
   const typingTimeoutRef = useRef(null);
 
   const BackspaceOnImage = Extension.create({
-  addKeyboardShortcuts() {
-    return {
-      Backspace: ({ editor }) => {
-        const { state } = editor;
-        const { $from, empty } = state.selection;
-        if (!empty) {
-          return false;
-        }     
-
-        let imageNode = null;
-        let imagePos = null;
-
-        if ($from.nodeBefore && $from.nodeBefore.type.name === "image") {
-          imageNode = $from.nodeBefore;
-          imagePos = $from.pos - $from.nodeBefore.nodeSize;
-         
-        }
-         else if ($from.parentOffset === 0) {
-          const prevNode = state.doc.resolve($from.pos - 1);
-          if (prevNode.nodeBefore && prevNode.nodeBefore.type.name === "image") {
-            imageNode = prevNode.nodeBefore;
-            imagePos = prevNode.pos - prevNode.nodeBefore.nodeSize;
-           
+    addKeyboardShortcuts() {
+      return {
+        Backspace: ({ editor }) => {
+          const { state } = editor;
+          const { $from, empty } = state.selection;
+          if (!empty) {
+            return false;
           }
-        }
-         else {
-          for (let pos = $from.pos - 1; pos >= 0; pos--) {
-            try {
-              const resolvedPos = state.doc.resolve(pos);
-              const node = resolvedPos.nodeAfter;
-              if (node && node.type.name === "image") {
-                imageNode = node;
-                imagePos = pos;
-               
+
+          let imageNode = null;
+          let imagePos = null;
+
+          if ($from.nodeBefore && $from.nodeBefore.type.name === "image") {
+            imageNode = $from.nodeBefore;
+            imagePos = $from.pos - $from.nodeBefore.nodeSize;
+          } else if ($from.parentOffset === 0) {
+            const prevNode = state.doc.resolve($from.pos - 1);
+            if (
+              prevNode.nodeBefore &&
+              prevNode.nodeBefore.type.name === "image"
+            ) {
+              imageNode = prevNode.nodeBefore;
+              imagePos = prevNode.pos - prevNode.nodeBefore.nodeSize;
+            }
+          } else {
+            for (let pos = $from.pos - 1; pos >= 0; pos--) {
+              try {
+                const resolvedPos = state.doc.resolve(pos);
+                const node = resolvedPos.nodeAfter;
+                if (node && node.type.name === "image") {
+                  imageNode = node;
+                  imagePos = pos;
+
+                  break;
+                }
+
+                if (node && node.type.name !== "text") {
+                  break;
+                }
+              } catch (e) {
                 break;
               }
-        
-              if (node && node.type.name !== "text") {
-                break;
-              }
-            } catch (e) {
-              break;
             }
           }
-        }
 
-        if (imageNode) {
-         
-          mySpecialImageHandler(imageNode, imagePos, editor);
-         
-          return true;
-        }
+          if (imageNode) {
+            mySpecialImageHandler(imageNode, imagePos, editor);
 
-       
-        return false; 
-      },
-    };
-  },
-});
+            return true;
+          }
 
-async function mySpecialImageHandler(node, pos, editor) {
+          return false;
+        },
+      };
+    },
+  });
 
-  
-  try {
+  async function mySpecialImageHandler(node, pos, editor) {
+    try {
+      const src = node.attrs.src;
+      if (!src) {
+        console.error("No src attribute found on image");
+        return;
+      }
 
-    const src = node.attrs.src;
-    if (!src) {
-      console.error("No src attribute found on image");
-      return;
+      const publicId = src.split("/").pop().split(".")[0];
+
+      await axiosInstance.post("/note/deleteimage", { publicId });
+      if (pos !== null && pos >= 0) {
+        const tr = editor.state.tr.delete(pos, pos + node.nodeSize);
+        editor.view.dispatch(tr);
+      }
+    } catch (err) {
+      console.error("Image deletion failed:", err);
     }
-    
-    const publicId = src.split("/").pop().split(".")[0];
-    
-    
-    await axiosInstance.post("/note/deleteimage", { publicId });
-    if (pos !== null && pos >= 0) {
-      const tr = editor.state.tr.delete(pos, pos + node.nodeSize);
-      editor.view.dispatch(tr);
-    }
-    
-  } catch (err) {
-    console.error("Image deletion failed:", err);
   }
-}
-
-
 
   const editor = useEditor({
     extensions: [
@@ -422,32 +412,31 @@ async function mySpecialImageHandler(node, pos, editor) {
     URL.revokeObjectURL(url);
   };
 
- const insertImage = () => {
-  if (!editor) return;
+  const insertImage = () => {
+    if (!editor) return;
 
-  // Create hidden input
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.multiple = true;
+    // Create hidden input
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.multiple = true;
 
-  // Attach change event
-  input.addEventListener("change", async () => {
-    const files = input?.files;
-    console.log(files);
-    if (!files || files.length === 0) return;
+    // Attach change event
+    input.addEventListener("change", async () => {
+      const files = input?.files;
+      console.log(files);
+      if (!files || files.length === 0) return;
 
-    try {
-      await handleImageUpload(editor, files, editor.state.selection.from); // your upload function
+      try {
+        await handleImageUpload(editor, files, editor.state.selection.from); // your upload function
+      } catch (err) {
+        console.error("Image upload failed:", err);
+      }
+    });
 
-    } catch (err) {
-      console.error("Image upload failed:", err);
-    }
-  });
-
-  // Must be triggered synchronously from user click
-  input.click();
-};
+    // Must be triggered synchronously from user click
+    input.click();
+  };
 
   const insertLink = () => {
     const url = prompt("Enter URL:");

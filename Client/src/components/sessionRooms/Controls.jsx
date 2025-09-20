@@ -67,8 +67,9 @@ function Controls({
         <p className="text-neutral-400">|</p>
         <div className="flex items-center gap-2">
           <div
-            className={`w-3 h-3 mt-0.5 rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"
-              }`}
+            className={`w-3 h-3 mt-0.5 rounded-full ${
+              isConnected ? "bg-green-500" : "bg-red-500"
+            }`}
           />
           <span className="text-neutral-300">
             {isConnected ? "Connected" : "Disconnected"}

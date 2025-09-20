@@ -8,7 +8,6 @@ import { useTimerStore } from "@/stores/timerStore";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 
-
 // Variants for dropdown buttons
 const dropdownButtonVariants = {
   initial: { backgroundColor: "transparent" },
@@ -16,29 +15,32 @@ const dropdownButtonVariants = {
 };
 
 const periodMapping = {
-  "Today": "daily",
-  "This week": "weekly", 
+  Today: "daily",
+  "This week": "weekly",
   "This month": "monthly",
-  // "All time": "all-time"  ---> this option has been currently not been set up in the backend logic 
+  // "All time": "all-time"  ---> this option has been currently not been set up in the backend logic
 };
 
-// This allows to display the current monthly level as in the stats page 
+// This allows to display the current monthly level as in the stats page
 const getMonthlyLevel = (monthlyHours) => {
   const totalHours = parseFloat(monthlyHours) || 0;
-  const currentLevel = levels.find((lvl) => totalHours >= lvl.min && totalHours < lvl.max) || levels[levels.length - 1];
+  const currentLevel =
+    levels.find((lvl) => totalHours >= lvl.min && totalHours < lvl.max) ||
+    levels[levels.length - 1];
   const nextLevel = levels[levels.indexOf(currentLevel) + 1];
-  const range = nextLevel ? `${currentLevel.min}-${nextLevel.min}h` : `${currentLevel.min}h+`;
+  const range = nextLevel
+    ? `${currentLevel.min}-${nextLevel.min}h`
+    : `${currentLevel.min}h+`;
 
   return { name: currentLevel.name, range };
 };
 
 function StatsSummary() {
-
   const [selectedTime, setSelectedTime] = useState("Today");
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-    // Get current timer state from store
+  // Get current timer state from store
   const { time: currentTimerTime, isRunning, startTime } = useTimerStore();
 
   // Get the period for API call based on selected filter
@@ -51,38 +53,40 @@ function StatsSummary() {
     staleTime: 15000,
   });
 
-
-  // Get the current session hours 
+  // Get the current session hours
 
   const getCurrentSessionHours = () => {
     if (!isRunning || !startTime) return 0;
-    
+
     const now = new Date();
     const start = new Date(startTime);
     const sessionSeconds = Math.floor((now - start) / 1000);
-    const totalCurrentSeconds = sessionSeconds + (currentTimerTime.hours * 3600 + currentTimerTime.minutes * 60 + currentTimerTime.seconds);
-    
+    const totalCurrentSeconds =
+      sessionSeconds +
+      (currentTimerTime.hours * 3600 +
+        currentTimerTime.minutes * 60 +
+        currentTimerTime.seconds);
+
     return totalCurrentSeconds / 3600;
   };
 
   const stats = data?.userStats;
 
-
-
   const currentSessionHours = getCurrentSessionHours();
 
-   const getEnhancedValue = (baseValue, timeFilter) => {
+  const getEnhancedValue = (baseValue, timeFilter) => {
     const base = parseFloat(baseValue) || 0;
-    
+
     if (timeFilter === "Today" && currentSessionHours > 0) {
-      const today = new Date().toISOString().split('T')[0];
-      const isToday = !startTime || new Date(startTime).toISOString().split('T')[0] === today;
-      
+      const today = new Date().toISOString().split("T")[0];
+      const isToday =
+        !startTime || new Date(startTime).toISOString().split("T")[0] === today;
+
       if (isToday) {
         return base + currentSessionHours;
       }
     }
-    
+
     return base;
   };
 
@@ -100,7 +104,6 @@ function StatsSummary() {
         "This month": "0.0 h",
         "All time": "0.0 h",
       };
-
 
   // Prepare user stats from the query response
   const userStats = stats
@@ -292,8 +295,24 @@ function StatsSummary() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.4 }}
       >
-        {getMonthlyLevel(getEnhancedValue(stats?.timePeriods?.thisMonth || "0", "Today").toString()).name} 
-        ({getMonthlyLevel(getEnhancedValue(stats?.timePeriods?.thisMonth || "0", "Today").toString()).range})
+        {
+          getMonthlyLevel(
+            getEnhancedValue(
+              stats?.timePeriods?.thisMonth || "0",
+              "Today"
+            ).toString()
+          ).name
+        }
+        (
+        {
+          getMonthlyLevel(
+            getEnhancedValue(
+              stats?.timePeriods?.thisMonth || "0",
+              "Today"
+            ).toString()
+          ).range
+        }
+        )
       </motion.p>
 
       <div className="relative w-full bg-ter h-5 rounded-2xl mt-2">

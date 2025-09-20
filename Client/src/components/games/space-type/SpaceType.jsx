@@ -457,9 +457,10 @@ const SpaceType = () => {
             <div className="relative">
               <div
                 className={`w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-sm
-                  ${currentTarget?.id === enemy.id
-                    ? "bg-gradient-to-br from-yellow-400 to-orange-500 ring-4 ring-yellow-300 shadow-lg shadow-yellow-400/50"
-                    : "bg-gradient-to-br from-purple-500 to-pink-500"
+                  ${
+                    currentTarget?.id === enemy.id
+                      ? "bg-gradient-to-br from-yellow-400 to-orange-500 ring-4 ring-yellow-300 shadow-lg shadow-yellow-400/50"
+                      : "bg-gradient-to-br from-purple-500 to-pink-500"
                   } 
                   border-2 border-white shadow-lg`}
               >
@@ -482,7 +483,7 @@ const SpaceType = () => {
         {lasers.map((laser) => {
           const distance = Math.sqrt(
             Math.pow(laser.targetX - laser.startX, 2) +
-            Math.pow(laser.targetY - laser.startY, 2)
+              Math.pow(laser.targetY - laser.startY, 2)
           );
           const angle = Math.atan2(
             laser.targetY - laser.startY,

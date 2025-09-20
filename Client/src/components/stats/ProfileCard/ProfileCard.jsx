@@ -242,9 +242,14 @@ const ProfileCard = ({ isCurrentUser = false }) => {
             <Button
               onClick={handleGiveKudos}
               disabled={isCurrentUser || hasGivenKudos}
-              variant={isCurrentUser || hasGivenKudos ? "transparent" : "default"}
-              className={`px-6 py-2 h-10 rounded-lg flex items-center space-x-2 flex-1 ${isCurrentUser || hasGivenKudos ? "bg-gray-400/30 cursor-not-allowed" : ""
-                }`}
+              variant={
+                isCurrentUser || hasGivenKudos ? "transparent" : "default"
+              }
+              className={`px-6 py-2 h-10 rounded-lg flex items-center space-x-2 flex-1 ${
+                isCurrentUser || hasGivenKudos
+                  ? "bg-gray-400/30 cursor-not-allowed"
+                  : ""
+              }`}
             >
               <ThumbsUp className="w-5 h-5" />
               <span>{hasGivenKudos ? "Kudos Given" : "Kudos"}</span>
@@ -262,12 +267,13 @@ const ProfileCard = ({ isCurrentUser = false }) => {
               disabled={isFriendRequestLoading}
               onClick={handleFriendRequestAction}
               variant="default"
-              className={`px-6 py-2 h-10 rounded-lg flex items-center space-x-2 w-full sm:w-auto text-center flex-1 text-nowrap cursor-pointer ${friendRequestStatus === "Add Friend"
+              className={`px-6 py-2 h-10 rounded-lg flex items-center space-x-2 w-full sm:w-auto text-center flex-1 text-nowrap cursor-pointer ${
+                friendRequestStatus === "Add Friend"
                   ? "bg-purple-600 hover:bg-purple-700"
                   : friendRequestStatus === "Cancel Request"
                     ? "bg-purple-500 hover:bg-purple-600"
                     : "bg-purple-400 hover:bg-purple-500"
-                }`}
+              }`}
             >
               <UserPlus className="w-5 h-5" />
               <span>{friendRequestStatus}</span>
@@ -277,10 +283,10 @@ const ProfileCard = ({ isCurrentUser = false }) => {
       </div>
 
       {user.FieldOfStudy ||
-        user.OtherDetails?.skills ||
-        user.OtherDetails?.interests ||
-        user.Country ||
-        user.OtherDetails?.additionalNotes ? (
+      user.OtherDetails?.skills ||
+      user.OtherDetails?.interests ||
+      user.Country ||
+      user.OtherDetails?.additionalNotes ? (
         <ProfileDetails user={user} />
       ) : (
         <div className="h-3"></div>

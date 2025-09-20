@@ -87,8 +87,9 @@ const Friends = () => {
                 onClick={() => handleRemoveClick(friend)}
                 disabled={friend.isRemoved}
                 variant={friend.isRemoved ? "transparent" : "secondary"}
-                className={`txt px-3 py-1 rounded ${friend.isRemoved ? "bg-ter" : "hover:bg-red-500"
-                  }`}
+                className={`txt px-3 py-1 rounded ${
+                  friend.isRemoved ? "bg-ter" : "hover:bg-red-500"
+                }`}
               >
                 {friend.isRemoved ? "Friend Removed" : "Remove"}
               </Button>

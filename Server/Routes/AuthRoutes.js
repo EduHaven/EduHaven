@@ -59,7 +59,7 @@ router.post(
   "/login",
   loginValidationRules(),
   validate,
-  sanitizeFields(["Email"]),
+  sanitizeFields(["identifier"]),
   loginRateLimiter,
   login
 );

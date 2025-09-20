@@ -77,28 +77,24 @@ function Login() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
           <label
-            htmlFor="email"
+            htmlFor="identifier"
             className="block text-sm font-medium text-gray-900 dark:text-gray-300"
           >
-            Email
+            Email or Username
           </label>
           <div className="mt-3">
             <input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              {...register("Email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Enter a valid email address",
-                },
+              id="identifier"
+              type="text"
+              placeholder="you@example.com or username"
+              {...register("identifier", {
+                required: "Email or Username is required",
               })}
               className="block w-full rounded-xl border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm bg-transparent"
             />
-            {errors.Email && (
-              <p className="text-red-600 text-sm mt-1">
-                {errors.Email.message}
+            {errors.identifier && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.identifier.message}
               </p>
             )}
           </div>

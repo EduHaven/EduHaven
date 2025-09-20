@@ -216,8 +216,9 @@ const Game2048 = () => {
                 {row.map((cell, j) => (
                   <div
                     key={`${i}-${j}`}
-                    className={`${styles.cell} ${cell ? styles["tile" + cell] : ""
-                      }`}
+                    className={`${styles.cell} ${
+                      cell ? styles["tile" + cell] : ""
+                    }`}
                     style={{
                       boxShadow: cell ? "0 2px 8px rgba(0,0,0,0.08)" : "none",
                       border: cell ? "2px solid #edc22e" : "2px solid #eee4da",

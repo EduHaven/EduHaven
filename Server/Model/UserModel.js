@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema(
         return this.oauthProvider ? false : true;
       },
     },
+    Username: { type: String, unique: true, required: true },
     oauthProvider: { type: String }, // e.g., "google", "github"
     oauthId: { type: String },
 
@@ -74,6 +75,7 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
 
 const User = mongoose.model("User", UserSchema);
 export default User;

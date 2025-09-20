@@ -159,10 +159,11 @@ const minimax = (squares, depth, isMaximizing) => {
 const Cell = ({ value, onClick, isWinning, index }) => {
   return (
     <div
-      className={`w-[90px] h-[90px] border border-[rgba(var(--shadow-rgb),0.1)] rounded-[calc(var(--radius)-0.125rem)] flex items-center justify-center cursor-pointer transition-all duration-200 ease-in-out relative overflow-hidden h hover:border-[rgba(var(--shadow-rgb),0.2)] hover:scale-102 active:scale-98 ${isWinning
-        ? "bg-[var(--btn)] !border-[var(--btn)]"
-        : "bg-[var(--bg-sec)] over:bg-[var(--bg-primary)]"
-        }`}
+      className={`w-[90px] h-[90px] border border-[rgba(var(--shadow-rgb),0.1)] rounded-[calc(var(--radius)-0.125rem)] flex items-center justify-center cursor-pointer transition-all duration-200 ease-in-out relative overflow-hidden h hover:border-[rgba(var(--shadow-rgb),0.2)] hover:scale-102 active:scale-98 ${
+        isWinning
+          ? "bg-[var(--btn)] !border-[var(--btn)]"
+          : "bg-[var(--bg-sec)] over:bg-[var(--bg-primary)]"
+      }`}
       onClick={onClick}
       style={{
         animationDelay: `${index * 30}ms`,
@@ -170,8 +171,9 @@ const Cell = ({ value, onClick, isWinning, index }) => {
     >
       {value && (
         <span
-          className={`text-3xl font-bold animate-[scaleIn_0.3s_cubic-bezier(0.68,-0.55,0.265,1.55)] ${isWinning ? "text-white animate-pulse" : "text-[var(--btn)]"
-            }`}
+          className={`text-3xl font-bold animate-[scaleIn_0.3s_cubic-bezier(0.68,-0.55,0.265,1.55)] ${
+            isWinning ? "text-white animate-pulse" : "text-[var(--btn)]"
+          }`}
         >
           {value}
         </span>
@@ -340,20 +342,22 @@ function TicTacToe() {
                 <Button
                   onClick={() => handleModeChange("computer")}
                   variant={gameMode === "computer" ? "default" : "transparent"}
-                  className={`px-4 py-2 rounded-[calc(var(--radius)-0.125rem)] border-none text-sm font-medium ${gameMode === "computer"
-                    ? ""
-                    : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[rgba(var(--shadow-rgb),0.05)]"
-                    }`}
+                  className={`px-4 py-2 rounded-[calc(var(--radius)-0.125rem)] border-none text-sm font-medium ${
+                    gameMode === "computer"
+                      ? ""
+                      : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[rgba(var(--shadow-rgb),0.05)]"
+                  }`}
                 >
                   Computer
                 </Button>
                 <Button
                   onClick={() => handleModeChange("human")}
                   variant={gameMode === "human" ? "default" : "transparent"}
-                  className={`px-4 py-2 rounded-[calc(var(--radius)-0.125rem)] text-sm font-medium ${gameMode === "human"
-                    ? ""
-                    : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[rgba(var(--shadow-rgb),0.05)]"
-                    }`}
+                  className={`px-4 py-2 rounded-[calc(var(--radius)-0.125rem)] text-sm font-medium ${
+                    gameMode === "human"
+                      ? ""
+                      : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[rgba(var(--shadow-rgb),0.05)]"
+                  }`}
                 >
                   Human
                 </Button>
@@ -362,10 +366,11 @@ function TicTacToe() {
 
             {/* Difficulty Selector */}
             <div
-              className={`flex items-center gap-3 transition-all duration-300 overflow-hidden ${gameMode === "computer"
-                ? "opacity-100 max-w-xs"
-                : "opacity-0 max-w-0 m-0 p-0"
-                }`}
+              className={`flex items-center gap-3 transition-all duration-300 overflow-hidden ${
+                gameMode === "computer"
+                  ? "opacity-100 max-w-xs"
+                  : "opacity-0 max-w-0 m-0 p-0"
+              }`}
             >
               <span className="text-[var(--txt-dim)] text-sm font-medium text-nowrap">
                 Difficulty :
@@ -376,10 +381,11 @@ function TicTacToe() {
                     key={diff}
                     onClick={() => handleDifficultyChange(diff)}
                     variant={difficulty === diff ? "default" : "transparent"}
-                    className={`px-4 py-2 rounded-[calc(var(--radius)-0.125rem)] border-none text-sm font-medium capitalize ${difficulty === diff
-                      ? ""
-                      : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[rgba(var(--shadow-rgb),0.05)]"
-                      }`}
+                    className={`px-4 py-2 rounded-[calc(var(--radius)-0.125rem)] border-none text-sm font-medium capitalize ${
+                      difficulty === diff
+                        ? ""
+                        : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[rgba(var(--shadow-rgb),0.05)]"
+                    }`}
                   >
                     {diff.charAt(0).toUpperCase() + diff.slice(1)}
                   </Button>

@@ -17,12 +17,15 @@ function SignUp() {
   };
 
   const [showPassword, setShowPassword] = useState(false);
+
+  // Single useForm call with everything you need
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
     watch,
+    setError,
     trigger,
     setValue,
   } = useForm({
@@ -46,6 +49,10 @@ function SignUp() {
         throw new Error("First Name and Last Name are required");
       }
 
+      if (!data.Username) {
+        throw new Error("Username is required");
+      }
+
       const response = await axiosInstance.post(url, data);
 
       reset();
@@ -62,12 +69,22 @@ function SignUp() {
         navigate("/auth/login");
       }
     } catch (error) {
-      if (error.response?.data?.errors?.length) {
-          error.response.data.errors.forEach((err) => toast.error(err.msg));
-        } else {
-          toast.error(error.response?.data?.error || "An error occurred");
-        }
-      };  
+      console.error(`Signup failed:`, error.response?.data || error.message);
+      const errMsg = error.response?.data?.error || error.message;
+      if (errMsg.toLowerCase().includes("username")) {
+        setError("Username", {
+          type: "manual",
+          message: "Username already exists. Please choose another.",
+        });
+      } else if (errMsg.toLowerCase().includes("email")) {
+        setError("Email", {
+          type: "manual",
+          message: "Email already exists. Please use another.",
+        });
+      } else {
+        toast.error(errMsg);
+      }
+    }
   };
 
   const password = watch("Password", "");
@@ -250,6 +267,50 @@ function SignUp() {
               )}
             </div>
           </div>
+        </div>
+
+        <div>
+          <label
+            htmlFor="Username"
+            className="block tesxt-sm font-medium text-gray-900 dark:text-gray-300"
+          >
+            Username
+          </label>
+        </div>
+        <div className="mt-2.5">
+          <input
+            id="Username"
+            type="text"
+            placeholder="knight_owl"
+            {...register("Username", {
+              required: "Username is required",
+              validate: (value) => {
+                if (!/^[A-Za-z0-9_]*$/.test(value)) {
+                  return "Username can only contain letters, numbers, and underscores";
+                }
+                if (value.length < 3) {
+                  return "Username must be at least 3 characters long";
+                }
+                return true;
+              },
+            })}
+            onBlur={() => {
+              setBlurred((prev) => ({ ...prev, Username: true }));
+              trigger("Username");
+            }}
+            onChange={(e) => {
+              register("Username").onChange(e);
+              if (blurred.Username) {
+                trigger("Username");
+              }
+            }}
+            className="block w-full rounded-xl border bg-transparent border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
+          ></input>
+          {blurred.Username && errors.Username && (
+            <p className="text-red-600 text-sm mt-1">
+              {errors.Username.message}
+            </p>
+          )}
         </div>
 
         <div>

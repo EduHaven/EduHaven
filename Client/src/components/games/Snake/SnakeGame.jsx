@@ -515,8 +515,9 @@ const SnakeGame = () => {
             <span>{gameMode}</span>
             <ChevronDown
               size={20}
-              className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ""
-                }`}
+              className={`${styles.chevron} ${
+                isOpen ? styles.chevronOpen : ""
+              }`}
             />
           </div>
           {isOpen && (

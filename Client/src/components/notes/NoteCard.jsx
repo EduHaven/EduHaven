@@ -53,8 +53,9 @@ const NoteCard = ({
           onPin(note?._id, note?.pinnedAt);
         }}
         className={`absolute top-2 right-2 p-1 rounded-full bg-black/10 hover:bg-black/20 transition-opacity
-        ${note?.pinnedAt ? "opacity-100" : hovered ? "opacity-100" : "opacity-0"
-          }`}
+        ${
+          note?.pinnedAt ? "opacity-100" : hovered ? "opacity-100" : "opacity-0"
+        }`}
       >
         <Pin
           size={16}

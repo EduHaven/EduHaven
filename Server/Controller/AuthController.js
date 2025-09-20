@@ -1,13 +1,13 @@
 import bcrypt from "bcrypt";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
-
 import Event from "../Model/EventModel.js";
 import Note from "../Model/NoteModel.js";
 import SessionRoom from "../Model/SessionModel.js";
 import TimerSession from "../Model/StudySession.js";
 import Task from "../Model/ToDoModel.js";
 import User from "../Model/UserModel.js";
+import { createUserWithUniqueUsername } from "../Middlewares/usernameHandler.js";
 
 import generateAuthToken from "../utils/GenerateAuthToken.js";
 import sendMail from "../utils/sendMail.js";
@@ -56,14 +56,16 @@ const googleCallback = async (req, res) => {
 
     let user = await User.findOne({ Email: email });
     if (!user) {
-      user = await User.create({
+      const base = email.split("@")[0];
+      const userData = {
         FirstName: given_name,
         LastName: family_name,
         Email: email,
         ProfilePicture: picture,
         oauthProvider: "google",
         oauthId,
-      });
+      };
+      user=await createUserWithUniqueUsername(base, userData);
     }
 
     const appToken = generateAuthToken(user);
@@ -123,6 +125,7 @@ const verifyUser = async (req, res) => {
     await User.create({
       FirstName: verify.user.FirstName,
       LastName: verify.user.LastName,
+      Username: verify.user.Username,
       Email: verify.user.Email,
       Password: verify.user.Password,
       ProfilePicture: `https://api.dicebear.com/9.x/initials/svg?seed=${verify.user.FirstName}`,
@@ -139,11 +142,15 @@ const verifyUser = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { Email, Password } = req.body;
-    if (!Email || !Password) {
-      return res.status(422).json({ error: "Please fill all the fields" });
+    const { identifier, Password } = req.body;
+    if (!identifier || !Password) {
+      return res
+        .status(422)
+        .json({ error: "Please provide email/username and password" });
     }
-    const user = await User.findOne({ Email });
+    const user = await User.findOne({
+      $or: [{ Email: identifier }, { Username: identifier }],
+    });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -195,10 +202,10 @@ const login = async (req, res) => {
 
 const signup = async (req, res) => {
   try {
-    const { FirstName, LastName, Email, Password } = req.body;
+    const { FirstName, LastName, Username, Email, Password } = req.body;
 
     // Validate input fields
-    if (!FirstName || !LastName || !Email || !Password) {
+    if (!FirstName || !LastName || !Email || !Username || !Password) {
       return res.status(422).json({ error: "Please fill all the fields" });
     }
 
@@ -206,6 +213,10 @@ const signup = async (req, res) => {
     let user = await User.findOne({ Email: Email });
     if (user) {
       return res.status(409).json({ error: "User already exists" });
+    }
+    user = await User.findOne({ Username });
+    if (user) {
+      return res.status(409).json({ error: "Username already exists" });
     }
     // const imageurl = req.body.imageUrl;
     // console.log(imageurl)
@@ -216,6 +227,7 @@ const signup = async (req, res) => {
     user = {
       FirstName,
       LastName,
+      Username,
       Email,
       Password: haspass, // Store hashed password
     };

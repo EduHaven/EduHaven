@@ -10,7 +10,7 @@ const NoteHeader = ({
   selectedNote,
   setStatus,
   setSelectedNote,
-  status, 
+  status,
 }) => {
   return (
     <header

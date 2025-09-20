@@ -12,6 +12,7 @@ export default function BasicInfo() {
   const { user, setUser, fetchUserDetails, isBasicInfoComplete } =
     useUserProfile();
   const [profileData, setProfileData] = useState({
+    Username: "",
     FirstName: "",
     LastName: "",
     ProfilePicture: null,
@@ -38,8 +39,9 @@ export default function BasicInfo() {
 
         if (!user) {
           fetchUserDetails(decoded.id);
-        } else {
+        } else if (!initialProfileData) {
           const userData = {
+            Username: user.Username || "",
             FirstName: user.FirstName || "",
             LastName: user.LastName || "",
             ProfilePicture: user.ProfilePicture || null,
@@ -54,7 +56,7 @@ export default function BasicInfo() {
         console.error("Error decoding token:", error);
       }
     }
-  }, [user, fetchUserDetails]);
+  }, [user, fetchUserDetails, initialProfileData]);
 
   useEffect(() => {
     if (!initialProfileData) return;
@@ -255,6 +257,25 @@ export default function BasicInfo() {
 
         {/* Personal Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-6 py-2">
+          <div className="space-y-2">
+            <label
+              htmlFor="username"
+              className="block text-md font-medium text-[var(--txt-dim)]"
+            >
+              Username *
+            </label>
+            <input
+              id="username"
+              type="text"
+              name="Username"
+              value={profileData.Username}
+              onChange={handleInputChange}
+              placeholder="Enter your username"
+              className="w-full px-4 py-3 bg-[var(--bg-sec)] border border-transparent rounded-lg text-[var(--txt)] placeholder-[var(--txt-dim)] focus:outline-none focus:ring-2 focus:ring-[var(--btn)] focus:border-transparent transition-all"
+              required
+              disabled={isProfileUpdateLoading}
+            />
+          </div>
           <div className="space-y-2">
             <label
               htmlFor="first-name"
