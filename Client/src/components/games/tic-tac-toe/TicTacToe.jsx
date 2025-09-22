@@ -225,24 +225,6 @@ function TicTacToe() {
     resetGame();
   };
 
-  // Bot move logic
-  useEffect(() => {
-    if (
-      !xIsNext &&
-      gameMode === "computer" &&
-      !winner &&
-      squares.some((square) => square !== null)
-    ) {
-      const timer = setTimeout(() => {
-        const botMove = getBotMove(squares, difficulty);
-        if (botMove !== null && botMove !== undefined) {
-          handleMove(botMove);
-        }
-      }, 250);
-      return () => clearTimeout(timer);
-    }
-  }, [xIsNext, squares, gameMode, difficulty, winner, handleMove]);
-
   const handleMove = (i) => {
     if (squares[i] || winner) return;
 
@@ -268,6 +250,24 @@ function TicTacToe() {
       if (isSoundEnabled) tieSound.play();
     }
   };
+
+  // Bot move logic
+  useEffect(() => {
+    if (
+      !xIsNext &&
+      gameMode === "computer" &&
+      !winner &&
+      squares.some((square) => square !== null)
+    ) {
+      const timer = setTimeout(() => {
+        const botMove = getBotMove(squares, difficulty);
+        if (botMove !== null && botMove !== undefined) {
+          handleMove(botMove);
+        }
+      }, 250);
+      return () => clearTimeout(timer);
+    }
+  }, [xIsNext, squares, gameMode, difficulty, winner, handleMove]);
 
   const renderStatus = () => {
     if (winner === "tie") return "It's a tie!";
