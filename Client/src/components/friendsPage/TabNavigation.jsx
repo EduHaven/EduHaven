@@ -27,7 +27,7 @@ function TabNavigation({ activeTab, onTabChange }) {
           >
             {tab.label}
             {tab.id === "friendRequests" && isPendingRequests && (
-              <NotificationIndicator count={requests.length} />
+              <NotificationIndicator />
             )}
           </button>
         ))}
