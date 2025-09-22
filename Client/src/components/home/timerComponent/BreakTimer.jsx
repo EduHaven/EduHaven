@@ -1,16 +1,23 @@
 // No connection to backend, runs entirely on the frontend
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Clock12, Coffee, RotateCcw, Edit3, Check } from "lucide-react";
 import AnimatedDigits from "./AnimatedDigits";
+
+import { useTitleUpdater } from "@/hooks/useTitleUpdater";
 
 function BreakTimer() {
   const [breakTime, setBreakTime] = useState(600); // Default break time in seconds (10 min)
   const [isRunning, setIsRunning] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [customBreakTime, setCustomBreakTime] = useState(10);
+
+  useTitleUpdater({
+    timeLeft: breakTime,
+    isPaused: !isRunning,
+    isBreakMode: true,
+  });
 
   useEffect(() => {
     let interval;
@@ -33,7 +40,9 @@ function BreakTimer() {
   const handleReset = () => {
     setIsRunning(false);
     setBreakTime(customBreakTime * 60);
+    document.title = "EduHaven - Premium Study Platform";
   };
+
   const handleEditClick = () => setIsEditing(true);
   const handleApplyBreakTime = () => {
     setBreakTime(customBreakTime * 60);
@@ -60,64 +69,57 @@ function BreakTimer() {
               onChange={(e) => setCustomBreakTime(Number(e.target.value))}
               className="px-2 py-1 text-white rounded-md w-44 bg-transparent border-none outline-none appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
-            <motion.button
+            <Button
               onClick={handleApplyBreakTime}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="bg-green-600 p-2 rounded-lg"
+              variant="default"
+              size="icon"
+              className="bg-green-600 p-2 rounded-lg text-white"
             >
               <Check className="w-5 h-5" />
-            </motion.button>
+            </Button>
           </div>
         )}
+
         {!isEditing && (
-          <motion.button
+          <Button
             onClick={handleEditClick}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            variant="transparent"
+            size="icon"
             className="m-4 text-gray-300 hover:text-white"
           >
             <Edit3 className="w-5 h-5" />
-          </motion.button>
+          </Button>
         )}
       </div>
 
       <div className="flex gap-4 justify-center mt-4">
-        <motion.button
+        <Button
           onClick={handleStartPause}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className={`relative px-6 py-2 rounded-lg flex items-center gap-2 transition-colors duration-300 ease-in-out ${
-            isRunning
-              ? "bg-black/20 hover:bg-black/30"
-              : "bg-purple-600 hover:bg-purple-700"
-          }`}
+          variant="default"
+          size="default"
+          className={`relative px-6 py-2 rounded-lg flex items-center gap-2 transition-colors duration-300 ease-in-out ${isRunning ? "bg-black/20 hover:bg-black/30" : "bg-purple-600 hover:bg-purple-700"}`}
         >
           <span
-            className={`flex items-center gap-2 transition-opacity duration-300 ${
-              isRunning ? "opacity-0" : "opacity-100"
-            }`}
+            className={`flex items-center gap-2 transition-opacity duration-300 ${isRunning ? "opacity-0" : "opacity-100"}`}
           >
             <Coffee className="w-5 h-5" />
             <span>Start Break</span>
           </span>
           <span
-            className={`absolute inset-0 flex items-center justify-center gap-2 transition-opacity duration-300 ${
-              isRunning ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute inset-0 flex items-center justify-center gap-2 transition-opacity duration-300 ${isRunning ? "opacity-100" : "opacity-0"}`}
           >
             <Clock12 className="w-5 h-5 animate-spin" />
             <span>Pause</span>
           </span>
-        </motion.button>
-        <motion.button
+        </Button>
+        <Button
           onClick={handleReset}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
+          variant="destructive"
+          size="icon"
           className="hover:bg-red-700 p-2 rounded-lg flex items-center gap-2"
         >
           <RotateCcw className="w-5 h-5" />
-        </motion.button>
+        </Button>
       </div>
     </div>
   );

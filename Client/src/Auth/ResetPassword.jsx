@@ -1,13 +1,11 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import axiosInstance from "@/utils/axios";
+import { motion } from "framer-motion";
+import { CheckCircle, Eye, EyeOff, KeyRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Eye, EyeOff, Shield, CheckCircle, KeyRound } from "lucide-react";
 import { toast } from "react-toastify";
-import bgImg from "../assets/LoginBackground.jpg";
-
-// const backendUrl = import.meta.env.VITE_API_URL;
 
 const formVariants = {
   initial: {
@@ -41,14 +39,6 @@ const containerVariants = {
   },
 };
 
-const backgroundVariants = {
-  initial: { opacity: 0 },
-  animate: {
-    opacity: 1,
-    transition: { duration: 1 },
-  },
-};
-
 function ResetPassword() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -67,14 +57,12 @@ function ResetPassword() {
   useEffect(() => {
     // Get email from localStorage
     const email = localStorage.getItem("resetEmail");
-    const resetToken = localStorage.getItem("resetToken");
-    const otpVerified = localStorage.getItem("otpVerified")
     if (email) {
       setResetEmail(email);
     } else {
       // If no email found, redirect to forgot password
       toast.error("Please start the password reset process again.");
-      navigate("/forgot-password");
+      navigate("/auth/forgot-password");
     }
   }, [navigate]);
 
@@ -83,7 +71,7 @@ function ResetPassword() {
   const [strength, setStrength] = useState(0);
 
   const strengthLevels = [
-    { level: "Very Weak", color: "text-red-500" },
+    { level: "Very Weak", color: "text-red-600" },
     { level: "Weak", color: "text-orange-500" },
     { level: "Medium", color: "text-yellow-500" },
     { level: "Strong", color: "text-green-500" },
@@ -105,7 +93,6 @@ function ResetPassword() {
   }, [password]);
 
   const onSubmit = async (data) => {
-  
     // Check if passwords match
     if (data.newPassword !== data.confirmPassword) {
       toast.error("Passwords do not match");
@@ -113,15 +100,15 @@ function ResetPassword() {
     }
 
     try {
-       const resetToken = localStorage.getItem("resetToken");
+      const resetToken = localStorage.getItem("resetToken");
       if (!resetToken) {
         toast.error("Reset token not found. Please start the process again.");
-        navigate("/forgot-password");
+        navigate("/auth/forgot-password");
         return;
       }
 
       const url = `/auth/reset-password`;
-      const response = await axiosInstance.post(
+      await axiosInstance.post(
         url,
         {
           email: resetEmail,
@@ -137,223 +124,185 @@ function ResetPassword() {
       // Clear stored data
       localStorage.removeItem("resetToken");
       localStorage.removeItem("resetEmail");
-       localStorage.removeItem("otpVerified");
+      localStorage.removeItem("otpVerified");
       reset();
       setIsResetComplete(true);
       toast.success("Password reset successful!");
-      
+
       // Redirect to login after 3 seconds
       setTimeout(() => {
-        navigate("/authenticate");
+        navigate("/auth/login");
       }, 3000);
-
     } catch (error) {
-      console.error("Reset password failed:", error.response?.data || error.message);
-      toast.error(error.response?.data?.message || error.response?.data?.error || "Failed to reset password");
+      console.error(
+        "Reset password failed:",
+        error.response?.data || error.message
+      );
+      toast.error(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          "Failed to reset password"
+      );
     }
-  };
-
-  const handleGoBack = () => {
-    navigate("/forgot-password");
   };
 
   if (isResetComplete) {
     return (
       <motion.div
-        variants={backgroundVariants}
+        variants={containerVariants}
         initial="initial"
         animate="animate"
-        className="flex justify-center items-center min-h-screen w-full bg-cover bg-center bg-no-repeat p-6"
-        style={{ backgroundImage: `url(${bgImg})` }}
+        className="relative w-full max-w-md rounded-3xl"
       >
-        <motion.div
-          variants={containerVariants}
-          initial="initial"
-          animate="animate"
-          className="relative w-full max-w-md p-8 bg-white/80 dark:bg-black/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-white/10"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl pointer-events-none" />
-          
-          <div className="relative z-10 text-center">
-            <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Password Reset Complete!
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Your password has been successfully reset. You can now login with your new password.
-            </p>
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
-              <p className="text-sm text-green-700 dark:text-green-300">
-                Redirecting to login page in a few seconds...
-              </p>
-            </div>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate("/authenticate")}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600"
-            >
-              Go to Login Now
-            </motion.button>
+        <div className="relative z-10 text-center">
+          <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-4">
+            <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
           </div>
-        </motion.div>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Password Reset Complete!
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            Your password has been successfully reset. You can now login with
+            your new password.
+          </p>
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
+            <p className="text-sm text-green-700 dark:text-green-300">
+              Redirecting to login page in a few seconds...
+            </p>
+          </div>
+          <Button
+            onClick={() => navigate("/auth/login")}
+            variant="default"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600"
+          >
+            Go to Login Now
+          </Button>
+        </div>
       </motion.div>
     );
   }
 
   return (
     <motion.div
-      variants={backgroundVariants}
+      variants={containerVariants}
       initial="initial"
       animate="animate"
-      className="flex justify-center items-center min-h-screen w-full bg-cover bg-center bg-no-repeat p-6"
-      style={{ backgroundImage: `url(${bgImg})` }}
+      className="relative w-full max-w-md rounded-3xl"
     >
       <motion.div
-        variants={containerVariants}
+        variants={formVariants}
         initial="initial"
         animate="animate"
-        className="relative w-full max-w-md p-8 bg-white/80 dark:bg-black/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-white/10"
+        className="space-y-6"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl pointer-events-none" />
-
-        <div className="relative z-10">
-          {/* Back Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleGoBack}
-            className="absolute -top-2 -left-2 p-2 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-sm hover:bg-white/30 dark:hover:bg-black/30 transition-colors shadow-lg"
-          >
-            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-200" />
-          </motion.button>
-
-          {/* Header */}
-          <div className="flex w-full items-center gap-2 mb-8 justify-center dark:invert">
-            <img src="/Logo.svg" alt="Logo" className="size-8" />
-            <h3 className="text-black font-semibold text-xl">Eduhaven</h3>
+        <div className="text-center">
+          <div className="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-4">
+            <KeyRound className="w-8 h-8 text-blue-600 dark:text-blue-400" />
           </div>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Reset Your Password
+          </h2>
+        </div>
 
-          <motion.div
-            variants={formVariants}
-            initial="initial"
-            animate="animate"
-            className="space-y-6"
-          >
-            <div className="text-center">
-              <div className="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-4">
-                <KeyRound className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Reset Your Password
-              </h2>
-
-            </div>
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {/* New Password */}
-              <div>
-                <label
-                  htmlFor="newPassword"
-                  className="block text-sm font-medium text-gray-900 dark:text-gray-300"
-                >
-                  New Password{" "}
-                  <span
-                    className={`text-sm ml-20 font-semibold ${
-                      strengthLevels[strength - 1]?.color
-                    }`}
-                  >
-                    {strengthLevels[strength - 1]?.level}
-                  </span>
-                </label>
-                <div className="mt-2.5 relative">
-                  <input
-                    id="newPassword"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter new password"
-                    {...register("newPassword", {
-                      required: "New password is required",
-                      minLength: {
-                        value: 6,
-                        message: "Password must be at least 6 characters",
-                      },
-                    })}
-                    className="block w-full rounded-xl bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-blue-600"
-                  >
-                    {showPassword ? <Eye size={19} /> : <EyeOff size={19} />}
-                  </button>
-                </div>
-                {errors.newPassword && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.newPassword.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Confirm Password */}
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2"
-                >
-                  Confirm New Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm new password"
-                    {...register("confirmPassword", {
-                      required: "Please confirm your password",
-                      validate: (value) =>
-                        value === password || "Passwords do not match",
-                    })}
-                    className="block w-full rounded-xl bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword((prev) => !prev)}
-                    className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-blue-600"
-                  >
-                    {showConfirmPassword ? <Eye size={19} /> : <EyeOff size={19} />}
-                  </button>
-                </div>
-                {errors.confirmPassword && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.confirmPassword.message}
-                  </p>
-                )}
-                {confirmPassword && confirmPassword === password && (
-                  <p className="text-green-500 text-sm mt-1 flex items-center gap-1">
-                    <CheckCircle size={16} />
-                    Passwords match
-                  </p>
-                )}
-              </div>
-
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full rounded-xl py-3 px-4 text-white font-semibold ${
-                  isSubmitting
-                    ? "opacity-50 cursor-not-allowed bg-gray-400"
-                    : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* New Password */}
+          <div>
+            <label
+              htmlFor="newPassword"
+              className="block text-sm font-medium text-gray-900 dark:text-gray-300"
+            >
+              New Password{" "}
+              <span
+                className={`text-sm ml-20 font-semibold ${
+                  strengthLevels[strength - 1]?.color
                 }`}
               >
-                {isSubmitting ? "Resetting Password..." : "Reset Password"}
-              </motion.button>
-            </form>
-          </motion.div>
-        </div>
+                {strengthLevels[strength - 1]?.level}
+              </span>
+            </label>
+            <div className="mt-2.5 relative">
+              <input
+                id="newPassword"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter new password"
+                {...register("newPassword", {
+                  required: "New password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+                className="block w-full rounded-xl bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-blue-600"
+              >
+                {showPassword ? <Eye size={19} /> : <EyeOff size={19} />}
+              </button>
+            </div>
+            {errors.newPassword && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.newPassword.message}
+              </p>
+            )}
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2"
+            >
+              Confirm New Password
+            </label>
+            <div className="relative">
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm new password"
+                {...register("confirmPassword", {
+                  required: "Please confirm your password",
+                  validate: (value) =>
+                    value === password || "Passwords do not match",
+                })}
+                className="block w-full rounded-xl bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 sm:text-sm pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-blue-600"
+              >
+                {showConfirmPassword ? <Eye size={19} /> : <EyeOff size={19} />}
+              </button>
+            </div>
+            {errors.confirmPassword && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.confirmPassword.message}
+              </p>
+            )}
+            {confirmPassword && confirmPassword === password && (
+              <p className="text-green-500 text-sm mt-1 flex items-center gap-1">
+                <CheckCircle size={16} />
+                Passwords match
+              </p>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            variant="default"
+            className={`w-full rounded-xl py-3 px-4 font-semibold ${
+              isSubmitting
+                ? "opacity-50 cursor-not-allowed bg-gray-400"
+                : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            }`}
+          >
+            {isSubmitting ? "Resetting Password..." : "Reset Password"}
+          </Button>
+        </form>
       </motion.div>
     </motion.div>
   );

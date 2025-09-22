@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ConfirmLogoutModal from "../ConfirmLogoutModal";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { Button } from "@/components/ui/button";
 
 const Sidebar = ({ user, activeTab, setActiveTab }) => {
   const navigate = useNavigate();
@@ -82,21 +83,23 @@ const Sidebar = ({ user, activeTab, setActiveTab }) => {
 
         <div className="absolute bottom-4 w-full px-4">
           {user ? (
-            <button
+            <Button
               onClick={() => setShowLogoutModal(true)}
-              className="m-auto flex items-center justify-center px-4 py-2 text-red-400 transition-colors hover:bg-red-500 hover:text-white rounded gap-2"
+              variant="transparent"
+              className="m-auto flex items-center justify-center px-4 py-2 text-red-400 hover:bg-red-500 hover:text-white rounded gap-2"
             >
               <LogOut size={16} />
               Logout
-            </button>
+            </Button>
           ) : (
-            <button
-              onClick={() => navigate("/authenticate")}
-              className="m-auto flex items-center justify-center px-5 py-2 text-green-400 transition-colors hover:bg-green-500 hover:text-white rounded-lg gap-2 border border-green-500"
+            <Button
+              onClick={() => navigate("/auth/login")}
+              variant="transparent"
+              className="m-auto flex items-center justify-center px-5 py-2 text-green-400 hover:bg-green-500 hover:text-white rounded-lg gap-2 border border-green-500"
             >
               <LogIn size={16} />
               Login
-            </button>
+            </Button>
           )}
         </div>
       </aside>

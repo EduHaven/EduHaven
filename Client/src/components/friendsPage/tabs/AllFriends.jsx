@@ -22,8 +22,12 @@ export default function AllFriends() {
     return friends.filter((user) => {
       const fullName = `${user.FirstName} ${user.LastName || ""}`.toLowerCase();
       if (fullName.includes(term.toLowerCase())) return true;
-      if (user.OtherDetails?.skills?.toLowerCase().includes(term.toLowerCase())) return true;
-      if (user.OtherDetails?.interests?.toLowerCase().includes(term.toLowerCase())) return true;
+      if (user.OtherDetails?.skills?.toLowerCase().includes(term.toLowerCase()))
+        return true;
+      if (
+        user.OtherDetails?.interests?.toLowerCase().includes(term.toLowerCase())
+      )
+        return true;
       return false;
     });
   }, [friends, searchTerm]);
@@ -43,8 +47,7 @@ export default function AllFriends() {
         <SearchBar onSearch={handleSearch} placeholder="Search friends..." />
       )}
 
-      {/* 4. Update container to use CSS Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+      <div className="flex flex-wrap justify-center gap-3 2xl:gap-4 mt-4">
         {filteredFriends.map((user) => (
           <UserCard key={user._id} user={user} selectedTab="allFriends" />
         ))}

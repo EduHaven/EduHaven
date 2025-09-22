@@ -19,6 +19,8 @@ import {
   X,
 } from "lucide-react";
 import ToolbarButton from "./ToolbarButton";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 const NoteEditor = ({
   selectedNote,
@@ -29,15 +31,19 @@ const NoteEditor = ({
   insertLink,
   insertImage,
   insertTable,
+  onClose,
 }) => {
   return (
-    <div
+    <motion.div
       className="flex-1 flex flex-col rounded-tl-3xl"
       style={{
         backgroundColor: colors.find((c) => c.name === selectedNote.color)
           ?.style.backgroundColor,
         color: "var(--txt)",
       }}
+      initial={{ x: 100, opacity: 0 }}
+      animate={{ x: 1, opacity: 1 }}
+      transition={{ delay: 0.2 }}
     >
       {/* Editor Header */}
       <div
@@ -50,14 +56,14 @@ const NoteEditor = ({
             placeholder="Untitled"
             value={selectedNote.title}
             onChange={(e) =>
-              updateNote(selectedNote.id, { title: e.target.value })
+              updateNote(selectedNote._id, { title: e.target.value })
             }
             className="flex-1 border-none outline-none text-2xl font-semibold bg-transparent font-inherit"
             style={{ color: "var(--txt)" }}
           />
 
-          <button
-            onClick={() => setSelectedNote(null)}
+          <Button
+            onClick={onClose}
             className="p-2 border-none bg-transparent cursor-pointer"
             style={{
               color: "var(--txt-dim)",
@@ -65,7 +71,7 @@ const NoteEditor = ({
             }}
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         {/* Formatting Toolbar */}
@@ -236,7 +242,7 @@ const NoteEditor = ({
       <div className="flex-1 p-4 overflow-auto">
         <EditorContent editor={editor} className="min-h-full" />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

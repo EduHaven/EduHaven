@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Edit, Trash2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
 
 const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
   const [editingEvent, setEditingEvent] = useState(null);
@@ -97,9 +98,14 @@ const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold txt">All Events</h2>
-            <button onClick={onClose} className="txt-dim hover:txt transition">
+            <Button
+              onClick={onClose}
+              variant="transparent"
+              size="icon"
+              className="txt-dim hover:txt transition"
+            >
               <X size={24} />
-            </button>
+            </Button>
           </div>
 
           <div
@@ -148,18 +154,22 @@ const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
                           />
                         </div>
                         <div className="flex gap-2">
-                          <button
+                          <Button
                             onClick={handleSave}
-                            className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-lg px-3 py-2 text-sm transition"
+                            variant="default"
+                            size="default"
+                            className="flex-1 bg-green-600 hover:bg-green-700 text-white text-sm"
                           >
                             Save
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             onClick={handleCancel}
-                            className="flex-1 bg-gray-600 hover:bg-gray-700 text-white rounded-lg px-3 py-2 text-sm transition"
+                            variant="secondary"
+                            size="default"
+                            className="flex-1 bg-gray-600 hover:bg-gray-700 text-white text-sm"
                           >
                             Cancel
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     ) : (
@@ -183,18 +193,22 @@ const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
                           </span>
                         </div>
                         <div className="flex gap-1">
-                          <button
+                          <Button
                             onClick={() => handleEdit(event)}
+                            variant="transparent"
+                            size="icon"
                             className="p-2 txt-dim hover:text-blue-500 transition-colors"
                           >
                             <Edit className="w-4 h-4" />
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             onClick={() => handleDelete(event._id)}
+                            variant="transparent"
+                            size="icon"
                             className="p-2 txt-dim hover:text-red-500 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     )}

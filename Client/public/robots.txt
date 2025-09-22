@@ -34,9 +34,9 @@ Allow: /notes
 Allow: /friends
 Allow: /settings
 Allow: /games
-Allow: /authenticate
+Allow: /auth
 Allow: /privacy
-Allow: /project-details
+Allow: /about
 
 # Crawl delay (optional)
 Crawl-delay: 1

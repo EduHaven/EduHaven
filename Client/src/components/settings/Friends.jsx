@@ -3,6 +3,7 @@ import { useFriends, useRemoveFriend } from "@/queries/friendQueries";
 import { User } from "lucide-react";
 import { Link } from "react-router-dom";
 import ConfirmRemoveFriendModal from "../ConfirmRemoveFriendModal";
+import { Button } from "@/components/ui/button";
 
 const Friends = () => {
   const { data: friends, isLoading } = useFriends();
@@ -75,22 +76,28 @@ const Friends = () => {
                       <User className="w-7 h-7" />
                     </div>
                   )}
-                  <h4 className="text-lg font-medium line-clamp-1 txt">
-                    {friend.FirstName
-                      ? `${friend.FirstName} ${friend.LastName || ""}`
-                      : "old-user"}
-                  </h4>
+                  <div>
+                    <h4 className="text-lg font-medium line-clamp-1 txt">
+                      {friend.FirstName
+                        ? `${friend.FirstName} ${friend.LastName || ""}`
+                        : "old-user"}
+                    </h4>
+                    {friend.Username && (
+                      <p className="text-sm txt">{friend.Username}</p>
+                    )}
+                  </div>
                 </Link>
               </div>
-              <button
+              <Button
                 onClick={() => handleRemoveClick(friend)}
                 disabled={friend.isRemoved}
-                className={`transition-colors duration-300 txt px-3 py-1 rounded ${
-                  friend.isRemoved ? "bg-ter" : "bg-ter hover:bg-red-500"
+                variant={friend.isRemoved ? "transparent" : "secondary"}
+                className={`txt px-3 py-1 rounded ${
+                  friend.isRemoved ? "bg-ter" : "hover:bg-red-500"
                 }`}
               >
                 {friend.isRemoved ? "Friend Removed" : "Remove"}
-              </button>
+              </Button>
             </li>
           ))}
         </ul>

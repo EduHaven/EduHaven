@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Sample profile data
@@ -90,7 +91,7 @@ function FloatingProfile({ profile, delay = 0, area = "bottom" }) {
         animation: `floatWave${profile.id} ${waveSpeed}ms ease-in-out infinite`,
       }}
     >
-      <style jsx>{`
+      <style>{`
         @keyframes floatWave${profile.id} {
           0% {
             transform: translate(-50%, -50%) translate(0px, 0px);
@@ -261,17 +262,15 @@ function HeroSection() {
         >
           learn, collaborate, & grow together.
         </motion.h2>
-        <motion.button
-          onClick={() => navigate("/authenticate")}
-          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-semibold transition-all hover:scale-105 transform duration-300 shadow-lg hover:shadow-xl"
-          initial={{ opacity: 0, y: 20, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.6, delay: 1 }}
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.95 }}
+        <Button
+          onClick={() => navigate("/auth/login")}
+          variant="default"
+          size="default"
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-semibold transition-all transform duration-300 shadow-lg hover:shadow-xl"
+          style={{}}
         >
           Get started
-        </motion.button>
+        </Button>
       </motion.div>
 
       {/* Background ambient effects */}

@@ -2,14 +2,13 @@ import { MoreVertical, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Link } from "react-router-dom";
-import Avatar from "../../Avatar";
+import { Button } from "@/components/ui/button";
 
 import { useSendRequest, useUsersInfinite } from "@/queries/friendQueries";
 
 function SuggestedFriends({ onViewSentRequests }) {
   const { mutate: sendFriendRequest } = useSendRequest();
-  const { data, fetchNextPage, hasNextPage, isLoading, isFetchingNextPage } =
-    useUsersInfinite(15);
+  const { data, fetchNextPage, hasNextPage, isLoading } = useUsersInfinite(15);
   const suggestedFriends = data?.pages.flatMap((page) => page.users) || [];
 
   const [showDropdown, setShowDropdown] = useState(false);
@@ -55,21 +54,26 @@ function SuggestedFriends({ onViewSentRequests }) {
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-semibold txt">Suggested Friends</h3>
         <div className="relative" ref={dropdrownRef}>
-          <button onClick={() => setShowDropdown(!showDropdown)}>
+          <Button
+            onClick={() => setShowDropdown(!showDropdown)}
+            variant="transparent"
+            size="icon"
+          >
             <MoreVertical className="w-5 h-5 txt" />
-          </button>
+          </Button>
           {showDropdown && (
             <div className="absolute right-0 mt-2 w-40 bg-ter rounded-md shadow-lg z-10">
-              <button
+              <Button
                 onClick={() => {
                   setShowDropdown(false);
                   onViewSentRequests();
                 }}
-                className="block w-full text-left px-4 py-2 text-sm txt hover:bg-sec"
-                style={{ borderColor: "var(--txt-dim)" }}
+                variant="transparent"
+                size="sm"
+                className="block w-full text-left txt hover:bg-sec border-(var(--txt-dim))"
               >
                 Show Sent Requests
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -98,7 +102,14 @@ function SuggestedFriends({ onViewSentRequests }) {
                     to={`/user/${user._id}`}
                     className="flex items-center hover:brightness-110"
                   >
-                   <Avatar src={user.ProfilePicture} alt={"Profile"} />
+                    <img
+                      src={
+                        user?.ProfilePicture ||
+                        `https://api.dicebear.com/9.x/initials/svg?seed=${user.FirstName}`
+                      }
+                      className="size-12 rounded-full transition cursor-pointer"
+                      alt={"Profile"}
+                    />
                     <div className="ml-4 flex-1 overflow-hidden">
                       <div className="text-lg font-medium line-clamp-1 txt">
                         {user.FirstName
@@ -111,20 +122,24 @@ function SuggestedFriends({ onViewSentRequests }) {
                 </div>
                 <div className="absolute top-[8%] right-0 bg-sec p-1.5 px-2 transition-all opacity-0 group-hover:opacity-100 flex gap-1">
                   {user.requestSent ? (
-                    <button
+                    <Button
                       disabled
-                      className="border border-gray-500/50 text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition bg-sec txt"
+                      variant="secondary"
+                      size="sm"
+                      className="border border-gray-500/50 flex items-center justify-center gap-1 bg-sec txt"
                     >
                       Request Sent
-                    </button>
+                    </Button>
                   ) : (
-                    <button
+                    <Button
                       onClick={() => sendFriendRequest(user._id)}
-                      className="bg-ter text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition hover:bg-[var(--btn-hover)] txt"
+                      variant="secondary"
+                      size="sm"
+                      className="flex items-center justify-center gap-1"
                     >
                       <Plus className="w-4 h-4" />
                       Friend
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>

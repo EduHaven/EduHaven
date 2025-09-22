@@ -55,7 +55,7 @@ const Goals = ({ isCurrentUser = false }) => {
     };
 
     fetchTasks();
-  }, [view]);
+  }, [view, isCurrentUser, userId]);
 
   const handleDropdownClick = (viewType) => {
     setView(viewType);
@@ -73,7 +73,7 @@ const Goals = ({ isCurrentUser = false }) => {
         </h3>
         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
-            <Button variant ="transparent">
+            <Button variant="transparent">
               {view.charAt(0).toUpperCase() + view.slice(1)}
               <ChevronDown className="w-4 h-4" />
             </Button>

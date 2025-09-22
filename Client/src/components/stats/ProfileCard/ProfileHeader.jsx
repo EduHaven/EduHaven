@@ -1,7 +1,7 @@
 // components/ProfileCard/ProfileHeader.jsx
-import { Edit3, Share2, User } from "lucide-react";
+import { Edit3, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useRef } from "react";
+import { Button } from "@/components/ui/button";
 
 const ProfileHeader = ({
   isCurrentUser,
@@ -11,10 +11,6 @@ const ProfileHeader = ({
   toggleLink,
   copyLink,
   shareRef,
-  kudosCount,
-  friendsCount,
-  setShowPopup,
-  popupRef,
 }) => {
   return (
     <div className="flex justify-end gap-6 px-4">
@@ -43,12 +39,14 @@ const ProfileHeader = ({
                 title={profilelink}
                 className="flex-1 bg-transparent text-sm text-white outline-none truncate"
               />
-              <button
-                className="ml-2 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm font-medium text-white transition"
+              <Button
                 onClick={copyLink}
+                variant="default"
+                size="sm"
+                className="ml-2 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium"
               >
                 Copy
-              </button>
+              </Button>
             </div>
           )}
         </div>

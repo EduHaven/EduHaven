@@ -13,6 +13,7 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.webextensions,
+        ...globals.node,
       },
       parserOptions: {
         ecmaVersion: "latest",
@@ -36,6 +37,9 @@ export default [
         "warn",
         { allowConstantExport: true },
       ],
+      "react/prop-types": "off",
+      "no-unused-vars": "error",
+      "react-hooks/exhaustive-deps": "off",
     },
   },
 ];

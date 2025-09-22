@@ -1,6 +1,7 @@
 // CreateRoomModal.jsx
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 function CreateRoomModal({ isOpen, onClose, onCreate }) {
   const [roomName, setRoomName] = useState("");
@@ -114,19 +115,23 @@ function CreateRoomModal({ isOpen, onClose, onCreate }) {
               />
 
               <div className="flex justify-end gap-4">
-                <button
+                <Button
                   type="button"
                   onClick={onClose}
-                  className="bg-ter text-[var(--txt)] px-4 py-2 rounded-lg hover:bg-primary font-medium transition duration-200 w-32"
+                  variant="destructive"
+                  size="default"
+                  className="font-medium w-32"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
-                  className=" bg-ter px-4 py-2 rounded-lg btn hover:bg-[var(--btn-hover)] txt transition-colors w-32"
+                  variant="secondary"
+                  size="default"
+                  className="w-32"
                 >
                   Create
-                </button>
+                </Button>
               </div>
             </form>
           </motion.div>

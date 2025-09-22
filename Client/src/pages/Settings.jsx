@@ -25,7 +25,7 @@ const Settings = () => {
         console.error("Error decoding token:", error);
       }
     }
-  }, []);
+  }, [fetchUserDetails]);
 
   const validTabs = [
     "basic-info",

@@ -1,9 +1,10 @@
 import { useSentRequests } from "@/queries/friendQueries";
-import { ArrowLeft, User } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 function SentRequests({ onBack }) {
-  const { data: sentRequests = [], isLoading } = useSentRequests();
+  const { data: sentRequests = [] } = useSentRequests();
 
   const showSkeletons = sentRequests.length === 0;
 
@@ -13,8 +14,11 @@ function SentRequests({ onBack }) {
         <div className="w-full mb-4 h-8 bg-gray-500/20 rounded-md"></div>
         {Array(4)
           .fill()
-          .map((_, i) => (
-            <div className="flex justify-between items-center space-x-2 my-2">
+          .map((key) => (
+            <div
+              key={key}
+              className="flex justify-between items-center space-x-2 my-2"
+            >
               <div className="w-10 aspect-square bg-gray-500/20 rounded-full"></div>
               <div className="flex-1 flex flex-col justify-center *:items-start space-y-2">
                 <div className=" bg-gray-500/20 w-full h-4 rounded-md"></div>
@@ -29,9 +33,14 @@ function SentRequests({ onBack }) {
   return (
     <section className="bg-sec rounded-3xl p-4">
       <div className="flex items-center mb-4">
-        <button onClick={onBack} className="mr-2">
+        <Button
+          onClick={onBack}
+          size="icon"
+          variant="transparent"
+          className="mr-2"
+        >
           <ArrowLeft className="w-5 h-5 txt" />
-        </button>
+        </Button>
         <h3 className="text-xl font-semibold txt">Sent Requests</h3>
       </div>
       {sentRequests.length === 0 ? (
@@ -41,17 +50,14 @@ function SentRequests({ onBack }) {
           {sentRequests?.map((user) => (
             <div key={user._id} className="flex items-center">
               <Link to={`/user/${user._id}`}>
-                {user.ProfilePicture ? (
-                  <img
-                    src={user.ProfilePicture}
-                    className="w-9 h-9 rounded-full transition hover:brightness-75 cursor-pointer"
-                    alt="Profile"
-                  />
-                ) : (
-                  <div className="p-2 bg-ter rounded-full transition hover:brightness-75 cursor-pointer">
-                    <User className="w-7 h-7" />
-                  </div>
-                )}
+                <img
+                  src={
+                    user?.ProfilePicture ||
+                    `https://api.dicebear.com/9.x/initials/svg?seed=${user.FirstName}`
+                  }
+                  className="w-9 h-9 rounded-full transition hover:brightness-75 cursor-pointer"
+                  alt="Profile"
+                />
               </Link>
               <div className="ml-4">
                 <Link

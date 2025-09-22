@@ -16,7 +16,7 @@ import {
   fetchSuggestedUsers,
   rejectFriendRequest,
   removeFriend,
-  sendFriendRequest
+  sendFriendRequest,
 } from "../api/friendApi";
 
 export const useFriendRequests = () =>

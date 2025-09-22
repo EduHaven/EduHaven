@@ -1,7 +1,7 @@
 import LionComponent from "./LionComponent";
 import { Link } from "react-router-dom";
 
-import SnakeIcon from "..//../assets/icon/SnakeIcon";
+import SnakeIcon from "../../assets/icon/SnakeIcon";
 import SpaceTypeIcon from "../../assets/icon/SpaceTypeIcon";
 import TicTacToeIcon from "../../assets/icon/TicTacToeIcon";
 import WacAMole from "@/assets/icon/WacAMole";

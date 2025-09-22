@@ -16,12 +16,15 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const { context, core } = require("@actions/github-script");
+
             const { owner, repo } = context.repo;
             const issueNumber = context.issue.number;
             const opener = context.payload.issue.user.login;
 
             // Find the opener's permission level on this repo
             let perm = "none";
+
             try {
               const res = await github.rest.repos.getCollaboratorPermissionLevel({
                 owner,
@@ -39,17 +42,18 @@ jobs:
               return;
             }
 
-            const commentBody1 = `
+            const commentBody = `
 ### Thank you for raising this issue!  
-We'll review it as soon as possible. We truly appreciate your contributions!   
+We'll review it as soon as possible. We truly appreciate your contributions!  
+
 > Meanwhile, make sure you've visited the **README.md**, **CONTRIBUTING.md**, and **CODE_OF_CONDUCT.md** before creating a PR for this.  
-Please do **NOT** create a PR until this issue has been assigned to you. `;
+Please do **NOT** create a PR until this issue has been assigned to you.`;
 
             await github.rest.issues.createComment({
               owner,
               repo,
               issue_number: issueNumber,
-              body: commentBody1,
+              body: commentBody,
             });
 
             core.info(`Auto-comment added for outside contributor: ${opener} (permission=${perm}).`);

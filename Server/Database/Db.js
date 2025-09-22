@@ -1,5 +1,6 @@
 // Server/Database/Db.js
 import mongoose from "mongoose";
+import { handleMissingUsernames } from "../Middlewares/usernameHandler.js";
 
 /**
  * ConnectDB - connects to MongoDB using mongoose.
@@ -48,12 +49,15 @@ export const ConnectDB = async ({
     try {
       attempt += 1;
       if (attempt > 1) {
-        console.log(`🔁 Retry ${attempt}/${retries + 1} - attempting MongoDB connection...`);
+        console.log(
+          `🔁 Retry ${attempt}/${retries + 1} - attempting MongoDB connection...`
+        );
       } else {
         console.log("🔌 Attempting to connect to MongoDB...");
       }
 
       await mongoose.connect(uri, connectOptions);
+      await handleMissingUsernames(); // add username to users without username
       console.log("✅ MongoDB connected");
 
       // Expose a close function for graceful shutdown
@@ -78,7 +82,7 @@ export const ConnectDB = async ({
       // exponential backoff before retrying
       const delay = initialDelayMs * Math.pow(2, attempt - 1);
       console.log(`⏳ Waiting ${delay}ms before next retry...`);
-      // eslint-disable-next-line no-await-in-loop
+
       await wait(delay);
     }
   }

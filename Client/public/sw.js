@@ -1,4 +1,6 @@
-const CACHE_NAME = "eduhaven-v1.0.0";
+/* eslint-env serviceworker */
+/* global clients */
+
 const STATIC_CACHE = "eduhaven-static-v1.0.0";
 const DYNAMIC_CACHE = "eduhaven-dynamic-v1.0.0";
 

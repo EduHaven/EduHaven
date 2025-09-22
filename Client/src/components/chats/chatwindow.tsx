@@ -1,5 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Send, MoreVertical, Smile, User, Users } from "lucide-react";
+import EmojiPicker from "@emoji-mart/react";
+import data from "@emoji-mart/data";
+
 
 // Dummy messages for demonstration
 const getDummyMessages = (userId) => {
@@ -105,7 +108,15 @@ function ChatWindow({ selectedUser }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
+  // the state variables for setting states of the emojipicker
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState(0);
+
   const messagesEndRef = useRef(null);
+  const emojiPickerRef = useRef(null);
+  const emojiButtonRef = useRef(null);
+  const textareaRef = useRef(null);
+  
 
   // Load messages when user is selected
   useEffect(() => {
@@ -134,6 +145,29 @@ function ChatWindow({ selectedUser }) {
 
     setMessages((prev) => [...prev, newMessage]);
     setMessage("");
+    setCursorPosition(0); 
+
+  // This hook is to close the emojipicker when clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target) &&
+        emojiButtonRef.current &&
+        !emojiButtonRef.current.contains(event.target)
+      ) {
+        setShowEmoji(false);
+      }
+    };
+
+    if (showEmoji) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showEmoji]);
 
     // TODO: Connect to backend - Send message via socket/API
     // Example: socket.emit('sendMessage', { userId: selectedUser.id, message: message });
@@ -161,6 +195,43 @@ function ChatWindow({ selectedUser }) {
       handleSendMessage();
     }
   };
+
+  // To make sure to track the emojipicker state
+  const toggleEmojiPicker = () => {
+  setShowEmoji(!showEmoji);
+  };
+
+  // To insert emoji into our message
+  const onEmojiSelect = (emoji) => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      const position = textarea.selectionStart || cursorPosition;
+      
+      const newMessage = message.slice(0, position) + emoji.native + message.slice(position);
+      
+      setMessage(newMessage);
+      setShowEmoji(false);
+      
+      textarea.focus();
+      const newCursorPosition = position + emoji.native.length;
+      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+      setCursorPosition(newCursorPosition);
+    }
+  };
+
+  const handleTextareaClick = () => {
+    if (textareaRef.current) {
+      setCursorPosition(textareaRef.current.selectionStart);
+    }
+  };
+
+  const handleTextareaKeyUp = () => {
+    if (textareaRef.current) {
+      setCursorPosition(textareaRef.current.selectionStart);
+    }
+  };
+
+  
 
   // Empty state when no user is selected
   if (!selectedUser) {
@@ -312,12 +383,39 @@ function ChatWindow({ selectedUser }) {
 
       {/* Message Input - Responsive */}
       <div
-        className="p-2 sm:p-3 lg:p-4 border-t border-gray-200/20"
+        className="p-2 sm:p-3 lg:p-4 border-t border-gray-200/20 relative"
         style={{
           backgroundColor: "color-mix(in srgb, var(--bg-sec), black 10%)",
         }}
       >
         <div className="flex items-end gap-2 sm:gap-3">
+                    {/* Emoji Button */}
+          <div className="relative">
+            <button 
+              ref={emojiButtonRef}
+              onClick={toggleEmojiPicker}
+              className="p-2 rounded-full hover:opacity-70 transition-colors txt-dim hover:txt"
+            >
+              <Smile className="w-7 h-7" />
+            </button>
+
+            {/* Emoji Picker Popup */}
+            {showEmoji && (
+              <div 
+                ref={emojiPickerRef}
+                className="absolute bottom-full left-0 mb-2 z-50"
+                style={{ zIndex: 9999 }}
+              >
+                <EmojiPicker
+                  data={data}
+                  onEmojiSelect={onEmojiSelect}
+                  theme="auto"
+                  previewPosition="none"
+                  skinTonePosition="none"
+                />
+              </div>
+            )}
+          </div>
           {/* Message Input */}
           <div
             className="flex-1 rounded-2xl border border-gray-200/20 focus-within:border-[var(--btn)] transition-colors"
@@ -326,8 +424,14 @@ function ChatWindow({ selectedUser }) {
             }}
           >
             <textarea
+              ref={textareaRef}
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={(e) => {
+                setMessage(e.target.value);
+                setCursorPosition(e.target.selectionStart);
+              }}
+              onClick={handleTextareaClick}
+              onKeyUp={handleTextareaKeyUp}
               onKeyDown={handleKeyPress}
               placeholder="Type a message..."
               className="w-full p-2 sm:p-3 bg-transparent resize-none txt placeholder-txt-disabled focus:outline-none text-sm sm:text-base"
@@ -336,10 +440,6 @@ function ChatWindow({ selectedUser }) {
             />
           </div>
 
-          {/* Emoji Button */}
-          <button className="p-2 rounded-full hover:opacity-70 transition-colors txt-dim hover:txt">
-            <Smile className="w-5 h-5" />
-          </button>
 
           {/* Send Button - Responsive */}
           <button

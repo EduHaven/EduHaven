@@ -1,13 +1,13 @@
 import bcrypt from "bcrypt";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
-
 import Event from "../Model/EventModel.js";
 import Note from "../Model/NoteModel.js";
 import SessionRoom from "../Model/SessionModel.js";
 import TimerSession from "../Model/StudySession.js";
 import Task from "../Model/ToDoModel.js";
 import User from "../Model/UserModel.js";
+import { createUserWithUniqueUsername } from "../Middlewares/usernameHandler.js";
 
 import generateAuthToken from "../utils/GenerateAuthToken.js";
 import sendMail from "../utils/sendMail.js";
@@ -56,14 +56,16 @@ const googleCallback = async (req, res) => {
 
     let user = await User.findOne({ Email: email });
     if (!user) {
-      user = await User.create({
+      const base = email.split("@")[0];
+      const userData = {
         FirstName: given_name,
         LastName: family_name,
         Email: email,
         ProfilePicture: picture,
         oauthProvider: "google",
         oauthId,
-      });
+      };
+      user=await createUserWithUniqueUsername(base, userData);
     }
 
     const appToken = generateAuthToken(user);
@@ -123,8 +125,10 @@ const verifyUser = async (req, res) => {
     await User.create({
       FirstName: verify.user.FirstName,
       LastName: verify.user.LastName,
+      Username: verify.user.Username,
       Email: verify.user.Email,
       Password: verify.user.Password,
+      ProfilePicture: `https://api.dicebear.com/9.x/initials/svg?seed=${verify.user.FirstName}`,
     });
 
     return res.status(200).json({ message: "User Signup Successfully" });
@@ -138,11 +142,15 @@ const verifyUser = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { Email, Password } = req.body;
-    if (!Email || !Password) {
-      return res.status(422).json({ error: "Please fill all the fields" });
+    const { identifier, Password } = req.body;
+    if (!identifier || !Password) {
+      return res
+        .status(422)
+        .json({ error: "Please provide email/username and password" });
     }
-    const user = await User.findOne({ Email });
+    const user = await User.findOne({
+      $or: [{ Email: identifier }, { Username: identifier }],
+    });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -194,10 +202,10 @@ const login = async (req, res) => {
 
 const signup = async (req, res) => {
   try {
-    const { FirstName, LastName, Email, Password } = req.body;
+    const { FirstName, LastName, Username, Email, Password } = req.body;
 
     // Validate input fields
-    if (!FirstName || !LastName || !Email || !Password) {
+    if (!FirstName || !LastName || !Email || !Username || !Password) {
       return res.status(422).json({ error: "Please fill all the fields" });
     }
 
@@ -205,6 +213,10 @@ const signup = async (req, res) => {
     let user = await User.findOne({ Email: Email });
     if (user) {
       return res.status(409).json({ error: "User already exists" });
+    }
+    user = await User.findOne({ Username });
+    if (user) {
+      return res.status(409).json({ error: "Username already exists" });
     }
     // const imageurl = req.body.imageUrl;
     // console.log(imageurl)
@@ -215,9 +227,9 @@ const signup = async (req, res) => {
     user = {
       FirstName,
       LastName,
+      Username,
       Email,
       Password: haspass, // Store hashed password
-      ProfilePicture: "https://cdn-icons-png.flaticon.com/512/219/219986.png", // Default profile picture
     };
 
     const otp = Math.floor(Math.random() * 1000000)
@@ -234,9 +246,7 @@ const signup = async (req, res) => {
       }
     );
 
-    await sendMail(Email, FirstName, otp,'signup');
-
-    const token = generateAuthToken(user);
+    await sendMail(Email, FirstName, otp, "signup");
 
     res.cookie("activationToken", activationToken, {
       expires: new Date(Date.now() + 86400000),
@@ -245,7 +255,6 @@ const signup = async (req, res) => {
 
     return res.status(201).json({
       message: "OTP sent to your email.",
-      token,
       activationToken,
     });
   } catch (error) {
@@ -262,13 +271,17 @@ const forgotPassword = async (req, res) => {
 
     // Validate input
     if (!Email) {
-      return res.status(422).json({ error: "Please provide your email address" });
+      return res
+        .status(422)
+        .json({ error: "Please provide your email address" });
     }
 
     // Check if user exists
     const user = await User.findOne({ Email });
     if (!user) {
-      return res.status(404).json({ error: "User not found with this email address" });
+      return res
+        .status(404)
+        .json({ error: "User not found with this email address" });
     }
     // check if user logged in with google
 
@@ -281,21 +294,21 @@ const forgotPassword = async (req, res) => {
     const otp = Math.floor(Math.random() * 1000000)
       .toString()
       .padStart(6, "0");
-   
+
     // Create reset token with user email and OTP
     const resetToken = jwt.sign(
       {
         email: Email,
         otp,
       },
-      process.env.Activation_Secret, 
+      process.env.Activation_Secret,
       {
-        expiresIn: "15m", 
+        expiresIn: "15m",
       }
     );
 
     // Send OTP via email
-    await sendMail(Email, user.FirstName, otp,'reset');
+    await sendMail(Email, user.FirstName, otp, "reset");
     // Set cookie with reset token
     res.cookie("resetToken", resetToken, {
       expires: new Date(Date.now() + 900000), // 15 minutes
@@ -332,8 +345,8 @@ const verifyResetOTP = async (req, res) => {
     }
 
     if (!otp) {
-      return res.status(422).json({ 
-        error: "Please provide the OTP" 
+      return res.status(422).json({
+        error: "Please provide the OTP",
       });
     }
 
@@ -374,9 +387,9 @@ const verifyResetOTP = async (req, res) => {
       }
     );
 
-    return res.status(200).json({ 
+    return res.status(200).json({
       message: "OTP verified successfully",
-      verifiedResetToken
+      verifiedResetToken,
     });
   } catch (error) {
     console.error("Error verifying reset OTP:", error);
@@ -386,7 +399,7 @@ const verifyResetOTP = async (req, res) => {
   }
 };
 
-// Reset Password 
+// Reset Password
 const resetPassword = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -406,9 +419,9 @@ const resetPassword = async (req, res) => {
       });
     }
 
-    if ( !newPassword) {
-      return res.status(422).json({ 
-        error: "Please provide new password" 
+    if (!newPassword) {
+      return res.status(422).json({
+        error: "Please provide new password",
       });
     }
 
@@ -422,8 +435,6 @@ const resetPassword = async (req, res) => {
         message: "Invalid or expired reset token",
       });
     }
-
-  
 
     // Find user by email
     const user = await User.findOne({ Email: verify.email });
@@ -440,8 +451,9 @@ const resetPassword = async (req, res) => {
     // Clear reset token cookie
     res.clearCookie("resetToken");
 
-    return res.status(200).json({ 
-      message: "Password reset successfully. Please login with your new password." 
+    return res.status(200).json({
+      message:
+        "Password reset successfully. Please login with your new password.",
     });
   } catch (error) {
     console.error("Error resetting password:", error);
@@ -497,15 +509,47 @@ const deleteAccount = async (req, res) => {
 
     const userId = req.user._id;
 
+    // Ensure deletion OTP was verified and still valid
+    const currentUser = await User.findById(userId);
+    if (!currentUser?.deletionOTP?.verified) {
+      return res
+        .status(403)
+        .json({ error: "Deletion OTP not verified or missing" });
+    }
+    if (
+      currentUser.deletionOTP.expiresAt &&
+      currentUser.deletionOTP.expiresAt < new Date()
+    ) {
+      return res.status(403).json({ error: "Deletion OTP expired" });
+    }
+
     // 1. Remove user from other users' friend lists
     await User.updateMany({ friends: userId }, { $pull: { friends: userId } });
 
     // 2. Delete all related data
+    await User.updateMany(
+      { friendRequests: userId },
+      { $pull: { friendRequests: userId } }
+    );
+    await User.updateMany(
+      { sentRequests: userId },
+      { $pull: { sentRequests: userId } }
+    );
+    await User.updateMany(
+      { kudosGiven: userId },
+      { $pull: { kudosGiven: userId } }
+    );
+
+    await Note.updateMany(
+      { "collaborators.user": userId },
+      { $pull: { collaborators: { user: userId } } }
+    );
+
     await Promise.all([
-      Note.deleteMany({ user: userId }),
+      Note.deleteMany({ owner: userId }),
       Event.deleteMany({ createdBy: userId }),
-      TimerSession.deleteMany({ userId }),
-      SessionRoom.deleteMany({ host: userId }),
+      TimerSession.deleteMany({ user: userId }),
+      SessionRoom.deleteMany({ createdBy: userId }),
       Task.deleteMany({ user: userId }),
     ]);
 
@@ -521,8 +565,61 @@ const deleteAccount = async (req, res) => {
   }
 };
 
+// Request deletion OTP (email)
+const requestDeletionOTP = async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const code = Math.floor(Math.random() * 1000000)
+      .toString()
+      .padStart(6, "0");
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+
+    user.deletionOTP = { code, expiresAt, verified: false };
+    await user.save();
+
+    await sendMail(user.Email, user.FirstName, code, "reset"); // reuse reset template
+
+    return res.status(200).json({ message: "Deletion OTP sent" });
+  } catch (error) {
+    console.error("Error requesting deletion OTP:", error);
+    return res.status(500).json({ error: "Failed to send deletion OTP" });
+  }
+};
+
+// Verify deletion OTP
+const verifyDeletionOTP = async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+    const { otp } = req.body;
+    if (!otp) return res.status(422).json({ error: "OTP required" });
+
+    const user = await User.findById(req.user._id);
+    if (!user?.deletionOTP?.code) {
+      return res.status(400).json({ error: "No deletion OTP requested" });
+    }
+    if (user.deletionOTP.expiresAt < new Date()) {
+      return res.status(400).json({ error: "OTP expired" });
+    }
+    if (user.deletionOTP.code !== otp) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    user.deletionOTP.verified = true;
+    await user.save();
+    return res.status(200).json({ message: "Deletion OTP verified" });
+  } catch (error) {
+    console.error("Error verifying deletion OTP:", error);
+    return res.status(500).json({ error: "Failed to verify deletion OTP" });
+  }
+};
+
 export {
   deleteAccount,
+  requestDeletionOTP,
+  verifyDeletionOTP,
   googleAuth,
   googleCallback,
   login,
@@ -532,5 +629,5 @@ export {
   refreshAccessToken,
   signup,
   verifyUser,
-  verifyResetOTP
+  verifyResetOTP,
 };

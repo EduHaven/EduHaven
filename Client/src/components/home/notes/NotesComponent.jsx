@@ -1,12 +1,29 @@
 import { useState, useRef, useEffect } from "react";
 import axiosInstance from "@/utils/axios";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Trash,
-  Plus,
-  RefreshCcwDot,
-} from "lucide-react";
+import NoteTitle from "./Title";
+import TopControls from "./TopControls";
+import BottomControls from "./BottomControls";
+import NoteContent from "./content";
+import { motion, AnimatePresence } from "framer-motion";
+
+// for framer motion left/right moving animation
+const variants = {
+  enter: (direction) => ({
+    x: direction > 0 ? 150 : -150,
+    opacity: 0,
+    scale: 0.95,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction) => ({
+    x: direction > 0 ? -150 : 150,
+    opacity: 0,
+    scale: 0.95,
+  }),
+};
 
 function NotesComponent() {
   const [notes, setNotes] = useState([]);
@@ -16,18 +33,13 @@ function NotesComponent() {
   const titleTimeoutRef = useRef(null);
   const contentTimeoutRef = useRef(null);
   const [isSynced, setIsSynced] = useState(true);
-  const [rotate, setRotate] = useState(false); // used to rotate sync icon
+  const [rotate, setRotate] = useState(false); // to indicate when tick icon when it starts saving.
   const [currentPage, setCurrentPage] = useState(0);
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const [scrollHeight, setScrollHeight] = useState(0);
-  const textAreaRef = useRef(null);
+  const [direction, setDirection] = useState(0);
 
   useEffect(() => {
     fetchNotes();
 
-    if (textAreaRef.current) {
-      setScrollHeight(textAreaRef.current.scrollHeight);
-    }
     return () => {
       clearTimeout(titleTimeoutRef.current);
       clearTimeout(contentTimeoutRef.current);
@@ -42,6 +54,7 @@ function NotesComponent() {
           addNewPage(); // adding new is necessary cause we get err in posting data to db.
         } else {
           setNotes(response.data.data);
+          console.log("fetched notes", response.data.data);
         }
       } else {
         setError("Something wrong at our end");
@@ -69,6 +82,7 @@ function NotesComponent() {
 
   const goToNextPage = () => {
     if (currentPage < notes.length - 1) {
+      setDirection(1); // moving forward
       setCurrentPage((prev) => prev + 1);
       setTitleError("");
       setContentError("");
@@ -77,6 +91,7 @@ function NotesComponent() {
 
   const goToPreviousPage = () => {
     if (currentPage > 0) {
+      setDirection(-1); // moving backward
       setCurrentPage((prev) => prev - 1);
       setTitleError("");
       setContentError("");
@@ -129,55 +144,6 @@ function NotesComponent() {
     else setContentError("");
   };
 
-  const handleNoteContentChange = (event) => {
-    const updatedText = event.target.value;
-    const noteIndex = currentPage;
-
-    const currentTitle = notes[noteIndex]?.title || "";
-    validateFields(currentTitle, updatedText);
-
-    setNotes((prevNotes) =>
-      prevNotes.map((note, index) =>
-        index === noteIndex ? { ...note, content: updatedText } : note
-      )
-    );
-
-    if (error) setError("");
-
-    if (updatedText.trim() && currentTitle.trim()) {
-      if (isSynced) {
-        setIsSynced(false);
-        setRotate(false);
-      }
-
-      clearTimeout(contentTimeoutRef.current);
-
-      const noteId = notes[noteIndex]?._id;
-      const contentToSave = updatedText.trim();
-
-      contentTimeoutRef.current = setTimeout(async () => {
-        try {
-          if (noteId) {
-            await axiosInstance.put(`/note/${noteId}`, {
-              content: contentToSave,
-            });
-          }
-          handleSync(notes[noteIndex].title, updatedText); // sets synced = true
-        } catch (err) {
-          console.error("Error updating note content:", err);
-          setError("Failed to save changes");
-          setIsSynced(true);
-        }
-      }, 3000);
-    } else {
-      clearTimeout(contentTimeoutRef.current);
-      if (!isSynced) {
-        setIsSynced(true);
-        setRotate(false);
-      }
-    }
-  };
-
   const handleTitleChange = (event) => {
     const updatedTitle = event.target.value;
     const noteIndex = currentPage;
@@ -226,133 +192,58 @@ function NotesComponent() {
     }
   };
 
-  const handleScroll = () => {
-    if (textAreaRef.current) {
-      setScrollPosition(textAreaRef.current.scrollTop);
-      setScrollHeight(textAreaRef.current.scrollHeight);
-    }
-  };
-
   return (
-    <div className="bg-sec txt rounded-3xl py-6 px-3 w-full mx-auto relative shadow">
-      {error && console.error(error)}
+    <div className="group relative w-full h-[404px] rounded-3xl mx-auto overflow-hidden bg- red-500">
+      <TopControls
+        notes={notes}
+        addNew={addNewPage}
+        currentPage={currentPage}
+        next={goToNextPage}
+        prev={goToPreviousPage}
+      />
+      <AnimatePresence mode="wait" custom={direction}>
+        <motion.div
+          key={currentPage}
+          custom={direction}
+          variants={variants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="group bg-sec txt rounded-3xl py-6 pb-3 2xl:px-3 shadow z-10 absolute w-full overflow-hidden"
+        >
+          {error && console.error(error)}
 
-      {/* Navigation */}
-      <div className="flex justify-between px-3">
-        <div className="flex gap-4 items-center">
-          <h3 className="text-2xl font-semibold">Notes</h3>
-          <button
-            className="p-1.5 rounded-full hover:bg-ter"
-            onClick={addNewPage}
-          >
-            <Plus />
-          </button>
-        </div>
-        <div className="flex space-x-2 items-center">
-          <span className="opacity-90 text-lg">
-            {notes.length > 0 ? `${currentPage + 1}/${notes.length}` : "1/1"}
-          </span>
-          <button
-            onClick={goToPreviousPage}
-            className={`p-1.5 rounded-full hover:bg-ter ${
-              currentPage === 0 ? "txt-dim" : ""
-            }`}
-          >
-            <ChevronLeft />
-          </button>
-          <button
-            onClick={goToNextPage}
-            className={`p-1.5 rounded-full hover:bg-ter ${
-              currentPage === notes.length - 1 ? "txt-dim" : ""
-            }`}
-          >
-            <ChevronRight />
-          </button>
-        </div>
-      </div>
-
-      {/* Title, Delete and Sync Button */}
-      <div className="flex justify-between mt-5 items-center w-full px-3 mb-1.5">
-        <div className="flex-1 relative">
-          <input
-            type="text"
-            value={notes[currentPage]?.title || ""}
-            onChange={handleTitleChange}
-            placeholder="Title"
-            className="bg-transparent outline-none p-0.5 text-lg w-full font-semibold opacity-85"
+          <NoteTitle
+            notes={notes}
+            titleChange={handleTitleChange}
+            currentPage={currentPage}
+            titleError={titleError}
           />
-          {titleError && (
-            <p className="text-red-400 text-xs absolute -bottom-3">
-              {titleError}
-            </p>
-          )}
-        </div>
 
-        {!isSynced && (
-          <button className="text-black text-lg hover:bg-yellow-300 rounded-full mx-3 py-0.5 px-4 bg-yellow-400 flex items-center gap-2 transition-transform transform opacity-100">
-            sync
-            <div
-              className="h-4"
-              style={{
-                transform: rotate ? "rotate(-360deg)" : "rotate(0deg)",
-                transition: "transform 0.7s ease-in-out",
-              }}
-            >
-              <RefreshCcwDot className="h-4" />
-            </div>
-          </button>
-        )}
-        {notes[currentPage]?.content !== "" &&
-          notes[currentPage]?.title !== "" && (
-            <button onClick={() => handleDeleteNote(notes[currentPage]?._id)}>
-              <Trash className="h-5 txt-dim hover:text-red-500" />
-            </button>
-          )}
-      </div>
+          <NoteContent
+            err={contentError}
+            setError={setError}
+            notes={notes}
+            currentPage={currentPage}
+            setNotes={setNotes}
+            setRotate={setRotate}
+            isSynced={isSynced}
+            setIsSynced={setIsSynced}
+            contentTimeoutRef={contentTimeoutRef}
+            handleSync={handleSync}
+            validateFields={validateFields}
+          />
 
-      {/* Content */}
-      <div className="relative w-full h-64 overflow-hidden">
-        <div
-          className="absolute w-full pointer-events-none"
-          style={{
-            backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 30px, #6E6E6E 39px )`,
-            backgroundSize: "100% 32px",
-            transform: `translateY(-${scrollPosition}px)`,
-            height: `${scrollHeight}px`,
-            marginTop: "2px",
-          }}
-        ></div>
-        <textarea
-          ref={textAreaRef}
-          id="area"
-          className="relative w-full h-full bg-transparent txt-dim p-2 px-3 outline-none resize-none font-kalam font-light"
-          style={{
-            lineHeight: "32px",
-            paddingTop: "8px",
-          }}
-          placeholder="Take a note..."
-          onScroll={handleScroll}
-          value={notes[currentPage]?.content}
-          onChange={handleNoteContentChange}
-        ></textarea>
-      </div>
-      {contentError && (
-        <span className="text-red-400 text-xs mt-1 absolute bottom-4 left-3">
-          {contentError}
-        </span>
-      )}
-
-      {/* Date and Time */}
-      <div className="absolute bottom-4 right-12 txt-dim bg-sec flex justify-between">
-        {notes[currentPage]?.createdAt
-          ? new Date(notes[currentPage].createdAt).toLocaleDateString() +
-            "\u00A0\u00A0\u00A0" +
-            new Date(notes[currentPage].createdAt).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "No date available"}
-      </div>
+          <BottomControls
+            isSynced={isSynced}
+            rotate={rotate}
+            notes={notes}
+            currentPage={currentPage}
+            onDelete={handleDeleteNote}
+          />
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

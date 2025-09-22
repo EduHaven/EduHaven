@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import NotificationIndicator from "../NotificationIndicator";
 
 function TabNavigation({ activeTab, onTabChange }) {
@@ -9,11 +10,11 @@ function TabNavigation({ activeTab, onTabChange }) {
   ];
 
   return (
-    <div className="w-60 overflow-hidden hidden sm:flex flex-col p-4 h-screen mr-3 2xl:mr-6 bg-[var(--bg-sec)]">
+    <div className="w-60 overflow-hidden hidden sm:flex flex-col p-4 h-screen 2xl:mr-6 bg-[var(--bg-sec)]">
       <h3 className="text-xl font-semibold mb-4 text-[var(--txt)]">Friends</h3>
       <div className="space-y-2">
         {tabs.map((tab) => (
-          <button
+          <Button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
             className={`w-full flex items-center justify-between px-4 py-2 rounded-lg ${
@@ -23,8 +24,7 @@ function TabNavigation({ activeTab, onTabChange }) {
             }`}
           >
             {tab.label}
-            {tab.id === "friendRequests" && <NotificationIndicator />}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

@@ -5,15 +5,9 @@ const focusDockIcon = "/focusDocKIcon.jpg";
 const focusDockDisplay = "/focusDockDisplay.jpg";
 const focusDockDisplay2 = "/focusDockDisplay2.jpg";
 const focusDockDisplay3 = "/focusDockDisplay3.jpg";
+const focusDockDisplay4 = "/focusDockDisplay4.png";
 const FOCUS_DOCK_URL =
   "https://play.google.com/store/apps/details?id=com.rishukumarcodes.Standbyclock";
-
-// GSSoC Navigator Product
-const gssocNavigatorIcon =
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlkIn00HvFnjK7qiCrZZ_JGw0P8-48NKg8rw&s";
-const gssocNavigatorDisplay = "/navigator1.png";
-const gssocNavigatorDisplay2 = "/navigator2.png";
-const GSSOC_NAVIGATOR_URL = "https://girlscirpt2025.vercel.app";
 
 // Product data
 const products = [
@@ -23,16 +17,12 @@ const products = [
     description: "Increase your productivity 10X with focus dock.",
     icon: focusDockIcon,
     url: FOCUS_DOCK_URL,
-    slides: [focusDockDisplay, focusDockDisplay2, focusDockDisplay3],
-  },
-  {
-    id: "gssoc-navigator",
-    name: "GSSoC Navigator",
-    description:
-      "Navigate your way through GSSoC with our comprehensive gssoc project navigator.",
-    icon: gssocNavigatorIcon,
-    url: GSSOC_NAVIGATOR_URL,
-    slides: [gssocNavigatorDisplay, gssocNavigatorDisplay2],
+    slides: [
+      focusDockDisplay,
+      focusDockDisplay2,
+      focusDockDisplay3,
+      focusDockDisplay4,
+    ],
   },
 ];
 
@@ -66,39 +56,40 @@ function AdCard({ slideInterval = 30000 }) {
   }, [currentProductData.slides.length]);
 
   return (
-    <>
-      <h1 className="text-lg font-semibold">More products from us: </h1>
-
+    <div className="group space-y-2.5">
       <a
         href={currentProductData.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex flex-row items-center gap-4"
+        className="flex flex-row  gap-4"
       >
         <img
           src={currentProductData.icon}
           alt="Ad Preview"
           className="h-16 w-16 rounded-xl"
         />
-        <div>
-          <h2 className="txt font-bold text-lg">{currentProductData.name}</h2>
-          <p className="txt-dim text-sm">{currentProductData.description}</p>
+        <div className="relative w-full">
+          <h2 className="txt font-semibold text-lg">
+            {currentProductData.name}
+          </h2>
+          <p className="absolute bottom-0 group-hover:opacity-0 transition-all txt-dim text-sm h-9">
+            {currentProductData.description}
+          </p>
+          <div className="absolute opacity-0 group-hover:opacity-100 transition-all bottom-0 flex gap-4 w-full">
+            <a
+              href={currentProductData.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 btn p-1 rounded-lg hover:btn-hover transition-colors text-center"
+            >
+              Try it
+            </a>
+          </div>
         </div>
       </a>
 
-      <div className="flex gap-4">
-        <a
-          href={currentProductData.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 btn p-1.5 rounded-lg hover:btn-hover transition-colors text-center"
-        >
-          Try it
-        </a>
-      </div>
-
       {/* Carousel area with fade */}
-      <div className="relative aspect-[27/35] w-full">
+      <div className="relative aspect-video overflow-hidden w-full">
         {currentProductData.slides.map((src, idx) => (
           <a
             key={idx}
@@ -111,7 +102,7 @@ function AdCard({ slideInterval = 30000 }) {
               src={src}
               alt={`${currentProductData.name} Slide ${idx + 1}`}
               className={`
-                h-auto w-full rounded-xl
+                h-full w-full rounded-xl object-cover object-center
                 transition-opacity duration-500
                 ${idx === currentSlide ? "opacity-100" : "opacity-0"}
               `}
@@ -121,7 +112,7 @@ function AdCard({ slideInterval = 30000 }) {
       </div>
 
       {/* Product indicator dots */}
-      <div className="flex justify-center gap-2 mt-2">
+      {/* <div className="flex justify-center gap-2 mt-2">
         {products.map((_, idx) => (
           <div
             key={idx}
@@ -130,8 +121,8 @@ function AdCard({ slideInterval = 30000 }) {
             }`}
           />
         ))}
-      </div>
-    </>
+      </div> */}
+    </div>
   );
 }
 

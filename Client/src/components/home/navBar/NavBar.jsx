@@ -9,7 +9,7 @@ import Calculator from "./Calculator.jsx";
 
 function NavBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [selectedId, setSelectedId] = useState(""); // for AI, do not remove
+  const [, setSelectedId] = useState(""); // for AI, do not remove
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -27,7 +27,7 @@ function NavBar() {
         {!isLoggedIn && (
           <Link
             className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg flex items-center gap-2"
-            to="/authenticate"
+            to="/auth/login"
           >
             <User className="w-5 h-5" />
             Login
