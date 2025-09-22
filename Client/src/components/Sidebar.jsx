@@ -47,6 +47,12 @@ function Sidebar() {
           ref={ref}
           className="relative flex flex-col items-center justify-center pt-2.5 pb-2 group hover:bg-ter rounded-lg transition-colors"
         >
+          {label === "Friends" && (
+            <span className="absolute top-2 right-2">
+              <NotificationIndicator size={2} visibility={false} />
+            </span>
+          )}
+
           <IconComponent
             className={`size-5 2xl:size-6 transition-colors duration-300 ${
               isActive ? "txt" : "!txt-disabled group-hover:txt"

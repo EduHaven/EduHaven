@@ -1,4 +1,3 @@
-import { useFriendRequests } from "@/queries/friendQueries";
 import NotificationIndicator from "../NotificationIndicator";
 
 function TabNavigation({ activeTab, onTabChange }) {
@@ -8,8 +7,6 @@ function TabNavigation({ activeTab, onTabChange }) {
     { id: "sentRequests", label: "Sent Requests" },
     { id: "allFriends", label: "All Friends" },
   ];
-  const { data: requests = [] } = useFriendRequests();
-  const isPendingRequests = requests.length !== 0;
 
   return (
     <div className="w-60 overflow-hidden hidden sm:flex flex-col p-4 h-screen mr-3 2xl:mr-6 bg-[var(--bg-sec)]">
@@ -26,9 +23,7 @@ function TabNavigation({ activeTab, onTabChange }) {
             }`}
           >
             {tab.label}
-            {tab.id === "friendRequests" && isPendingRequests && (
-              <NotificationIndicator />
-            )}
+            {tab.id === "friendRequests" && <NotificationIndicator />}
           </button>
         ))}
       </div>

@@ -7,9 +7,9 @@ function NotificationIndicator({ size = 5, visibility = true }) {
   if (!isPendingRequests) return null;
 
   return (
-    <span className={`h-${size} w-${size} text-sm rounded-full bg-green-500`}>
+    <div className={`h-${size} w-${size} text-sm rounded-full bg-green-500`}>
       {visibility && requests.length}
-    </span>
+    </div>
   );
 }
 
