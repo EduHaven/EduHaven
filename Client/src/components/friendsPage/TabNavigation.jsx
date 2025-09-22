@@ -1,3 +1,6 @@
+import { useFriendRequests } from "@/queries/friendQueries";
+import NotificationIndicator from "../NotificationIndicator";
+
 function TabNavigation({ activeTab, onTabChange }) {
   const tabs = [
     { id: "suggested", label: "Suggested" },
@@ -5,6 +8,8 @@ function TabNavigation({ activeTab, onTabChange }) {
     { id: "sentRequests", label: "Sent Requests" },
     { id: "allFriends", label: "All Friends" },
   ];
+  const { data: requests = [] } = useFriendRequests();
+  const isPendingRequests = requests.length !== 0;
 
   return (
     <div className="w-60 overflow-hidden hidden sm:flex flex-col p-4 h-screen mr-3 2xl:mr-6 bg-[var(--bg-sec)]">
@@ -14,13 +19,16 @@ function TabNavigation({ activeTab, onTabChange }) {
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className={`w-full text-left px-4 py-2 rounded-lg ${
+            className={`w-full flex items-center justify-between px-4 py-2 rounded-lg ${
               activeTab === tab.id
                 ? "bg-[var(--btn)] text-white"
                 : "hover:bg-[var(--bg-ter)] duration-300"
             }`}
           >
             {tab.label}
+            {tab.id === "friendRequests" && isPendingRequests && (
+              <NotificationIndicator count={requests.length} />
+            )}
           </button>
         ))}
       </div>
