@@ -14,6 +14,7 @@ const Leaderboard = () => {
   const [view, setView] = useState("weekly");
   const [friendsOnly, setFriendsOnly] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [imageErrorIds, setImageErrorIds] = useState(new Set());
 
   // Replace direct axios call with TanStack Query hook
   const { data: leaderboard = [], isLoading } = useLeaderboard(
@@ -170,9 +171,27 @@ const Leaderboard = () => {
                   </div>
                   <Link
                     to={isCurrentUser ? "/stats" : `/user/${user.userId}`}
-                    className="text-center font-semibold"
+                    className="text-center font-semibold flex items-center gap-2"
                   >
-                    {user.username}
+                    {/* Show user's profile picture before their name. If the image fails, track the userId in imageErrorIds so we don't retry rendering a broken image. */}
+                    {user.profilePicture && !imageErrorIds.has(user.userId) ? (
+                      <img
+                        src={user.profilePicture}
+                        alt={`${user.username}'s avatar`}
+                        className="w-7 h-7 rounded-full object-cover flex-shrink-0"
+                        referrerPolicy="no-referrer"
+                        onError={() => {
+                          setImageErrorIds((prev) => {
+                            const next = new Set(prev);
+                            next.add(user.userId);
+                            return next;
+                          });
+                        }}
+                      />
+                    ) : null}
+                    <span className="truncate max-w-[12rem] 2xl:max-w-[9.5rem] inline-block align-middle">
+                      {user.username}
+                    </span>
                   </Link>
                 </div>
 

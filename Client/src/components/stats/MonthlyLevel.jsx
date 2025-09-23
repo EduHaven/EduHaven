@@ -43,9 +43,10 @@ const MonthlyLevel = () => {
 
   const nextLevel = levels[levels.indexOf(currentLevel) + 1];
 
+  // Show progress as percentage of the next level's requirement so
+  // 10.7 hours out of 30h (next level) => ~35.7% visible on the bar
   const progress = nextLevel
-    ? ((totalHours - currentLevel.min) / (nextLevel.min - currentLevel.min)) *
-      100
+    ? Math.max(0, Math.min(100, (totalHours / nextLevel.min) * 100))
     : 100;
 
   const hoursNeeded = nextLevel ? nextLevel.min - totalHours : 0;

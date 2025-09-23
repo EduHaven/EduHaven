@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import NotificationIndicator from "../NotificationIndicator";
 function TabNavigation({ activeTab, onTabChange }) {
   const tabs = [
     { id: "suggested", label: "Suggested" },
@@ -17,9 +18,10 @@ function TabNavigation({ activeTab, onTabChange }) {
             onClick={() => onTabChange(tab.id)}
             variant={activeTab === tab.id ? "default" : "secondary"}
             size="default"
-            className="w-full text-left px-4 py-2"
+            className="w-full text-left px-4 py-2 flex justify-between items-center"
           >
             {tab.label}
+            {tab.id === "friendRequests" && <NotificationIndicator />}
           </Button>
         ))}
       </div>

@@ -1,6 +1,7 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import { useEffect } from "react";
 import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import axiosInstance from "@/utils/axios";
 
@@ -20,6 +21,7 @@ function NoteContent({
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Image,
       Placeholder.configure({
         placeholder: "Take a note...",
       }),
@@ -38,6 +40,8 @@ function NoteContent({
       );
       validateFields(currentTitle, content);
       if (err) setError("");
+
+      console.log("The content is: ", currentTitle, content);
 
       // Auto-save logic
       if (content.trim() && currentTitle.trim()) {
