@@ -1,23 +1,23 @@
-import { useState, useRef, useEffect } from "react";
-import axiosInstance from "@/utils/axios";
+import { useState, useRef } from "react";
+import {
+  useNotes,
+  useCreateNote,
+  useUpdateNote,
+  useDeleteNote,
+} from "@/queries/NoteQueries";
 import NoteTitle from "./Title";
 import TopControls from "./TopControls";
 import BottomControls from "./BottomControls";
 import NoteContent from "./content";
 import { motion, AnimatePresence } from "framer-motion";
 
-// for framer motion left/right moving animation
 const variants = {
   enter: (direction) => ({
     x: direction > 0 ? 150 : -150,
     opacity: 0,
     scale: 0.95,
   }),
-  center: {
-    x: 0,
-    opacity: 1,
-    scale: 1,
-  },
+  center: { x: 0, opacity: 1, scale: 1 },
   exit: (direction) => ({
     x: direction > 0 ? -150 : 150,
     opacity: 0,
@@ -26,181 +26,68 @@ const variants = {
 };
 
 function NotesComponent() {
-  const [notes, setNotes] = useState([]);
-  const [error, setError] = useState("");
+  const { data: notes = [], isLoading, isError } = useNotes();
+  const createNoteMutation = useCreateNote();
+  const updateNoteMutation = useUpdateNote();
+  const deleteNoteMutation = useDeleteNote();
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const [direction, setDirection] = useState(0);
   const [titleError, setTitleError] = useState("");
   const [contentError, setContentError] = useState("");
   const titleTimeoutRef = useRef(null);
   const contentTimeoutRef = useRef(null);
-  const [isSynced, setIsSynced] = useState(true);
-  const [rotate, setRotate] = useState(false); // to indicate when tick icon when it starts saving.
-  const [currentPage, setCurrentPage] = useState(0);
-  const [direction, setDirection] = useState(0);
 
-  useEffect(() => {
-    fetchNotes();
+  if (isLoading) return <p>Loading notes...</p>;
+  if (isError) return <p>Failed to load notes</p>;
 
-    return () => {
-      clearTimeout(titleTimeoutRef.current);
-      clearTimeout(contentTimeoutRef.current);
-    };
-  }, []);
-
-  const fetchNotes = async () => {
-    try {
-      const response = await axiosInstance.get(`/note`);
-      if (response.data.success) {
-        if (!response.data.data || response.data.data.length === 0) {
-          addNewPage(); // adding new is necessary cause we get err in posting data to db.
-        } else {
-          setNotes(response.data.data);
-          console.log("fetched notes", response.data.data);
-        }
-      } else {
-        setError("Something wrong at our end");
-      }
-    } catch (err) {
-      setError(err?.response?.data?.error);
-    }
-  };
-
-  // This function manages whether to update note or create new.
-  const handleSync = (title, content) => {
-    setRotate(true);
-    setTimeout(() => setIsSynced(true), 700);
-    if (notes[currentPage]._id === undefined) {
-      handleAddNote(title, content);
+  const handleAddNote = (title, content) => {
+    if (!title.trim() || !content.trim()) {
       return;
     }
+    createNoteMutation.mutate({ title, content });
   };
 
-  const addNewPage = () => {
-    const newNote = { content: "", title: "", date: new Date() };
-    setNotes((prevNotes) => [...prevNotes, newNote]);
-    setCurrentPage(notes.length);
-  };
-
-  const goToNextPage = () => {
-    if (currentPage < notes.length - 1) {
-      setDirection(1); // moving forward
-      setCurrentPage((prev) => prev + 1);
-      setTitleError("");
-      setContentError("");
-    }
-  };
-
-  const goToPreviousPage = () => {
-    if (currentPage > 0) {
-      setDirection(-1); // moving backward
-      setCurrentPage((prev) => prev - 1);
-      setTitleError("");
-      setContentError("");
-    }
-  };
-
-  const handleAddNote = async (title, content) => {
-    if (title.trim() === "" || content.trim() === "") {
-      setError("Title and content are required.");
-      return;
-    }
-
-    try {
-      const response = await axiosInstance.post(`/note`, {
-        title: title,
-        content: content,
-      });
-
-      if (response.data.success) {
-        fetchNotes();
-        setError(""); // Clear errors
-      }
-    } catch (err) {
-      setError(
-        err.response?.data?.error || "Failed to add note try refreshing page"
-      );
-      console.log(err);
-    }
-  };
-
-  const handleDeleteNote = async (id) => {
-    try {
-      const response = await axiosInstance.delete(`/note/${id}`);
-      if (response.data.success) {
-        fetchNotes();
-      }
-    } catch (err) {
-      setError(
-        err.response?.data?.error ||
-          "Failed to delete note try refreshinng page"
-      );
-    }
-  };
-
-  const validateFields = (title, content) => {
-    if (!title.trim()) setTitleError("*title is required");
-    else setTitleError("");
-
-    if (!content.trim()) setContentError("*content is required");
-    else setContentError("");
+  const handleDeleteNote = (id) => {
+    deleteNoteMutation.mutate(id);
   };
 
   const handleTitleChange = (event) => {
     const updatedTitle = event.target.value;
-    const noteIndex = currentPage;
+    const noteId = notes[currentPage]?._id;
 
-    const currentContent = notes[noteIndex]?.content || "";
-    validateFields(updatedTitle, currentContent);
+    if (!noteId) return;
+    clearTimeout(titleTimeoutRef.current);
 
-    // Update title in local state
-    setNotes((prevNotes) =>
-      prevNotes.map((note, index) =>
-        index === noteIndex ? { ...note, title: updatedTitle } : note
-      )
-    );
+    titleTimeoutRef.current = setTimeout(() => {
+      updateNoteMutation.mutate({ id: noteId, title: updatedTitle });
+    }, 1000);
+  };
 
-    if (error) setError("");
-    const noteId = notes[noteIndex]?._id;
+  const handleContentChange = (updatedContent) => {
+    const noteId = notes[currentPage]?._id;
+    if (!noteId) return;
+    clearTimeout(contentTimeoutRef.current);
+    contentTimeoutRef.current = setTimeout(() => {
+      updateNoteMutation.mutate({ id: noteId, content: updatedContent });
+    }, 1000);
+  };
 
-    if (updatedTitle.trim() && currentContent.trim()) {
-      if (isSynced) {
-        setIsSynced(false);
-        setRotate(false);
-      }
-
-      clearTimeout(titleTimeoutRef.current);
-
-      const titleToSave = updatedTitle.trim();
-
-      titleTimeoutRef.current = setTimeout(async () => {
-        try {
-          if (noteId) {
-            await axiosInstance.put(`/note/${noteId}`, { title: titleToSave });
-          }
-          handleSync(updatedTitle, notes[noteIndex].content); // sets synced = true after delay
-        } catch (err) {
-          console.error("Error updating note title:", err);
-          setError("Failed to save changes");
-          setIsSynced(true); // Reset sync state on error
-        }
-      }, 3000);
-    } else {
-      clearTimeout(titleTimeoutRef.current);
-      if (!isSynced) {
-        setIsSynced(true);
-        setRotate(false);
-      }
-    }
+  const handleAddNewPage = () => {
+    handleAddNote("Untitled", "");
+    setCurrentPage(notes.length); // Go to the new note (will be last after mutation)
   };
 
   return (
-    <div className="group relative w-full h-[404px] rounded-3xl mx-auto overflow-hidden bg- red-500">
+    <div className="group relative w-full h-[404px] rounded-3xl mx-auto overflow-hidden">
       <TopControls
         notes={notes}
-        addNew={addNewPage}
+        addNew={handleAddNewPage}
         currentPage={currentPage}
-        next={goToNextPage}
-        prev={goToPreviousPage}
+        next={() => setCurrentPage((p) => Math.min(p + 1, notes.length - 1))}
+        prev={() => setCurrentPage((p) => Math.max(p - 1, 0))}
       />
+
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={currentPage}
@@ -212,8 +99,6 @@ function NotesComponent() {
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="group bg-sec txt rounded-3xl py-6 pb-3 2xl:px-3 shadow z-10 absolute w-full overflow-hidden"
         >
-          {error && console.error(error)}
-
           <NoteTitle
             notes={notes}
             titleChange={handleTitleChange}
@@ -222,25 +107,19 @@ function NotesComponent() {
           />
 
           <NoteContent
-            err={contentError}
-            setError={setError}
             notes={notes}
             currentPage={currentPage}
-            setNotes={setNotes}
-            setRotate={setRotate}
-            isSynced={isSynced}
-            setIsSynced={setIsSynced}
+            onContentChange={handleContentChange}
             contentTimeoutRef={contentTimeoutRef}
-            handleSync={handleSync}
-            validateFields={validateFields}
+            err={contentError}
           />
 
           <BottomControls
-            isSynced={isSynced}
-            rotate={rotate}
             notes={notes}
             currentPage={currentPage}
             onDelete={handleDeleteNote}
+            isSynced={true}
+            rotate={false}
           />
         </motion.div>
       </AnimatePresence>
