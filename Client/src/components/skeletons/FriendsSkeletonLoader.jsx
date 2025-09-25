@@ -1,7 +1,7 @@
 import UserCardSkeleton from "./UserCardSkeleton";
 import { Loader2Icon } from "lucide-react";
 
-const FriendsSkeletonLoader = ({ count = 12 }) => {
+const FriendsSkeletonLoader = ({ count = 20 }) => {
   return (
     <>
       <div className="flex flex-wrap justify-center gap-3 2xl:gap-4 mt-4">

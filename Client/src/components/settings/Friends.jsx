@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useFriends, useRemoveFriend } from "@/queries/friendQueries";
 import { User } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -6,9 +6,8 @@ import ConfirmRemoveFriendModal from "../ConfirmRemoveFriendModal";
 import { Button } from "@/components/ui/button";
 
 const Friends = () => {
-  const { data: friends, isLoading } = useFriends();
+  const { data: friends = [], isLoading } = useFriends();
   const { mutate: removeFriend } = useRemoveFriend();
-
   const [selectedFriend, setSelectedFriend] = useState(null);
 
   const handleRemoveClick = (friend) => {
@@ -26,13 +25,24 @@ const Friends = () => {
     setSelectedFriend(null);
   };
 
+  // Memoize 12 random pixel widths for the skeleton's name bars (between 200px - 320px)
+  const skeletonWidths = useMemo(() => {
+    return [...Array(12)].map(() => 200 + Math.floor(Math.random() * 121));
+  }, []);
+
   const LoadingSkeleton = () => (
     <div className="space-y-2 min-w-[600px] rounded-2xl overflow-hidden">
-      {[...Array(3)].map((_, index) => (
-        <div key={index} className="p-4 rounded-md flex justify-between bg-sec">
+      {skeletonWidths.map((width, index) => (
+        <div
+          key={index}
+          className="p-4 rounded-md flex justify-between bg-sec"
+        >
           <div className="flex items-center gap-4">
             <div className="w-9 h-9 bg-ter rounded-full animate-pulse"></div>
-            <div className="h-5 bg-ter rounded w-32 animate-pulse"></div>
+            <div
+              className="h-5 bg-ter rounded animate-pulse"
+              style={{ width: `${width}px`, minWidth: 200 }}
+            ></div>
           </div>
           <div className="h-8 bg-ter rounded w-20 animate-pulse"></div>
         </div>
@@ -49,9 +59,7 @@ const Friends = () => {
         </Link>
       </div>
 
-      {isLoading ? (
-        <LoadingSkeleton />
-      ) : friends.length === 0 ? (
+      {friends.length === 0 ? (
         <p className="txt">No friends yet.</p>
       ) : (
         <ul className="space-y-2 min-w-[600px] rounded-2xl overflow-hidden">
@@ -102,6 +110,9 @@ const Friends = () => {
           ))}
         </ul>
       )}
+
+      {/* Skeleton loader always visible regardless of loading state */}
+      <LoadingSkeleton />
 
       {selectedFriend && (
         <ConfirmRemoveFriendModal
