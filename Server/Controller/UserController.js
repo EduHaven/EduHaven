@@ -247,10 +247,36 @@ const giveKudos = async (req, res) => {
   }
 };
 
+const findUserByUsernameOrEmail = async (req, res) => {
+  try {
+    const search = req.query.search || "";
+
+    const query = search
+      ? {
+          $or: [
+            { Name: { $regex: search, $options: "i" } },
+            { Email: { $regex: search, $options: "i" } },
+          ],
+        }
+      : {};
+
+    const users = await User.find(query)
+      .select("-Password")
+      .limit(50)
+      .lean();
+
+    return res.status(200).json({ users });
+  } catch (error) {
+    console.error("Error fetching all users:", error);
+    return sendError(res, 500, "Failed to fetch users", error.message);
+  }
+};
+
 export {
   getUserBadges,
   getUserDetails,
   giveKudos,
   updateProfile,
   uploadProfilePicture,
+  findUserByUsernameOrEmail,
 };

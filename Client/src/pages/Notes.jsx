@@ -505,9 +505,7 @@ const Notes = () => {
       <div className="flex h-screen">
         {/* notes page (also works as sidebar} */}
         <div
-          className={`${
-            isFullScreen ? "hidden" : selectedNote ? "w-80" : "w-full"
-          } overflow-auto p-4`}
+          className={`${selectedNote ? "w-80" : "w-full"} overflow-auto p-4`}
         >
           <NoteHeader
             selectedNote={selectedNote}

@@ -432,6 +432,6 @@ body {
 /* Calendar Event title background */
 @layer components {
   .popup-overlay {
-    @apply bg-black/40 backdrop-blur-sm;
+    @apply bg-black/50 backdrop-blur-sm;
   }
 }

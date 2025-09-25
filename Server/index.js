@@ -1,7 +1,7 @@
+import dotenv from "dotenv";
 import express from "express";
 import { createServer } from "http";
 import fetch, { Headers, Request, Response } from "node-fetch";
-import dotenv from "dotenv";
 import { applyCommonMiddleware } from "./Middlewares/commonMiddleware.js";
 import { ConnectDB } from "./Database/Db.js";
 import { mountRoutes } from "./Routes/Routes.js";
