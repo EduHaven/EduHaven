@@ -398,7 +398,7 @@ function PinnedLinks() {
               onClick={handleAddNew}
               variant="default"
               size="default"
-              className="block w-full px-4 py-2 txt hover:bg-ter rounded-md mt-2 flex items-center gap-2 transition-colors duration-200 border-t border-opacity-20 border-gray-300 pt-3"
+              className="w-full px-4 py-2 txt hover:bg-ter rounded-md mt-2 flex items-center gap-2 transition-colors duration-200 border-t border-opacity-20 border-gray-300 pt-3"
             >
               <motion.div
                 initial={{ rotate: -90, scale: 0.8 }}
