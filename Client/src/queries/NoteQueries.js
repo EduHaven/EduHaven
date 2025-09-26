@@ -42,11 +42,9 @@ export const useCreateNote = () => {
   return useMutation({
     mutationFn: createNote,
     onSuccess: (newNote) => {
+      // Only add to active notes
       queryClient.setQueryData(["notes"], (old = []) => [...old, newNote]);
-      queryClient.setQueryData(["archivedNotes"], (old = []) => [
-        ...old,
-        newNote,
-      ]);
+      // Do NOT add to archivedNotes here!
     },
   });
 };

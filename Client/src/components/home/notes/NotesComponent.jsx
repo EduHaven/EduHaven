@@ -118,8 +118,8 @@ function NotesComponent() {
             notes={notes}
             currentPage={currentPage}
             onDelete={handleDeleteNote}
-            isSynced={true}
-            rotate={false}
+            isSynced={!updateNoteMutation.isLoading} // false when updating, true when synced
+            rotate={updateNoteMutation.isSuccess}    // true when update is successful
           />
         </motion.div>
       </AnimatePresence>

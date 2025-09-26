@@ -5,7 +5,7 @@ function NoteTitle({ notes, currentPage, titleChange, titleError }) {
         <input
           type="text"
           value={notes[currentPage]?.title || ""}
-          onChange={titleChange}
+          onChange={e => titleChange(e.target.value)}
           placeholder="Title"
           className="bg-transparent outline-none p-0.5 text-xl w-full font-semibold "
         />

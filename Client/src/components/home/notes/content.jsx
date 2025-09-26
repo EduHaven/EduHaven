@@ -21,7 +21,7 @@ function NoteContent({
     onUpdate: ({ editor }) => {
       const content = editor.getHTML();
       if (onContentChange) {
-        onContentChange(content);
+        onContentChange(content);        
       }
     },
     editorProps: {
