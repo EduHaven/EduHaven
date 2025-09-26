@@ -1,3 +1,4 @@
+import React from "react";
 import { Lightbulb } from "lucide-react";
 
 function IdeaBehindEduhaven() {
@@ -14,13 +15,23 @@ function IdeaBehindEduhaven() {
 
       <div className="md:w-2/3 txt-dim leading-relaxed space-y-4 text-lg">
         <li>
-          Back in our student days, we leaned on <strong>Discord</strong> to connect with friends and collaborate. It worked to some extent- but it wasn’t designed for learning. The constant distractions and lack of structure made it hard to stay focused.
+          Back when we were studying, we relied on <strong>Discord</strong> to
+          connect with friends and collaborate. It worked, but it wasn’t really
+          built for learning—lots of distractions and missing the structure
+          students need.
         </li>
         <li>
-          We also tried other “study platforms”, but most fell flat. They simply matched random people online to silently self-study with cameras on. No real collaboration. No sense of community. Nothing to keep students truly motivated.
+          Other “study platforms” we tried were no better. Most just connected
+          random people online to silently self-study with cameras on. There was
+          no true collaboration, no community, and nothing to keep students
+          motivated.
         </li>
         <li>
-          That’s why we created <strong>EduHaven</strong>- a platform built for students, by students. Here, learning is social, structured, and engaging. From private study rooms with friends, collaborative notes, and meaningful discussions to progress analytics, leaderboards, and gamified motivation, EduHaven transforms studying into something both productive and fun.
+          That’s why we built <strong>EduHaven</strong>—a platform where
+          students can actually <em>grow together</em>. With private study rooms
+          for friends, collaborative notes, meaningful discussions, progress
+          analytics, and even leaderboards with gamification, EduHaven makes
+          studying both productive and engaging.
         </li>
       </div>
     </div>

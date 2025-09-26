@@ -10,7 +10,6 @@ function TimerComponent() {
   return (
     <div className="relative p-6 rounded-3xl flex-1 text-white min-w-72 overflow-hidden">
       {/* Background Layers Crossfading */}
-
       <motion.div
         className="absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-700/60 to-indigo-800"
         initial={{ opacity: isBreakMode ? 0 : 1 }}
@@ -31,7 +30,9 @@ function TimerComponent() {
             <Button
               onClick={() => setIsBreakMode(false)}
               variant="transparent"
-              className={`text-xl transition-colors duration-300 pb-1 ${!isBreakMode ? "font-semibold text-white" : "text-gray-300"}`}
+              className={`text-xl transition-colors duration-300 pb-1 ${
+                !isBreakMode ? "font-semibold text-white" : "text-gray-300"
+              }`}
             >
               Focus
             </Button>
@@ -46,7 +47,9 @@ function TimerComponent() {
             <Button
               onClick={() => setIsBreakMode(true)}
               variant="transparent"
-              className={`text-xl transition-colors duration-300 pb-1 ${isBreakMode ? "font-semibold text-white" : "text-gray-300"}`}
+              className={`text-xl transition-colors duration-300 pb-1 ${
+                isBreakMode ? "font-semibold text-white" : "text-gray-300"
+              }`}
             >
               Take a Break
             </Button>
@@ -59,6 +62,7 @@ function TimerComponent() {
             )}
           </div>
         </nav>
+
         {/* Timer Content with a subtle fade-in */}
         <div className="pt-10">
           <motion.div

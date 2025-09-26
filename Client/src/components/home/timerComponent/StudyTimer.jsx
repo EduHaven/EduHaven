@@ -174,6 +174,7 @@ function StudyTimer() {
       setStartTime(computedStart);
       setHasPosted(false);
       setLastSavedSeconds(0);
+
       startTimer();
     } else {
       pauseTimer();
