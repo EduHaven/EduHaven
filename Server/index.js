@@ -4,9 +4,9 @@ import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import fetch, { Headers, Request, Response } from "node-fetch";
 import compression from "compression";
 import morgan from "morgan";
+import readline from "readline";
 
 import { ConnectDB } from "./Database/Db.js";
 
@@ -26,14 +26,6 @@ import errorHandler from "./Middlewares/errorHandler.js";
 
 dotenv.config();
 
-// Polyfill fetch for Node (if needed)
-if (!globalThis.fetch) {
-    globalThis.fetch = fetch;
-    globalThis.Headers = Headers;
-    globalThis.Request = Request;
-    globalThis.Response = Response;
-}
-
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const NODE_ENV = process.env.NODE_ENV || "development";
@@ -51,14 +43,13 @@ applySecurity(app);
 app.use(express.json({ limit: "100kb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
 
-// CORS 
-app.use(
-    cors({
-        origin: CORS_ORIGIN,
-        credentials: true,
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    })
-);
+// CORS (centralized)
+const corsConfig = {
+    origin: CORS_ORIGIN,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+};
+app.use(cors(corsConfig));
 
 app.use(cookieParser());
 
@@ -83,6 +74,7 @@ app.use("/session-room", SessionRoomRoutes);
 app.use("/friends", FriendsRoutes);
 app.use("/user", UserRoutes);
 
+// Error handling
 app.use(notFound);
 app.use(errorHandler);
 
@@ -90,17 +82,11 @@ app.use(errorHandler);
 const server = createServer(app);
 
 const io = new Server(server, {
-    cors: {
-        origin: CORS_ORIGIN,
-        methods: ["GET", "POST"],
-        credentials: true,
-    },
+    cors: corsConfig, // reuse same config
     pingTimeout: 60000,
 });
 
 // -------------------- Graceful Shutdown --------------------
-import readline from "readline";
-
 let shuttingDown = false;
 
 function waitForKeypress(promptText = "Press Y to confirm, N to cancel: ") {
