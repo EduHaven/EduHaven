@@ -1,12 +1,223 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import axiosInstance from "@/utils/axios";
-import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { useUserProfile } from "../../contexts/UserProfileContext";
-import { Camera, User, Trash2 } from "lucide-react";
+import { Camera, User, Trash2, CheckCircle, AlertCircle, XCircle, Info, X } from "lucide-react";
 import UpdateButton from "./UpdateButton";
 import { CropModal } from "../CropModal";
 import { Button } from "@/components/ui/button";
+
+// Toast System Components
+const TOAST_TYPES = {
+  success: {
+    icon: CheckCircle,
+    iconBg: '#22c55e'
+  },
+  error: {
+    icon: XCircle,
+    iconBg: '#ef4444'
+  },
+  warning: {
+    icon: AlertCircle,
+    iconBg: '#f59e0b'
+  },
+  info: {
+    icon: Info,
+    iconBg: '#3b82f6'
+  }
+};
+
+// Individual Toast Component
+const Toast = ({ toast, onRemove }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
+  
+  const toastConfig = TOAST_TYPES[toast.type] || TOAST_TYPES.info;
+  const IconComponent = toastConfig.icon;
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 150);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (toast.duration && toast.duration > 0) {
+      const timer = setTimeout(() => {
+        handleClose();
+      }, toast.duration);
+      return () => clearTimeout(timer);
+    }
+  }, [toast.duration]);
+
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      onRemove(toast.id);
+    }, 350);
+  };
+
+  return (
+    <div
+      className={`
+        relative overflow-hidden
+        transform transition-all duration-350
+        ${isVisible && !isExiting 
+          ? 'translate-x-0 opacity-100 scale-100' 
+          : 'translate-x-full opacity-0 scale-95'}
+        ${isExiting ? 'translate-x-full opacity-0 scale-90' : ''}
+      `}
+      style={{
+        background: 'var(--bg-ter)',
+        borderRadius: '20px',
+        boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.15)',
+        minWidth: '350px',
+        maxWidth: '400px',
+        animationTimingFunction: isVisible && !isExiting ? 'cubic-bezier(0.68, -0.55, 0.265, 1.55)' : 'ease-out'
+      }}
+    >      
+      <div className="flex items-center gap-3 px-5 py-4">
+        <div className="flex-shrink-0">
+          <div 
+            className="w-7 h-7 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: toastConfig.iconBg }}
+          >
+            <IconComponent className="w-4 h-4 text-white" />
+          </div>
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <div className="font-medium text-[15px] leading-relaxed" style={{ color: 'var(--txt)' }}>
+            {toast.message}
+          </div>
+        </div>
+        
+        <button
+          onClick={handleClose}
+          className="flex-shrink-0 p-1.5 rounded-lg transition-all duration-200 hover:bg-white/10 hover:scale-105"
+          style={{ color: '#9ca3af' }}
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Toast Container
+const ToastContainer = ({ toasts, onRemove, position = 'top-right' }) => {
+  const getPositionClasses = () => {
+    switch (position) {
+      case 'top-left':
+        return 'top-6 left-6';
+      case 'top-center':
+        return 'top-6 left-1/2 transform -translate-x-1/2';
+      case 'top-right':
+        return 'top-6 right-6';
+      case 'bottom-left':
+        return 'bottom-6 left-6';
+      case 'bottom-center':
+        return 'bottom-6 left-1/2 transform -translate-x-1/2';
+      case 'bottom-right':
+        return 'bottom-6 right-6';
+      default:
+        return 'top-6 right-6';
+    }
+  };
+
+  return (
+    <>
+      <style jsx global>{`
+        @keyframes shrink {
+          from { width: 100%; }
+          to { width: 0%; }
+        }
+        
+        @keyframes bounceInRight {
+          0% {
+            transform: translateX(100%) scale(0.95);
+            opacity: 0;
+          }
+          60% {
+            transform: translateX(-10px) scale(1.02);
+            opacity: 0.8;
+          }
+          80% {
+            transform: translateX(5px) scale(0.98);
+            opacity: 0.9;
+          }
+          100% {
+            transform: translateX(0) scale(1);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes bounceOutRight {
+          0% {
+            transform: translateX(0) scale(1);
+            opacity: 1;
+          }
+          20% {
+            transform: translateX(-10px) scale(1.02);
+            opacity: 0.9;
+          }
+          100% {
+            transform: translateX(100%) scale(0.90);
+            opacity: 0;
+          }
+        }
+      `}</style>
+      <div className={`fixed z-50 ${getPositionClasses()} max-w-sm w-full pointer-events-none`}>
+        <div className="space-y-3 pointer-events-auto">
+          {toasts.map((toast, index) => (
+            <div
+              key={toast.id}
+              style={{
+                animationDelay: `${index * 150}ms`
+              }}
+            >
+              <Toast toast={toast} onRemove={onRemove} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+};
+
+// Toast Hook
+const useToast = () => {
+  const [toasts, setToasts] = useState([]);
+
+  const removeToast = useCallback((id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  }, []);
+
+  const addToast = useCallback((message, options = {}) => {
+    const id = Math.random().toString(36).substr(2, 9);
+    const toast = {
+      id,
+      message,
+      type: options.type || 'info',
+      title: options.title,
+      duration: options.duration !== undefined ? options.duration : 5000,
+      ...options
+    };
+
+    setToasts(prev => [...prev, toast]);
+    return id;
+  }, []);
+
+  const toast = {
+    success: (message, options) => addToast(message, { ...options, type: 'success' }),
+    error: (message, options) => addToast(message, { ...options, type: 'error' }),
+    warning: (message, options) => addToast(message, { ...options, type: 'warning' }),
+    info: (message, options) => addToast(message, { ...options, type: 'info' }),
+    remove: removeToast,
+    clear: () => setToasts([])
+  };
+
+  return { toast, toasts, removeToast };
+};
 
 export default function BasicInfo() {
   const { user, setUser, fetchUserDetails, isBasicInfoComplete } =
@@ -29,6 +240,9 @@ export default function BasicInfo() {
   const [hasChanged, setHasChanged] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  
+  // Custom Toast Hook
+  const { toast, toasts, removeToast } = useToast();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -427,6 +641,9 @@ export default function BasicInfo() {
           />
         </div>
       </form>
+
+      {/* Toast Container */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} position="top-right" />
     </div>
   );
 }
