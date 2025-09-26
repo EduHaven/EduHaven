@@ -40,7 +40,7 @@ git config --global user.email "your.email@example.com"
 1. **Find an Issue**
    - Look for issues tagged `good first issue` or `beginner friendly`.
    - Comment _"Hi! I'd like to work on this issue. Please assign it to me."_  
-   ✅ Only comment if the issue is unassigned.
+     ✅ Only comment if the issue is unassigned.
 
 2. **Fork the Repo**
 
@@ -89,13 +89,13 @@ git push origin fix-typo-homepage
 
 ## 🧠 Common Git Terms Explained
 
-| Term         | Meaning                                                 |
-|--------------|----------------------------------------------------------|
-| **Repository** | A project with its complete file history               |
-| **Fork**       | Your personal copy of the project                     |
-| **Clone**      | Download the project locally                          |
-| **Branch**     | A separate workspace for changes                      |
-| **Commit**     | A saved change to code                                |
+| Term                  | Meaning                                               |
+| --------------------- | ----------------------------------------------------- |
+| **Repository**        | A project with its complete file history              |
+| **Fork**              | Your personal copy of the project                     |
+| **Clone**             | Download the project locally                          |
+| **Branch**            | A separate workspace for changes                      |
+| **Commit**            | A saved change to code                                |
 | **Pull Request (PR)** | A request to merge your changes into the main project |
 
 ---
@@ -142,20 +142,25 @@ Use this PR template when submitting:
 
 ```md
 ## What I Changed
+
 - [Explain what you did]
 
 ## Why It Was Needed
+
 - [Reason behind the change]
 
 ## How to Test
+
 1. Go to...
 2. Perform...
 3. You should see...
 
 ## Screenshots (if applicable)
+
 ![before](url) ![after](url)
 
 ## Checklist
+
 - [ ] I tested my changes
 - [ ] I updated documentation if needed
 - [ ] I followed the code style
@@ -165,6 +170,7 @@ Fixes #<issue-number>
 ```
 
 ✅ PR Title Examples:
+
 - `Fix: Navbar menu not opening on mobile`
 - `Add: New badge system for users`
 - `Update: README with better setup guide`
@@ -177,20 +183,25 @@ Fixes #<issue-number>
 
 ```md
 ## Bug Description
+
 [What’s broken?]
 
 ## Steps to Reproduce
+
 1. Go to...
 2. Click on...
 3. Observe...
 
 ## Expected Behavior
+
 [What should happen?]
 
 ## Screenshots
+
 [Add if helpful]
 
 ## System Info
+
 - OS: [Windows/Mac/Linux]
 - Browser: [Chrome/Firefox/Safari]
 ```
@@ -199,12 +210,15 @@ Fixes #<issue-number>
 
 ```md
 ## Feature Description
+
 [What you want to add]
 
 ## Why It's Useful
+
 [How it helps users]
 
 ## Possible Implementation
+
 [Ideas for how it might work]
 ```
 
@@ -232,6 +246,7 @@ Fixes #<issue-number>
 ---
 
 > 💬 **Still have questions?**
+>
 > - Join our [Discord Community](https://discord.gg/uZv6ShY345)
 > - Open an issue with your doubt
 > - Or reach out to mentors during contribution events like GSSoC’25

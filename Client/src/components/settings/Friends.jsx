@@ -28,7 +28,7 @@ const Friends = () => {
 
   const LoadingSkeleton = () => (
     <div className="space-y-2 min-w-[600px] rounded-2xl overflow-hidden">
-      {[...Array(3)].map((_, index) => (
+      {[...Array(12)].map((_, index) => (
         <div key={index} className="p-4 rounded-md flex justify-between bg-sec">
           <div className="flex items-center gap-4">
             <div className="w-9 h-9 bg-ter rounded-full animate-pulse"></div>
