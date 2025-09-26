@@ -8,7 +8,6 @@ const createStudySession = async (req, res) => {
   try {
     const { startTime, endTime, duration } = req.body;
     console.log("Timer");
-    if (duration > 10) updateStreaks(req.user.id);
     const session = new StudySession({
       user: req.user.id,
       startTime,
@@ -16,6 +15,7 @@ const createStudySession = async (req, res) => {
       duration,
     });
     await session.save();
+    await updateStreaks(req.user.id);
     res.status(201).json(session);
   } catch (error) {
     console.error("Study session save error:", error); // More detailed logging
