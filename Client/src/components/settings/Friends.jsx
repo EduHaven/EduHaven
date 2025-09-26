@@ -1,19 +1,16 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useFriends, useRemoveFriend } from "@/queries/friendQueries";
 import { User } from "lucide-react";
 import { Link } from "react-router-dom";
 import ConfirmRemoveFriendModal from "../ConfirmRemoveFriendModal";
 import { Button } from "@/components/ui/button";
 
-const Friends = () => {
-  const { data: friends, isLoading } = useFriends();
+const Friends = ({ skeletonCount = 12 }) => {
+  const { data: friends = [], isLoading } = useFriends({ staleTime: 0, cacheTime: 0 });
   const { mutate: removeFriend } = useRemoveFriend();
-
   const [selectedFriend, setSelectedFriend] = useState(null);
 
-  const handleRemoveClick = (friend) => {
-    setSelectedFriend(friend);
-  };
+  const handleRemoveClick = (friend) => setSelectedFriend(friend);
 
   const confirmRemove = () => {
     if (selectedFriend) {
@@ -22,19 +19,28 @@ const Friends = () => {
     }
   };
 
-  const cancelRemove = () => {
-    setSelectedFriend(null);
-  };
+  const cancelRemove = () => setSelectedFriend(null);
 
-  const LoadingSkeleton = () => (
+  // Generate random widths for skeleton names
+  const skeletonWidths = useMemo(() => {
+    return [...Array(skeletonCount)].map(() => 180 + Math.floor(Math.random() * 100)); // 180px - 280px
+  }, [skeletonCount]);
+
+  const LoadingSkeleton = ({ count = skeletonCount }) => (
     <div className="space-y-2 min-w-[600px] rounded-2xl overflow-hidden">
-      {[...Array(3)].map((_, index) => (
-        <div key={index} className="p-4 rounded-md flex justify-between bg-sec">
+      {[...Array(count)].map((_, index) => (
+        <div
+          key={index}
+          className="p-4 rounded-md flex justify-between bg-sec animate-pulse"
+        >
           <div className="flex items-center gap-4">
-            <div className="w-9 h-9 bg-ter rounded-full animate-pulse"></div>
-            <div className="h-5 bg-ter rounded w-32 animate-pulse"></div>
+            <div className="w-9 h-9 bg-ter rounded-full"></div>
+            <div
+              className="h-5 bg-ter rounded"
+              style={{ width: `${skeletonWidths[index]}px` }}
+            ></div>
           </div>
-          <div className="h-8 bg-ter rounded w-20 animate-pulse"></div>
+          <div className="h-8 bg-ter rounded w-20"></div>
         </div>
       ))}
     </div>
@@ -49,16 +55,16 @@ const Friends = () => {
         </Link>
       </div>
 
-      {isLoading ? (
-        <LoadingSkeleton />
-      ) : friends.length === 0 ? (
-        <p className="txt">No friends yet.</p>
-      ) : (
-        <ul className="space-y-2 min-w-[600px] rounded-2xl overflow-hidden">
+      {/* Skeleton loader always visible */}
+      <LoadingSkeleton />
+
+      {/* Actual friend list rendered on top */}
+      {!isLoading && friends.length > 0 && (
+        <ul className="space-y-2 min-w-[600px] rounded-2xl overflow-hidden relative -mt-[calc(1.5rem*12)]">
           {friends.map((friend) => (
             <li
               key={friend._id}
-              className="p-4 rounded-md flex justify-between bg-sec"
+              className="p-4 rounded-md flex justify-between bg-sec transition-transform duration-300 hover:scale-[1.01]"
             >
               <div className="flex items-center gap-4">
                 <Link
