@@ -2,7 +2,7 @@ name: Prettier Check
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   prettier:
@@ -13,7 +13,7 @@ jobs:
       - name: Setup Node.js for Client
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install Client dependencies
         run: |
@@ -28,8 +28,8 @@ jobs:
       - name: Setup Node.js for Server
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
           cache-dependency-path: Server/package-lock.json
 
       - name: Install Server dependencies

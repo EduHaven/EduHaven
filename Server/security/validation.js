@@ -34,13 +34,15 @@ export const signupValidationRules = () => [
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters"),
 
-   body("Username")
+  body("Username")
     .optional() // allow auto-generated usernames (e.g. for Google OAuth)
     .trim()
     .isLength({ min: 3, max: 30 })
     .withMessage("Username must be 3-30 characters")
     .matches(/^[a-zA-Z0-9_.]+$/)
-    .withMessage("Username can only contain letters, numbers, underscores, and dots"),
+    .withMessage(
+      "Username can only contain letters, numbers, underscores, and dots"
+    ),
 ];
 
 export const loginValidationRules = () => [
@@ -225,13 +227,15 @@ export const updateProfileValidationRules = () => [
     .isLength({ max: 50 })
     .withMessage("LastName cannot exceed 50 characters"),
 
-   body("Username")
-    .optional() 
+  body("Username")
+    .optional()
     .trim()
     .isLength({ min: 3, max: 30 })
     .withMessage("Username must be 3-30 characters")
     .matches(/^[a-zA-Z0-9_.]+$/)
-    .withMessage("Username can only contain letters, numbers, underscores, and dots"),
+    .withMessage(
+      "Username can only contain letters, numbers, underscores, and dots"
+    ),
 
   body("GraduationYear")
     .optional()

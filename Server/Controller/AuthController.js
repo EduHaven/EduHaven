@@ -65,7 +65,7 @@ const googleCallback = async (req, res) => {
         oauthProvider: "google",
         oauthId,
       };
-      user=await createUserWithUniqueUsername(base, userData);
+      user = await createUserWithUniqueUsername(base, userData);
     }
 
     const appToken = generateAuthToken(user);

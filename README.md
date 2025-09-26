@@ -1,5 +1,5 @@
 [![join our group on discord](./Client/public/joinDiscordIcon.png)
-](https://discord.gg/uZv6ShY345) 
+](https://discord.gg/uZv6ShY345)
 
 <p align="center">
   <b>This project is now OFFICIALLY accepted for:</b>
@@ -131,13 +131,10 @@
    ```
 
 3. Set up environment variables:
-
    - **for frontend:**
-
      - create a `.env` file in the `/Client` directory, and copy all the contents from `.env.example`.
 
    - **for backend:**
-
      - Create a `.env` file in the `/Server` directory.
      - Follow the instructions provided in `.env.example` file to create a new `.env` file for backend.
 
