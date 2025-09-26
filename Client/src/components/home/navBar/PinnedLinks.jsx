@@ -276,25 +276,9 @@ function PinnedLinks() {
             transition={{ delay: 0.1, duration: 0.3 }}
           >
             {pinnedLinks.map((item, index) => (
-              <motion.div
+              <div
                 key={item.id}
-                initial={{
-                  opacity: 0,
-                  x: -20,
-                  filter: "blur(4px)",
-                }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  filter: "blur(0px)",
-                }}
-                transition={{
-                  delay: index * 0.05,
-                  duration: 0.2,
-                  ease: [0.15, 0.05, 0.15, 1],
-                }}
-                whileHover={{ scale: 1.02 }}
-                className="flex items-center justify-between px-4 py-2 txt hover:bg-ter rounded-md transition-colors duration-200"
+                className="flex items-center justify-between px-4 py-2 txt hover:bg-ter rounded-md transition-all duration-200 hover:px-3"
               >
                 <motion.div
                   className="flex items-center gap-2 cursor-pointer flex-1"
@@ -391,7 +375,7 @@ function PinnedLinks() {
                     )}
                   </AnimatePresence>
                 </div>
-              </motion.div>
+              </div>
             ))}
 
             <Button
