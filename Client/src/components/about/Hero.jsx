@@ -1,6 +1,6 @@
-import { GitFork, MessageSquare, Star } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { delay, easeInOut, easeOut, motion } from "framer-motion";
+import { easeOut, motion } from "framer-motion";
+import { GitFork, MessageSquare, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function Hero({ url, isLoading, stars, forks }) {
@@ -30,7 +30,6 @@ function Hero({ url, isLoading, stars, forks }) {
   const paragraph =
     "EduHaven is a productivity platform designed to enhance student learning with real-time collaboration, task management, note-making, and social connectivity. Built to optimize study efficiency, it offers seamless interactions through WebRTC-powered study rooms, analytics-driven insights, and gamification.";
 
-  // Split into words
   const words = paragraph.split(" ");
 
   // Motion variants
@@ -38,7 +37,7 @@ function Hero({ url, isLoading, stars, forks }) {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.01, easeOut },
+      transition: { staggerChildren: 0.01, ease: easeOut },
     },
   };
 
@@ -53,9 +52,10 @@ function Hero({ url, isLoading, stars, forks }) {
         <img
           src="./Logo.svg"
           alt="Logo"
-          className={`w-full m-auto object-contain p-4 logo-filter`}
+          className="w-full m-auto object-contain p-4 logo-filter"
         />
       </div>
+
       <motion.p
         className="text-[5vw] md:text-[3.5vw] lg:text-[2.5vw] txt font-light md:w-[77%] p-4 flex flex-wrap"
         variants={container}
@@ -68,6 +68,7 @@ function Hero({ url, isLoading, stars, forks }) {
           </motion.span>
         ))}
       </motion.p>
+
       <a
         href="https://forms.gle/SKL45KczPnVBkY276"
         target="_blank"
@@ -76,8 +77,6 @@ function Hero({ url, isLoading, stars, forks }) {
         <Button
           variant="secondary"
           size="lg"
-          target="_blank"
-          rel="noopener noreferrer"
           className="bg-sec hover:bg-[var(--bg-ter)] ml-4"
         >
           <MessageSquare size={18} />

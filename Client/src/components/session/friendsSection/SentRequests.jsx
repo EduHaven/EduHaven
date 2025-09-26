@@ -1,9 +1,10 @@
 import { useSentRequests } from "@/queries/friendQueries";
-import { ArrowLeft, User } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 function SentRequests({ onBack }) {
-  const { data: sentRequests = [], isLoading } = useSentRequests();
+  const { data: sentRequests = [] } = useSentRequests();
 
   const showSkeletons = sentRequests.length === 0;
 
@@ -32,9 +33,14 @@ function SentRequests({ onBack }) {
   return (
     <section className="bg-sec rounded-3xl p-4">
       <div className="flex items-center mb-4">
-        <button onClick={onBack} className="mr-2">
+        <Button
+          onClick={onBack}
+          size="icon"
+          variant="transparent"
+          className="mr-2"
+        >
           <ArrowLeft className="w-5 h-5 txt" />
-        </button>
+        </Button>
         <h3 className="text-xl font-semibold txt">Sent Requests</h3>
       </div>
       {sentRequests.length === 0 ? (

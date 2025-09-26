@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { User, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const FriendsPopup = ({
   showPopup,
@@ -67,12 +68,13 @@ const FriendsPopup = ({
                   <span className="text-sm txt-dim bg-sec px-3 py-1 rounded-full">
                     {friendsList.length} friends
                   </span>
-                  <button
+                  <Button
                     onClick={() => setShowPopup(false)}
-                    className="txt hover:text-[var(--btn)] transition-colors p-1"
+                    variant="transparent"
+                    className="txt hover:text-[var(--btn)] p-1"
                   >
                     <X className="w-5 h-5" />
-                  </button>
+                  </Button>
                 </div>
               </div>
 

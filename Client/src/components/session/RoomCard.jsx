@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 export default function RoomCard({ room, onDelete, showCategory, loading }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -27,7 +28,7 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
     const pinned = JSON.parse(localStorage.getItem("pinnedRooms") || "[]");
     const found = pinned.some((r) => r._id === room._id);
     setIsPinned(found);
-  }, [room?._id]);
+  }, [room, room?._id]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -124,12 +125,14 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
             </span>
           )}
         </div>
-        <button
+        <Button
           onClick={() => setMenuOpen(!menuOpen)}
+          variant="transparent"
+          size="icon"
           className="txt hover:txt-dim"
         >
           <MoreHorizontal className="w-6 h-6" />
-        </button>
+        </Button>
       </div>
 
       <AnimatePresence>
@@ -145,37 +148,49 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
             className="absolute right-4 top-12 bg-ter rounded-xl shadow-md z-10 p-1"
           >
             {!isPinned ? (
-              <button
+              <Button
                 onClick={handlePin}
-                className="flex items-center w-full text-left px-4 py-2.5 text-md gap-2 txt hover:btn"
+                variant="transparent"
+                size="lg"
+                className="flex items-center w-full justify-start gap-2 txt hover:btn px-4 py-2.5 text-md"
               >
-                <Pin size={20} /> Pin to home
-              </button>
+                <Pin size={20} />
+                Pin to home
+              </Button>
             ) : (
-              <button
+              <Button
                 onClick={handleUnpin}
-                className="flex items-center w-full text-left px-4 py-2.5 text-md gap-2 txt hover:btn"
+                variant="transparent"
+                size="lg"
+                className="flex items-center w-full justify-start gap-2 txt hover:btn px-4 py-2.5 text-md"
               >
-                <PinOff size={20} /> Unpin from home
-              </button>
+                <PinOff size={20} />
+                Unpin from home
+              </Button>
             )}
-            <button
+            <Button
               onClick={handleCopyLink}
-              className="flex items-center w-full text-left px-4 py-2.5 text-md gap-2 txt hover:btn"
+              variant="transparent"
+              size="lg"
+              className="flex items-center w-full justify-start gap-2 txt hover:btn px-4 py-2.5 text-md"
             >
-              <Link size={20} /> Copy Link
-            </button>
+              <Link size={20} />
+              Copy Link
+            </Button>
 
             {onDelete && (
-              <button
+              <Button
                 onClick={() => {
                   onDelete(room);
                   setMenuOpen(false);
                 }}
-                className="flex items-center w-full text-left px-4 py-2.5 text-md gap-2 txt hover:btn"
+                variant="transparent"
+                size="lg"
+                className="flex items-center w-full justify-start gap-2 txt hover:btn px-4 py-2.5 text-md"
               >
-                <Trash size={20} /> Delete
-              </button>
+                <Trash size={20} />
+                Delete
+              </Button>
             )}
           </motion.div>
         )}
@@ -189,13 +204,13 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
 
       {room.description && <p className="txt-dim mb-4">{room.description}</p>}
 
-      <button
+      <Button
         onClick={handleJoin}
-        className="w-full btn px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+        className="w-full flex items-center justify-center gap-2"
       >
         <Activity className="w-5 h-5" />
         Join
-      </button>
+      </Button>
     </div>
   );
 }

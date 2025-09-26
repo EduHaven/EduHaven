@@ -1,5 +1,5 @@
-import { Lightbulb } from "lucide-react";
 import React from "react";
+import { Lightbulb } from "lucide-react";
 
 function IdeaBehindEduhaven() {
   return (
@@ -17,7 +17,7 @@ function IdeaBehindEduhaven() {
         <li>
           Back when we were studying, we relied on <strong>Discord</strong> to
           connect with friends and collaborate. It worked, but it wasn’t really
-          built for learning lots of distractions and missing the structure
+          built for learning—lots of distractions and missing the structure
           students need.
         </li>
         <li>

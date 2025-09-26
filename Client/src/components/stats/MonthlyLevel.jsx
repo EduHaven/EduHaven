@@ -2,19 +2,19 @@ import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
 import { useConsolidatedStats } from "@/queries/timerQueries";
 
+export const levels = [
+  { name: "Bronze", min: 0, max: 10, color: "#cd7f32" },
+  { name: "Silver", min: 10, max: 30, color: "#c0c0c0" },
+  { name: "Gold", min: 30, max: 60, color: "#ffd700" },
+  { name: "Platinum", min: 60, max: 100, color: "#1f75fe" },
+  { name: "Diamond", min: 100, max: 150, color: "#00e5ff" },
+  { name: "Emerald", min: 150, max: Infinity, color: "#50c878" },
+];
+
 const MonthlyLevel = () => {
   const { userId } = useParams();
   // Replace direct axios call with consolidated data hook
   const { data, isLoading, error } = useConsolidatedStats(userId);
-
-  const levels = [
-    { name: "Bronze", min: 0, max: 10, color: "#cd7f32" },
-    { name: "Silver", min: 10, max: 30, color: "#c0c0c0" },
-    { name: "Gold", min: 30, max: 60, color: "#ffd700" },
-    { name: "Platinum", min: 60, max: 100, color: "#1f75fe" },
-    { name: "Diamond", min: 100, max: 150, color: "#00e5ff" },
-    { name: "Emerald", min: 150, max: Infinity, color: "#50c878" },
-  ];
 
   if (isLoading) {
     return (
@@ -43,9 +43,10 @@ const MonthlyLevel = () => {
 
   const nextLevel = levels[levels.indexOf(currentLevel) + 1];
 
+  // Show progress as percentage of the next level's requirement so
+  // 10.7 hours out of 30h (next level) => ~35.7% visible on the bar
   const progress = nextLevel
-    ? ((totalHours - currentLevel.min) / (nextLevel.min - currentLevel.min)) *
-      100
+    ? Math.max(0, Math.min(100, (totalHours / nextLevel.min) * 100))
     : 100;
 
   const hoursNeeded = nextLevel ? nextLevel.min - totalHours : 0;

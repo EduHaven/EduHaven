@@ -5,7 +5,6 @@ import { RotateCcw } from "lucide-react";
 
 function Slogan() {
   const [quote, setQuote] = useState("Stay hungry; stay foolish.");
-  const [author, setAuthor] = useState("");
   const [displayMode, setDisplayMode] = useState("greeting");
   const [firstName, setFirstName] = useState("User");
 
@@ -83,68 +82,26 @@ function Slogan() {
     }
 
     const fallbackQuotes = [
-      {
-        quote: "Success doesn't come to you. You go to it.",
-        author: "Marva Collins",
-      },
-      {
-        quote: "The only limit is the one you set yourself.",
-        author: "Unknown",
-      },
-      {
-        quote: "Push through the pain. Growth is on the other side.",
-        author: "Unknown",
-      },
-      {
-        quote: "Stay focused and never give up on your dreams.",
-        author: "Unknown",
-      },
-      {
-        quote: "Discipline is doing it even when you don’t feel like it.",
-        author: "Unknown",
-      },
-      {
-        quote: "Work hard in silence, let success make the noise.",
-        author: "Frank Ocean",
-      },
-      {
-        quote: "Small steps every day lead to big results.",
-        author: "Unknown",
-      },
-      {
-        quote: "Your future is created by what you do today.",
-        author: "Unknown",
-      },
-      {
-        quote: "The struggle you’re in today builds strength for tomorrow.",
-        author: "Unknown",
-      },
+      { quote: "Success doesn't come to you. You go to it.", author: "Marva Collins" },
+      { quote: "The only limit is the one you set yourself.", author: "Unknown" },
+      { quote: "Push through the pain. Growth is on the other side.", author: "Unknown" },
+      { quote: "Stay focused and never give up on your dreams.", author: "Unknown" },
+      { quote: "Discipline is doing it even when you don’t feel like it.", author: "Unknown" },
+      { quote: "Work hard in silence, let success make the noise.", author: "Frank Ocean" },
+      { quote: "Small steps every day lead to big results.", author: "Unknown" },
+      { quote: "Your future is created by what you do today.", author: "Unknown" },
+      { quote: "The struggle you’re in today builds strength for tomorrow.", author: "Unknown" },
       { quote: "If it matters to you, you’ll find a way.", author: "Unknown" },
-      {
-        quote: "The harder you work, the luckier you get.",
-        author: "Gary Player",
-      },
-      {
-        quote: "Great things never come from comfort zones.",
-        author: "Unknown",
-      },
+      { quote: "The harder you work, the luckier you get.", author: "Gary Player" },
+      { quote: "Great things never come from comfort zones.", author: "Unknown" },
       { quote: "Success is earned, not given.", author: "Unknown" },
-      {
-        quote: "Don’t watch the clock; do what it does — keep going.",
-        author: "Sam Levenson",
-      },
+      { quote: "Don’t watch the clock; do what it does — keep going.", author: "Sam Levenson" },
       { quote: "Believe in your hustle.", author: "Unknown" },
       { quote: "Dream it. Wish it. Do it.", author: "Unknown" },
-      {
-        quote: "Don’t limit your challenges, challenge your limits.",
-        author: "Jerry Dunn",
-      },
+      { quote: "Don’t limit your challenges, challenge your limits.", author: "Jerry Dunn" },
       { quote: "You are stronger than your excuses.", author: "Unknown" },
       { quote: "Focus on the goal, not the obstacle.", author: "Unknown" },
-      {
-        quote: "It always seems impossible until it's done.",
-        author: "Nelson Mandela",
-      },
+      { quote: "It always seems impossible until it's done.", author: "Nelson Mandela" },
     ];
 
     return fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)];
@@ -159,17 +116,14 @@ function Slogan() {
 
   const forceRefreshQuote = async () => {
     setQuote("Fetching new quote...");
-    setAuthor("");
     try {
       const fetchedData = await fetchQuote();
       setQuote(fetchedData.quote);
-      setAuthor(fetchedData.author);
       localStorage.setItem("dailyQuote", fetchedData.quote);
       localStorage.setItem("quoteAuthor", fetchedData.author);
       localStorage.setItem("quoteTimestamp", Date.now().toString());
     } catch (error) {
       setQuote("Failed to fetch quote.");
-      setAuthor("Try again");
       console.error("Error during refresh:", error);
     }
   };
@@ -186,11 +140,9 @@ function Slogan() {
 
     if (cachedQuote && !shouldRefreshQuote()) {
       setQuote(cachedQuote);
-      setAuthor(cachedAuthor || "");
     } else {
       fetchQuote().then((fetchedData) => {
         setQuote(fetchedData.quote);
-        setAuthor(fetchedData.author);
         localStorage.setItem("dailyQuote", fetchedData.quote);
         localStorage.setItem("quoteAuthor", fetchedData.author);
         localStorage.setItem("quoteTimestamp", Date.now().toString());
@@ -208,18 +160,8 @@ function Slogan() {
 
   const textVariants = {
     initial: { opacity: 0, y: 20, filter: "blur(10px)" },
-    animate: {
-      opacity: 1,
-      y: 0,
-      filter: "blur(0px)",
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-    exit: {
-      opacity: 0,
-      y: -20,
-      filter: "blur(10px)",
-      transition: { duration: 0.2, ease: "easeIn" },
-    },
+    animate: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { opacity: 0, y: -20, filter: "blur(10px)", transition: { duration: 0.2, ease: "easeIn" } },
   };
 
   return (
@@ -234,10 +176,8 @@ function Slogan() {
           className="text-center w-full max-w-full px-2 md:px-4"
         >
           {displayMode === "quote" ? (
-            <div className="hidden md:flex items-center justify-center gap-2 md:gap-4 flex-nowrap whitespace-nowrap overflow-hidden text-ellipsis">
-              <div className="font-semibold break-words max-w-full">
-                {quote}
-              </div>
+            <div className="hidden md:flex items-center justify-center gap-2 md:gap-4 flex-nowrap whitespace-nowrap overflow-hidden text-ellipsis text-xl 2xl:text-2xl">
+              <div className="font-semibold break-words max-w-full">{quote}</div>
               <motion.div
                 whileHover={{ rotate: -360 }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}

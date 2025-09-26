@@ -1,28 +1,28 @@
-import { useState, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useParams } from "react-router-dom";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from "react-router-dom";
 import { useLeaderboard } from "@/queries/timerQueries";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 
 const Leaderboard = () => {
+  const { userId } = useParams();
+  const location = useLocation();
   const [view, setView] = useState("weekly");
   const [friendsOnly, setFriendsOnly] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const { userId } = useParams();
+  const [imageErrorIds, setImageErrorIds] = useState(new Set());
 
   // Replace direct axios call with TanStack Query hook
-  const {
-    data: leaderboard = [],
-    isLoading,
-    error,
-  } = useLeaderboard(view, friendsOnly);
+  const { data: leaderboard = [], isLoading } = useLeaderboard(
+    view,
+    friendsOnly
+  );
 
   // Extract currentUserId from JWT token (keep this part)
   useEffect(() => {
@@ -36,10 +36,16 @@ const Leaderboard = () => {
     }
   }, []);
 
+  const highlightedUserId =
+    location.pathname.startsWith("/user/") && userId ? userId : currentUserId;
+
   const handleDropdownClick = (viewType) => setView(viewType);
   const handleFriendsOnlyToggle = () => setFriendsOnly((prev) => !prev);
 
   const currentUser = leaderboard.find((user) => user.userId === currentUserId);
+  const highlightedUser = leaderboard.find(
+    (user) => user.userId === highlightedUserId
+  );
 
   const getBadge = (rank) => {
     const baseBadgeStyle = `inline-flex items-center gap-1 rounded-full text-xs font-medium px-2 py-1 -ml-3`;
@@ -162,7 +168,7 @@ const Leaderboard = () => {
               <div
                 key={user.userId}
                 className={`flex items-center justify-between px-5 py-3 rounded-xl transition-all text-sm ${
-                  isCurrentUser
+                  user.userId === highlightedUserId
                     ? "bg-[var(--btn)] text-white"
                     : "hover:bg-[var(--bg-ter)] text-[var(--txt)]"
                 }`}
@@ -173,9 +179,27 @@ const Leaderboard = () => {
                   </div>
                   <Link
                     to={isCurrentUser ? "/stats" : `/user/${user.userId}`}
-                    className="text-center font-semibold"
+                    className="text-center font-semibold flex items-center gap-2"
                   >
-                    {user.username}
+                    {/* Show user's profile picture before their name. If the image fails, track the userId in imageErrorIds so we don't retry rendering a broken image. */}
+                    {user.profilePicture && !imageErrorIds.has(user.userId) ? (
+                      <img
+                        src={user.profilePicture}
+                        alt={`${user.username}'s avatar`}
+                        className="w-7 h-7 rounded-full object-cover flex-shrink-0"
+                        referrerPolicy="no-referrer"
+                        onError={() => {
+                          setImageErrorIds((prev) => {
+                            const next = new Set(prev);
+                            next.add(user.userId);
+                            return next;
+                          });
+                        }}
+                      />
+                    ) : null}
+                    <span className="truncate max-w-[12rem] 2xl:max-w-[9.5rem] inline-block align-middle">
+                      {user.username}
+                    </span>
                   </Link>
                 </div>
 
@@ -195,9 +219,24 @@ const Leaderboard = () => {
       {/* Footer */}
       {currentUser && leaderboard.length > 0 && (
         <div className="mt-6 text-center text-lg font-semibold text-[var(--txt-dim)]">
-          Your Position:{" "}
-          {leaderboard.findIndex((u) => u.userId === currentUserId) + 1} (
-          {formatDuration(currentUser.totalDuration)})
+          {highlightedUserId === currentUserId ? (
+            <>
+              Your Position:{" "}
+              {leaderboard.findIndex((u) => u.userId === currentUserId) + 1} (
+              {formatDuration(currentUser.totalDuration)})
+            </>
+          ) : (
+            <>
+              {
+                leaderboard.find((user) => user.userId === highlightedUserId)
+                  .username
+              }
+              {"'s Position: "}
+              {leaderboard.findIndex((u) => u.userId === highlightedUserId) +
+                1}{" "}
+              ({formatDuration(highlightedUser.totalDuration)})
+            </>
+          )}
         </div>
       )}
     </div>

@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import UseSocketContext from "@/contexts/SocketContext";
 import useSessionRoom from "@/hooks/useSessionRoom";
+import { Button } from "@/components/ui/button";
 
 function Controls({
   roomId,
@@ -78,87 +79,81 @@ function Controls({
 
       {/*Controls */}
       <div className="flex items-center gap-2 w-[32%] justify-center ">
-        <button
+        <Button
           onClick={toggleAudio}
-          className={`p-3 rounded-full ${
-            isAudioEnabled
-              ? "bg-[#333537] px-3.5 transition-all text-white "
-              : "bg-[#F9DEDC] hover:bg-[#E5CDCB] px-5 text-[#601410]"
-          }`}
+          size="icon"
+          variant={isAudioEnabled ? "default" : "secondary"}
+          className={`${isAudioEnabled ? "bg-[#333537] px-3 text-white transition-all" : "bg-[#F9DEDC] hover:bg-[#E5CDCB] px-5 text-[#601410]"}`}
         >
           {isAudioEnabled ? (
             <Mic size={24} strokeWidth={1.4} />
           ) : (
             <MicOff size={24} strokeWidth={1.8} />
           )}
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={toggleVideo}
-          className={`p-3 rounded-full ${
-            isVideoEnabled
-              ? "bg-[#333537] px-3.5 transition-all text-white"
-              : "bg-[#F9DEDC] hover:bg-[#E5CDCB] px-5 text-[#601410]"
-          }`}
+          size="icon"
+          variant={isVideoEnabled ? "default" : "secondary"}
+          className={`${isVideoEnabled ? "bg-[#333537] px-3.5 text-white transition-all" : "bg-[#F9DEDC] hover:bg-[#E5CDCB] px-5 text-[#601410]"}`}
         >
           {isVideoEnabled ? (
             <Video size={26} strokeWidth={1.4} />
           ) : (
             <VideoOff size={24} />
           )}
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={isScreenSharing ? stopScreenShare : startScreenShare}
-          className={`p-3 px-5 rounded-full ${
-            isScreenSharing
-              ? "bg-[#A8C7FA] text-black"
-              : "bg-[#333537] text-white"
-          }`}
+          size="icon"
+          variant={isScreenSharing ? "secondary" : "default"}
+          className={`${isScreenSharing ? "bg-[#A8C7FA] text-black" : "bg-[#333537] text-white"} px-5`}
         >
           <MonitorUp size={26} strokeWidth={1.4} />
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={handleLeaveRoom}
-          className="p-3 px-6 rounded-full bg-[#DC362E] hover:bg-red-500 text-white hover:opacity-80"
+          size="icon"
+          variant="destructive"
+          className="px-6 hover:opacity-80"
         >
           <Phone size={24} strokeWidth={1.4} className="rotate-[135deg]" />
-        </button>
+        </Button>
       </div>
 
       <div className="flex items-center  w-[32%] justify-end">
-        <button
+        <Button
           onClick={() => {
             setShowChat(false);
             setShowInfo(!showInfo);
           }}
-          className={`px-4 items-center rounded-full hover:bg-[#242424] flex gap-2 text-white`}
+          size="default"
+          variant="transparent"
+          className="px-4 items-center rounded-full flex gap-2 text-white hover:bg-[#242424]"
         >
           <Info
             size={26}
-            className={`${
-              showInfo
-                ? "fill-[#A8C7FA] text-black size-7 my-2.5"
-                : "Show Chat my-3"
-            }`}
+            className={`${showInfo ? "fill-[#A8C7FA] text-black" : "text-white"}`}
           />
           {participants.length}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             setShowInfo(false);
             setShowChat(!showChat);
           }}
-          className={`px-6 py-3 rounded-full hover:bg-[#242424] `}
+          size="icon"
+          variant="transparent"
+          className="px-6 py-3 rounded-full hover:bg-[#242424]"
         >
           <MessageSquare
             size={26}
-            className={`${
-              showChat ? "fill-[#A8C7FA] text-[#A8C7FA]" : "Show Chat"
-            }`}
+            className={`${showChat ? "fill-[#A8C7FA] text-[#A8C7FA]" : "text-white"}`}
           />
-        </button>
+        </Button>
       </div>
     </div>
   );

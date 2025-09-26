@@ -7,6 +7,7 @@ function Footer({ isLoading, repoData }) {
       className={`bg-sec rounded h-${height} w-${width} animate-pulse`}
     ></div>
   );
+
   return (
     <div className="pt-6 flex-shrink-0 flex justify-around border-t border-[var(--bg-ter)]">
       {/* left */}

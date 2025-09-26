@@ -4,6 +4,7 @@ import {
   useRejectRequest,
 } from "@/queries/friendQueries";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 function FriendRequests() {
   let { data: friendRequests = [], isLoading } = useFriendRequests();
@@ -76,18 +77,22 @@ function FriendRequests() {
               </div>
             </Link>
             <div className="m-4 flex space-x-3">
-              <button
+              <Button
                 onClick={() => handleReject(user._id)}
-                className="flex-1 border border-gray-500/50 hover:bg-red-500 text-red-400 hover:text-white text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition"
+                variant="destructive"
+                size="sm"
+                className="flex-1 border border-gray-500/50 hover:bg-red-500 text-red-400 hover:text-white flex items-center justify-center gap-1"
               >
                 Decline
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => handleAccept(user._id)}
-                className="flex-1 btn hover:bg-purple-600 hover:text-white text-sm px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition"
+                variant="primary"
+                size="sm"
+                className="flex-1 btn hover:bg-purple-600 hover:text-white flex items-center justify-center gap-1"
               >
                 Accept
-              </button>
+              </Button>
             </div>
           </div>
         ))}

@@ -1,5 +1,5 @@
 // Whacamole.jsx
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { RefreshCw, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import useSound from "use-sound";
@@ -9,6 +9,7 @@ import gameBackground from "./assets/gameBackground.jpg";
 import teddyMole from "./assets/Mole.png";
 import evilPlant from "./assets/Plant.png";
 import burrowHole from "./assets/BurrowHole.png";
+import { Button } from "@/components/ui/button";
 
 const NUM_HOLES = 9;
 const GAME_DURATION = 30; // seconds
@@ -160,12 +161,12 @@ const Whacamole = () => {
             <div>TIME: {timeLeft}</div>
             <div>HIGH SCORE: {hiScore}</div>
           </div>
-          <button
+          <Button
             onClick={() => setShowInstructions(true)}
-            className="px-6 py-2 bg-yellow-500 text-white font-semibold rounded-full shadow-md hover:opacity-90 transition"
+            className="px-6 py-2 bg-yellow-500 text-white font-semibold rounded-full shadow-md hover:opacity-90"
           >
             How to Play
-          </button>
+          </Button>
         </div>
 
         {/* Grid */}
@@ -204,12 +205,13 @@ const Whacamole = () => {
             <h2 className="text-4xl font-bold text-white mb-4">GAME OVER!</h2>
             <h4 className="text-xl text-white mb-6">Final Score: {score}</h4>
             <div className="flex justify-center gap-6">
-              <button
+              <Button
                 onClick={() => window.location.reload()}
                 className={`${btnClass} bg-green-500 flex items-center gap-2 justify-center`}
               >
-                <RefreshCw size={20} /> Play Again
-              </button>
+                <RefreshCw size={20} />
+                Play Again
+              </Button>
               <Link
                 to="/games"
                 className={`${btnClass} bg-red-500 flex items-center gap-2 justify-center`}
@@ -245,12 +247,12 @@ const Whacamole = () => {
                 try to beat your High Score!
               </li>
             </ul>
-            <button
+            <Button
               onClick={() => setShowInstructions(false)}
-              className="px-6 py-2 bg-green-500 text-white font-semibold rounded-full shadow-md hover:opacity-90 transition"
+              className="px-6 py-2 bg-green-500 text-white font-semibold rounded-full shadow-md hover:opacity-90"
             >
               Got it!
-            </button>
+            </Button>
           </div>
         </div>
       )}

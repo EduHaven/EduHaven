@@ -5,6 +5,7 @@ const tieSound = new Audio("/sounds/tie.mp3");
 
 import { useState, useEffect } from "react";
 import { Volume2, VolumeX, RotateCcw, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Game logic functions
 const calculateWinner = (squares) => {
@@ -240,7 +241,7 @@ function TicTacToe() {
       }, 250);
       return () => clearTimeout(timer);
     }
-  }, [xIsNext, squares, gameMode, difficulty, winner]);
+  }, [xIsNext, squares, gameMode, difficulty, winner, handleMove]);
 
   const handleMove = (i) => {
     if (squares[i] || winner) return;
@@ -324,12 +325,13 @@ function TicTacToe() {
       <nav className="px-8 pt-4">
         <div className="mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button
+            <Button
               onClick={() => window.history.back()}
-              className="flex items-center gap-2 px-4 py-1 text-[var(--txt-dim)] bg-sec rounded-lg cursor-pointer transition-all duration-200 text-sm font-medium hover:bg-ter "
+              variant="secondary"
+              className="flex items-center gap-2 px-4 py-1 text-[var(--txt-dim)] bg-sec rounded-lg text-sm font-medium hover:bg-ter"
             >
               <ArrowLeft size={24} />
-            </button>
+            </Button>
             <h1 className="text-2xl font-semibold txt">Tic Tac Toe</h1>
           </div>
 
@@ -337,26 +339,28 @@ function TicTacToe() {
             {/* Game Mode Toggle */}
             <div className="flex items-center gap-3">
               <div className="flex bg-[var(--bg-sec)] rounded-[var(--radius)] p-0.5 border border-[rgba(var(--shadow-rgb),0.1)]">
-                <button
+                <Button
                   onClick={() => handleModeChange("computer")}
-                  className={`px-4 py-2 rounded-[calc(var(--radius)-0.125rem)] border-none cursor-pointer transition-all duration-200 text-sm font-medium ${
+                  variant={gameMode === "computer" ? "default" : "transparent"}
+                  className={`px-4 py-2 rounded-[calc(var(--radius)-0.125rem)] border-none text-sm font-medium ${
                     gameMode === "computer"
-                      ? "bg-[var(--btn)] text-white"
-                      : " text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[rgba(var(--shadow-rgb),0.05)]"
+                      ? ""
+                      : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[rgba(var(--shadow-rgb),0.05)]"
                   }`}
                 >
                   Computer
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => handleModeChange("human")}
-                  className={`px-4 py-2 rounded-[calc(var(--radius)-0.125rem)] cursor-pointer transition-all duration-200 text-sm font-medium ${
+                  variant={gameMode === "human" ? "default" : "transparent"}
+                  className={`px-4 py-2 rounded-[calc(var(--radius)-0.125rem)] text-sm font-medium ${
                     gameMode === "human"
-                      ? "bg-[var(--btn)] text-white"
-                      : "bg-transparent text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[rgba(var(--shadow-rgb),0.05)]"
+                      ? ""
+                      : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[rgba(var(--shadow-rgb),0.05)]"
                   }`}
                 >
                   Human
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -373,28 +377,31 @@ function TicTacToe() {
               </span>
               <div className="flex bg-[var(--bg-sec)] rounded-[var(--radius)] p-0.5 border border-[rgba(var(--shadow-rgb),0.1)]">
                 {["easy", "medium", "hard"].map((diff) => (
-                  <button
+                  <Button
                     key={diff}
                     onClick={() => handleDifficultyChange(diff)}
-                    className={`px-4 py-2 rounded-[calc(var(--radius)-0.125rem)] border-none cursor-pointer  transition-all duration-200 text-sm font-medium capitalize ${
+                    variant={difficulty === diff ? "default" : "transparent"}
+                    className={`px-4 py-2 rounded-[calc(var(--radius)-0.125rem)] border-none text-sm font-medium capitalize ${
                       difficulty === diff
-                        ? "bg-[var(--btn)] text-white"
-                        : "bg-transparent text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[rgba(var(--shadow-rgb),0.05)]"
+                        ? ""
+                        : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[rgba(var(--shadow-rgb),0.05)]"
                     }`}
                   >
                     {diff.charAt(0).toUpperCase() + diff.slice(1)}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
           </div>
           {/* Sound Toggle */}
-          <button
+          <Button
             onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-            className="p-2 rounded-[var(--radius)] border border-[var(--bg-ter)] bg-transparent text-[var(--txt-dim)] cursor-pointer transition-all duration-200 hover:text-[var(--txt)] hover:bg-[var(--bg-ter)] hover:border-[rgba(var(--shadow-rgb),0.2)] ml-28"
+            variant="transparent"
+            size="icon"
+            className="p-2 rounded-[var(--radius)] border border-[var(--bg-ter)] text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--bg-ter)] hover:border-[rgba(var(--shadow-rgb),0.2)] ml-28"
           >
             {isSoundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
-          </button>
+          </Button>
         </div>
       </nav>
 
@@ -410,23 +417,25 @@ function TicTacToe() {
             <Board squares={squares} onClick={handleMove} winningLine={line} />
             {/* Game Controls */}
             <div className="flex gap-4 opacity-0 animate-[fadeInUp_0.6s_ease_0.3s_forwards]">
-              <button
-                className="flex items-center gap-2 px-6 py-3 bg-[var(--btn)] text-white border-none rounded-[var(--radius)] cursor-pointer transition-all duration-200 font-medium text-sm hover:bg-[var(--btn-hover)] hover:-translate-y-0.5"
+              <Button
                 onClick={resetGame}
+                variant="default"
+                className="flex items-center gap-2 px-6 py-3 rounded-[var(--radius)] font-medium text-sm hover:-translate-y-0.5"
               >
                 <RotateCcw size={16} />
                 New Game
-              </button>
+              </Button>
 
-              <button
-                className="px-6 py-3 bg-[var(--bg-sec)] text-[var(--txt)] border border-[rgba(var(--shadow-rgb),0.1)] rounded-[var(--radius)] cursor-pointer transition-all duration-200 font-medium text-sm hover:bg-[var(--bg-ter)] hover:border-[rgba(var(--shadow-rgb),0.2)] hover:-translate-y-0.5"
+              <Button
                 onClick={() => {
                   resetGame();
                   setScores({ X: 0, O: 0 });
                 }}
+                variant="secondary"
+                className="px-6 py-3 border border-[rgba(var(--shadow-rgb),0.1)] rounded-[var(--radius)] font-medium text-sm hover:bg-[var(--bg-ter)] hover:border-[rgba(var(--shadow-rgb),0.2)] hover:-translate-y-0.5"
               >
                 Reset Scores
-              </button>
+              </Button>
             </div>
           </div>
           {/* Score Board */}

@@ -56,7 +56,7 @@ function ScientificCalculator() {
       } else {
         setOutput("Invalid expression");
       }
-    } catch (error) {
+    } catch {
       setOutput("Error");
     }
   };

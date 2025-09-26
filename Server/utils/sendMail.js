@@ -34,7 +34,7 @@ const sendEmail = async (Email, FirstName, otp, emailType) => {
     const content = emailContent[emailType] || emailContent.signup;
 
     const response = await resend.emails.send({
-      from: "Eduahaven <noreply@eduhaven.online>",
+      from: "Eduhaven <noreply@eduhaven.online>",
       to: Email,
       subject: content.subject,
       html: `

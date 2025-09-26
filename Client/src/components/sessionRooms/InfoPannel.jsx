@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { Check, Clipboard, User, X } from "lucide-react";
-import useSessionRoom from "@/hooks/useSessionRoom.jsx";
-import { useParams } from "react-router-dom";
 import UseSocketContext from "@/contexts/SocketContext.jsx";
+import useSessionRoom from "@/hooks/useSessionRoom.jsx";
+import { Check, Clipboard, X } from "lucide-react";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import ProfileIcon from "./ProfileIcon.jsx";
+import { Button } from "@/components/ui/button";
 
 function ShowInfo({ setShowInfo }) {
   const [copied, setCopied] = useState(false);
@@ -23,19 +24,23 @@ function ShowInfo({ setShowInfo }) {
       <div className="max-w-sm w-full p-5 py-4 font-sans">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-medium txt ">Session details</h2>
-          <button
-            className=" txt hover:txt-hover"
+          <Button
             onClick={() => setShowInfo(false)}
+            variant="transparent"
+            size="icon"
+            className="txt hover:txt-hover"
           >
             <X size={22} />
-          </button>
+          </Button>
         </div>
         <div className="text-sm font-medium txt mb-2">Joining info</div>
         <p className="text-sm txt-dim mb-3 break-all">{meetingLink}</p>
 
-        <button
+        <Button
           onClick={handleCopy}
-          className="flex items-center text-blue-400 hover:bg-[var(--bg-ter)] px-3 py-2 rounded-full text-sm font-medium"
+          variant="transparent"
+          size="default"
+          className="flex items-center text-blue-400 px-3 py-2 rounded-full text-sm font-medium hover:bg-[var(--bg-ter)]"
         >
           {copied ? (
             <Check size={18} className="mr-1.5" />
@@ -43,7 +48,7 @@ function ShowInfo({ setShowInfo }) {
             <Clipboard size={18} className="mr-1.5" />
           )}
           {copied ? "Copied" : "Copy joining info"}
-        </button>
+        </Button>
       </div>
 
       <div className="p-4 py-3 border-t border-gray-500/20">

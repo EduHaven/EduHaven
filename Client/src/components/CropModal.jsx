@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Cropper from "react-easy-crop";
 import { Dialog } from "@headlessui/react";
 import { X, RotateCw, Check } from "lucide-react";
 import { getCroppedWebpFile } from "@/utils/imageUtils";
+import { Button } from "@/components/ui/button";
 
 export const CropModal = ({ isOpen, onClose, imageSrc, onCropDone }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -39,12 +40,14 @@ export const CropModal = ({ isOpen, onClose, imageSrc, onCropDone }) => {
             <Dialog.Title className="text-lg font-medium text-[var(--txt)]">
               Crop Image
             </Dialog.Title>
-            <button
+            <Button
               onClick={onClose}
-              className="p-1 rounded-md hover:bg-[var(--bg-sec)] transition-colors"
+              variant="transparent"
+              size="icon"
+              className="hover:bg-[var(--bg-sec)]"
             >
               <X className="w-5 h-5 text-[var(--txt-dim)]" />
-            </button>
+            </Button>
           </div>
 
           <div className="relative h-80 bg-[var(--bg-sec)]">
@@ -80,29 +83,33 @@ export const CropModal = ({ isOpen, onClose, imageSrc, onCropDone }) => {
                 </span>
               </div>
 
-              <button
+              <Button
                 onClick={handleRotate}
-                className="p-2 rounded-md bg-[var(--bg-sec)] text-[var(--txt)] hover:bg-[var(--btn)] hover:text-white transition-colors"
+                variant="secondary"
+                size="icon"
+                className="hover:bg-[var(--btn)] hover:text-white"
                 title="Rotate 90°"
               >
                 <RotateCw className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
 
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={onClose}
-                className="flex-1 py-2 px-4 rounded-md bg-[var(--bg-sec)] text-[var(--txt)] hover:bg-[var(--bg-sec)] transition-colors font-medium"
+                variant="transparent"
+                className="flex-1 py-2 px-4 rounded-md bg-[var(--bg-sec)] hover:bg-[var(--bg-sec)] font-medium"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSave}
-                className="flex-1 py-2 px-4 rounded-md bg-[var(--btn)] text-white hover:bg-[var(--btn-hover)] transition-colors font-medium flex items-center justify-center gap-1"
+                variant="default"
+                className="flex-1 py-2 px-4 rounded-md font-medium flex items-center justify-center gap-1"
               >
                 <Check className="w-4 h-4" />
                 Apply
-              </button>
+              </Button>
             </div>
           </div>
         </Dialog.Panel>

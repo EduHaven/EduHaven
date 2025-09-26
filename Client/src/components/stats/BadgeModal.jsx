@@ -1,5 +1,6 @@
 import { X, Info } from "lucide-react";
 import { getAllBadges } from "@/utils/badgeSystem";
+import { Button } from "@/components/ui/button";
 
 const BadgeModal = ({ isOpen, onClose }) => {
   const allBadges = getAllBadges();
@@ -15,12 +16,14 @@ const BadgeModal = ({ isOpen, onClose }) => {
             <Info className="w-6 h-6 text-[var(--txt)]" />
             <h2 className="text-2xl font-bold text-[var(--txt)]">All Badges</h2>
           </div>
-          <button
+          <Button
             onClick={onClose}
-            className="p-2 hover:bg-[var(--bg-ter)] rounded-lg transition-colors"
+            variant="transparent"
+            size="icon"
+            className="hover:bg-[var(--bg-ter)] rounded-lg"
           >
             <X className="w-5 h-5 text-[var(--txt)]" />
-          </button>
+          </Button>
         </div>
 
         {/* Content */}

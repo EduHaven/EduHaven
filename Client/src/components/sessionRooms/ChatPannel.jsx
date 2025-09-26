@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { SendHorizontal, X } from "lucide-react";
 import ProfileIcon from "./ProfileIcon.jsx";
+import { Button } from "@/components/ui/button";
 
 function ChatPannel({
   messages,
@@ -59,12 +60,14 @@ function ChatPannel({
     <div className="w-[363px] m-4 mb-0 rounded-3xl bg-sec flex flex-col overflow-auto h-[calc(100vh-90px)] p-5 py-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-medium txt ">Chat</h2>
-        <button
-          className=" txt hover:txt-hover"
+        <Button
           onClick={() => setShowChat(false)}
+          variant="transparent"
+          size="icon"
+          className="txt hover:txt-hover"
         >
           <X size={22} />
-        </button>
+        </Button>
       </div>
 
       {/* Messages */}
@@ -122,13 +125,15 @@ function ChatPannel({
             placeholder="Type a message..."
             className="flex-1 px-3 py-2 bg-transparent rounded-lg txt border-none outline-none focus:ring-0"
           />
-          <button
+          <Button
             type="submit"
+            size="icon"
+            variant="transparent"
             disabled={!message.trim()}
-            className="px-4 py-2 txt rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="txt rounded-lg"
           >
             <SendHorizontal size={20} />
-          </button>
+          </Button>
         </div>
       </form>
     </div>

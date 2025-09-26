@@ -18,7 +18,6 @@ function SessionRoom() {
 
   const socketIdRef = useRef();
   const videoRef = useRef([]);
-  const [screenAvailable, setScreenAvailable] = useState(false);
   const [videos, setVideos] = useState([]);
   const localVideoref = useRef();
 
@@ -32,7 +31,7 @@ function SessionRoom() {
     handleVideo,
     handleAudio,
     handleScreen,
-  } = UseMediaHandlers(localVideoref, socketIdRef, socket, setScreenAvailable);
+  } = UseMediaHandlers(localVideoref, socketIdRef, socket);
 
   UseConnectToSocketServer(socket, socketIdRef, roomId, videoRef, setVideos);
   if (videos) console.log("the list of videos are:", videos);

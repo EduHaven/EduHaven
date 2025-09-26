@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema(
         return this.oauthProvider ? false : true;
       },
     },
+    Username: { type: String, unique: true, required: true },
     oauthProvider: { type: String }, // e.g., "google", "github"
     oauthId: { type: String },
 
@@ -63,11 +64,18 @@ const UserSchema = new mongoose.Schema(
         earnedAt: { type: Date, default: Date.now },
       },
     ],
+    // Ephemeral fields for secure destructive actions (e.g., account deletion)
+    deletionOTP: {
+      code: { type: String },
+      expiresAt: { type: Date },
+      verified: { type: Boolean, default: false },
+    },
   },
   {
     timestamps: true,
   }
 );
+
 
 const User = mongoose.model("User", UserSchema);
 export default User;

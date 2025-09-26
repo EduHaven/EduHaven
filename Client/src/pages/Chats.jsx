@@ -1,7 +1,7 @@
-import React from "react";
 import UserList from "../components/chats/userlist";
 import ChatWindow from "../components/chats/chatwindow";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { useState } from "react";
 
 // Dummy data for demonstration
 const dummyUsers = [
@@ -44,7 +44,7 @@ const dummyUsers = [
 ];
 
 function Chats() {
-  const [selectedUser, setSelectedUser] = React.useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   return (
     <div

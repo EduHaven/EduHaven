@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import {
   BarChart2,
   Gamepad2,
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import NotificationIndicator from "./NotificationIndicator";
 
 function Sidebar() {
   const token = localStorage.getItem("token");
@@ -37,7 +38,7 @@ function Sidebar() {
     }
   }, [location.pathname]);
 
-  const SidebarLink = React.forwardRef(
+  const SidebarLink = forwardRef(
     ({ to, IconComponent, label, isActive }, ref) => {
       return (
         <Link
@@ -45,6 +46,11 @@ function Sidebar() {
           ref={ref}
           className="relative flex flex-col items-center justify-center pt-2.5 pb-2 group hover:bg-ter rounded-lg transition-colors"
         >
+          {label === "Friends" && (
+            <span className="absolute top-2 right-2">
+              <NotificationIndicator size={2} visibility={false} />
+            </span>
+          )}
           <IconComponent
             className={`size-5 2xl:size-6 transition-colors duration-300 ${
               isActive ? "txt" : "!txt-disabled group-hover:txt"

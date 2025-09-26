@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import ToolbarButton from "./ToolbarButton";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+
 const NoteEditor = ({
   selectedNote,
   setSelectedNote,
@@ -29,6 +31,7 @@ const NoteEditor = ({
   insertLink,
   insertImage,
   insertTable,
+  onClose,
 }) => {
   return (
     <motion.div
@@ -59,8 +62,8 @@ const NoteEditor = ({
             style={{ color: "var(--txt)" }}
           />
 
-          <button
-            onClick={() => setSelectedNote(null)}
+          <Button
+            onClick={onClose}
             className="p-2 border-none bg-transparent cursor-pointer"
             style={{
               color: "var(--txt-dim)",
@@ -68,7 +71,7 @@ const NoteEditor = ({
             }}
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         {/* Formatting Toolbar */}

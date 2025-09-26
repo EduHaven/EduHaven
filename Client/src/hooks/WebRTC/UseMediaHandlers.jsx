@@ -100,7 +100,7 @@ export const UseMediaHandlers = (
       navigator.mediaDevices
         .getUserMedia({ video: videoToggle, audio: audioToggle })
         .then(getUserMediaSuccess)
-        .then((stream) => {})
+        .then(() => {})
         .catch((e) => console.log(e));
     } else {
       try {
@@ -155,7 +155,7 @@ export const UseMediaHandlers = (
         navigator.mediaDevices
           .getDisplayMedia({ videoToggle: true, audio: true })
           .then(getDislayMediaSuccess)
-          .then((stream) => {})
+          .then(() => {})
           .catch((e) => console.log(e));
       }
     }
@@ -166,13 +166,13 @@ export const UseMediaHandlers = (
       getUserMedia();
       console.log("SET STATE HAS ", videoToggle, audioToggle);
     }
-  }, [videoToggle, audioToggle]);
+  }, [videoToggle, audioToggle, getUserMedia]);
 
   useEffect(() => {
     if (screen !== undefined) {
       getDislayMedia();
     }
-  }, [screen]);
+  }, [screen, getDislayMedia]);
 
   const handleVideo = () => setVideo(!videoToggle);
   const handleAudio = () => setAudio(!audioToggle);

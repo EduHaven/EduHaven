@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ArrowLeft } from "lucide-react";
 import styles from "./Game2048.module.css";
+import { Button } from "@/components/ui/button";
 
 const Game2048 = () => {
   const [board, setBoard] = useState(getInitialBoard());
@@ -39,7 +40,6 @@ const Game2048 = () => {
 
   function moveBoard(direction) {
     if (gameOver) return;
-    let newBoard = JSON.parse(JSON.stringify(board));
     let moved = false;
     let newScore = score;
 
@@ -126,27 +126,30 @@ const Game2048 = () => {
     }
   }
 
-  function handleKeyDown(e) {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
-      e.preventDefault(); // ✅ stops page scrolling
-    }
-    switch (e.key) {
-      case "ArrowUp":
-        moveBoard("up");
-        break;
-      case "ArrowDown":
-        moveBoard("down");
-        break;
-      case "ArrowLeft":
-        moveBoard("left");
-        break;
-      case "ArrowRight":
-        moveBoard("right");
-        break;
-      default:
-        break;
-    }
-  }
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault(); // ✅ stops page scrolling
+      }
+      switch (e.key) {
+        case "ArrowUp":
+          moveBoard("up");
+          break;
+        case "ArrowDown":
+          moveBoard("down");
+          break;
+        case "ArrowLeft":
+          moveBoard("left");
+          break;
+        case "ArrowRight":
+          moveBoard("right");
+          break;
+        default:
+          break;
+      }
+    },
+    [moveBoard]
+  );
 
   function resetGame() {
     setBoard(getInitialBoard());
@@ -157,7 +160,7 @@ const Game2048 = () => {
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [board, gameOver]);
+  }, [board, gameOver, handleKeyDown]);
 
   // Save high score to localStorage whenever it changes
   useEffect(() => {
@@ -168,12 +171,13 @@ const Game2048 = () => {
     <div className="h-screen flex flex-col">
       <nav className="px-8 pt-4 flex items-center justify-between">
         <div className="flex gap-3 items-center">
-          <button
+          <Button
             onClick={() => window.history.back()}
-            className="flex items-center gap-2 px-4 py-1 text-[var(--txt-dim)] bg-sec rounded-lg cursor-pointer transition-all duration-200 text-sm font-medium hover:bg-ter "
+            variant="secondary"
+            className="flex items-center gap-2 px-4 py-1 text-[var(--txt-dim)] bg-sec rounded-lg text-sm font-medium hover:bg-ter"
           >
             <ArrowLeft size={24} />
-          </button>
+          </Button>
 
           <h1 className="text-2xl font-semibold txt">2048</h1>
         </div>
@@ -186,18 +190,20 @@ const Game2048 = () => {
         </div>
 
         <div className="flex gap-4">
-          <button
+          <Button
             onClick={resetGame}
-            className="px-4 py-2 text-white btn hover:btn-hover rounded-lg cursor-pointer text-sm sm:text-base font-medium"
+            variant="default"
+            className="px-4 py-2 rounded-lg text-sm sm:text-base font-medium"
           >
             New Game
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setShowHowToPlay(true)}
-            className="px-3 py-2 text-[var(--txt-dim)] bg-[var(--bg-ter)] rounded-lg cursor-pointer text-sm sm:text-base font-medium hover:bg-ter hover:text-[var(--txt)]"
+            variant="secondary"
+            className="px-3 py-2 rounded-lg text-sm sm:text-base font-medium hover:bg-ter hover:text-[var(--txt)]"
           >
             How to Play
-          </button>
+          </Button>
         </div>
       </nav>
 
@@ -237,7 +243,9 @@ const Game2048 = () => {
                 <h2>Game Over!</h2>
                 <p>Final Score: {score}</p>
                 <p>High Score: {highScore}</p>
-                <button onClick={resetGame}>Try Again</button>
+                <Button onClick={resetGame} variant="default">
+                  Try Again
+                </Button>
               </div>
             </div>
           )}
@@ -247,12 +255,13 @@ const Game2048 = () => {
       {showHowToPlay && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className="bg-[var(--bg-primary)] rounded-xl shadow-lg p-8 max-w-md w-full relative">
-            <button
-              className="absolute top-2 right-2 px-2 py-1 text-[var(--txt-dim)] bg-sec rounded-lg cursor-pointer hover:bg-ter"
+            <Button
               onClick={() => setShowHowToPlay(false)}
+              variant="secondary"
+              className="absolute top-2 right-2 px-2 py-1 text-[var(--txt-dim)] bg-sec rounded-lg hover:bg-ter"
             >
               Close
-            </button>
+            </Button>
             <h2 className="text-xl font-bold mb-2">How to Play 2048</h2>
             <ul className="list-disc pl-5 space-y-2 text-base">
               <li>Use your arrow keys to move the tiles.</li>

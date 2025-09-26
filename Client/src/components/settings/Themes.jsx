@@ -1,5 +1,5 @@
+import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Clock, Globe, Check } from "lucide-react";
 
 const themes = [
   {

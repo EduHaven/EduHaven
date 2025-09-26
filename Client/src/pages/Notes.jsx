@@ -1,7 +1,9 @@
+import { useNavigate, useParams } from "react-router-dom";
 import FileHandler from "@tiptap/extension-file-handler";
 import Highlight from "@tiptap/extension-highlight";
 import { Image } from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
+import { Extension } from "@tiptap/core";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Table } from "@tiptap/extension-table";
 import TableCell from "@tiptap/extension-table-cell";
@@ -21,13 +23,19 @@ import NoteHeader from "@/components/notes/NoteHeader.jsx";
 import NotesList from "@/components/notes/NotesList.jsx";
 
 import {
+  useArchivedNotes,
+  useArchiveNote,
   useCreateNote,
   useDeleteNote,
   useNotes,
+  useRestoreTrashedNote,
+  useTrashedNotes,
+  useTrashNote,
   useUpdateNote,
 } from "@/queries/NoteQueries";
 
 import "@/components/notes/note.css";
+import TrashNotes from "@/components/notes/TrashNote";
 import axiosInstance from "@/utils/axios";
 import { toast } from "react-toastify";
 
@@ -43,17 +51,121 @@ const colors = [
 ];
 
 const Notes = () => {
+  const { noteId } = useParams();
+  const navigate = useNavigate();
+  const isFullScreen = !!noteId;
   const { data: notes = [], isLoading } = useNotes();
+  const { data: archiveNotes = [], isLoading: isArchiveLoading } =
+    useArchivedNotes();
+  const { data: trashNotes = [], isLoading: isTrashLoading } =
+    useTrashedNotes();
 
   const createNoteMutation = useCreateNote();
   const updateNoteMutation = useUpdateNote();
   const deleteNoteMutation = useDeleteNote();
+  const archiveNoteMutation = useArchiveNote();
+  const sendToTrashMutation = useTrashNote();
+  const restoreMutation = useRestoreTrashedNote();
 
+  const [status, setStatus] = useState("active"); // active, archive, trash
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNote, setSelectedNote] = useState(null);
   const [showColorPicker, setShowColorPicker] = useState(null);
 
+  useEffect(() => {
+    if (noteId && notes.length > 0) {
+      const foundNote = notes.find((n) => n._id === noteId);
+      if (foundNote) {
+        setSelectedNote(foundNote);
+      }
+    }
+  }, [noteId, notes]);
+
+  const notesObj = {
+    active: notes,
+    archive: archiveNotes,
+    trash: trashNotes,
+  };
+
   const typingTimeoutRef = useRef(null);
+
+  const BackspaceOnImage = Extension.create({
+    addKeyboardShortcuts() {
+      return {
+        Backspace: ({ editor }) => {
+          const { state } = editor;
+          const { $from, empty } = state.selection;
+          if (!empty) {
+            return false;
+          }
+
+          let imageNode = null;
+          let imagePos = null;
+
+          if ($from.nodeBefore && $from.nodeBefore.type.name === "image") {
+            imageNode = $from.nodeBefore;
+            imagePos = $from.pos - $from.nodeBefore.nodeSize;
+          } else if ($from.parentOffset === 0) {
+            const prevNode = state.doc.resolve($from.pos - 1);
+            if (
+              prevNode.nodeBefore &&
+              prevNode.nodeBefore.type.name === "image"
+            ) {
+              imageNode = prevNode.nodeBefore;
+              imagePos = prevNode.pos - prevNode.nodeBefore.nodeSize;
+            }
+          } else {
+            for (let pos = $from.pos - 1; pos >= 0; pos--) {
+              try {
+                const resolvedPos = state.doc.resolve(pos);
+                const node = resolvedPos.nodeAfter;
+                if (node && node.type.name === "image") {
+                  imageNode = node;
+                  imagePos = pos;
+
+                  break;
+                }
+
+                if (node && node.type.name !== "text") {
+                  break;
+                }
+              } catch (e) {
+                break;
+              }
+            }
+          }
+
+          if (imageNode) {
+            mySpecialImageHandler(imageNode, imagePos, editor);
+
+            return true;
+          }
+
+          return false;
+        },
+      };
+    },
+  });
+
+  async function mySpecialImageHandler(node, pos, editor) {
+    try {
+      const src = node.attrs.src;
+      if (!src) {
+        console.error("No src attribute found on image");
+        return;
+      }
+
+      const publicId = src.split("/").pop().split(".")[0];
+
+      await axiosInstance.post("/note/deleteimage", { publicId });
+      if (pos !== null && pos >= 0) {
+        const tr = editor.state.tr.delete(pos, pos + node.nodeSize);
+        editor.view.dispatch(tr);
+      }
+    } catch (err) {
+      console.error("Image deletion failed:", err);
+    }
+  }
 
   const editor = useEditor({
     extensions: [
@@ -85,6 +197,7 @@ const Notes = () => {
       Image.configure({
         allowBase64: true,
       }),
+      BackspaceOnImage,
       FileHandler.configure({
         allowedMimeTypes: [
           "image/png",
@@ -195,7 +308,7 @@ const Notes = () => {
             )
             .run();
         }
-      } catch (err) {
+      } catch {
         const didReplace = replacePlaceholder(
           placeholder,
           "Failed to upload image"
@@ -229,7 +342,7 @@ const Notes = () => {
         title: `Note ${notes.length + 1}`,
         content: "Write here...",
         color: "default",
-        isPinned: false,
+        pinnedAt: false,
       },
       {
         onSuccess: (newNote) => setSelectedNote(newNote),
@@ -253,9 +366,22 @@ const Notes = () => {
     });
   };
 
-  const togglePin = (id) => {
-    const note = notes.find((n) => n._id === id);
-    updateNote(id, { isPinned: !note.isPinned });
+  const sendToTrashNote = (id) => {
+    sendToTrashMutation.mutate(id, {
+      onSuccess: () => {
+        if (selectedNote?._id === id) setSelectedNote(null);
+      },
+    });
+  };
+
+  const restoreNote = (id) => {
+    restoreMutation.mutate(id, {
+      onSuccess: () => toast.success("Note restored"),
+    });
+  };
+
+  const togglePin = (id, pinnedAt) => {
+    updateNote(id, { pinnedAt: !pinnedAt });
   };
 
   const changeColor = (id, color) => {
@@ -263,15 +389,12 @@ const Notes = () => {
     setShowColorPicker(null);
   };
 
-  const duplicateNote = (note) => {
-    // const newNote = {
-    //   ...note,
-    //   id: Date.now(),
-    //   title: note.title + " (Copy)",
-    //   createdAt: new Date().toISOString(),
-    //   isPinned: false,
-    // };
-    // setNotes([newNote, ...notes]);
+  const archiveNote = (note) => {
+    archiveNoteMutation.mutate(note._id, {
+      onSuccess: () => {
+        if (selectedNote?._id === note._id) setSelectedNote(null);
+      },
+    });
   };
 
   const exportNote = (note) => {
@@ -290,10 +413,29 @@ const Notes = () => {
   };
 
   const insertImage = () => {
-    const url = prompt("Enter image URL:");
-    if (url && editor) {
-      editor.chain().focus().setImage({ src: url }).run();
-    }
+    if (!editor) return;
+
+    // Create hidden input
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.multiple = true;
+
+    // Attach change event
+    input.addEventListener("change", async () => {
+      const files = input?.files;
+      console.log(files);
+      if (!files || files.length === 0) return;
+
+      try {
+        await handleImageUpload(editor, files, editor.state.selection.from); // your upload function
+      } catch (err) {
+        console.error("Image upload failed:", err);
+      }
+    });
+
+    // Must be triggered synchronously from user click
+    input.click();
   };
 
   const insertLink = () => {
@@ -330,7 +472,7 @@ const Notes = () => {
     return text.substring(0, 100) + (text.length > 100 ? "..." : "");
   };
 
-  const filteredNotes = notes.filter((note) => {
+  const filteredNotes = notesObj[status].filter((note) => {
     const plainContent = getPlainTextPreview(note.content);
     const matchesSearch =
       note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -338,11 +480,21 @@ const Notes = () => {
     return matchesSearch;
   });
 
-  const pinnedNotes = (notes || []).filter((note) => note.isPinned);
-  const unpinnedNotes = (notes || []).filter((note) => !note.isPinned);
+  const pinnedNotes = (notesObj[status] || []).filter((note) => note.pinnedAt);
+  const unpinnedNotes = (notesObj[status] || []).filter(
+    (note) => !note.pinnedAt
+  );
 
-  if (isLoading) {
-    return <p>Loading...</p>;
+  if (status == "active" && isLoading) {
+    return <p>Loading notes...</p>;
+  }
+
+  if (status == "archive" && isArchiveLoading) {
+    return <p>Loading archived notes...</p>;
+  }
+
+  if (status == "trash" && isTrashLoading) {
+    return <p>Loading trashed notes...</p>;
   }
 
   return (
@@ -360,37 +512,58 @@ const Notes = () => {
             createNewNote={createNewNote}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
-          />
-          <NotesList
-            pinnedNotes={pinnedNotes}
-            unpinnedNotes={unpinnedNotes}
-            filteredNotes={filteredNotes}
-            searchTerm={searchTerm}
+            setStatus={setStatus}
             setSelectedNote={setSelectedNote}
-            togglePin={togglePin}
-            deleteNote={deleteNote}
-            duplicateNote={duplicateNote}
-            exportNote={exportNote}
-            changeColor={changeColor}
-            showColorPicker={showColorPicker}
-            setShowColorPicker={setShowColorPicker}
-            colors={colors}
-            getPlainTextPreview={getPlainTextPreview}
+            status={status}
           />
+
+          {(status == "active" || status == "archive") && (
+            <NotesList
+              pinnedNotes={pinnedNotes}
+              unpinnedNotes={unpinnedNotes}
+              filteredNotes={filteredNotes}
+              searchTerm={searchTerm}
+              setSelectedNote={setSelectedNote}
+              togglePin={togglePin}
+              sendToTrashNote={sendToTrashNote}
+              archiveNote={archiveNote}
+              exportNote={exportNote}
+              changeColor={changeColor}
+              showColorPicker={showColorPicker}
+              setShowColorPicker={setShowColorPicker}
+              colors={colors}
+              getPlainTextPreview={getPlainTextPreview}
+            />
+          )}
+
+          {status == "trash" && (
+            <TrashNotes
+              notes={trashNotes}
+              onDelete={deleteNote}
+              onRestore={restoreNote}
+              getPlainTextPreview={getPlainTextPreview}
+            />
+          )}
         </div>
 
         {/* Note Editor */}
         {selectedNote && (
-          <NoteEditor
-            selectedNote={selectedNote}
-            setSelectedNote={setSelectedNote}
-            colors={colors}
-            editor={editor}
-            updateNote={updateNote}
-            insertLink={insertLink}
-            insertImage={insertImage}
-            insertTable={insertTable}
-          />
+          <div className="flex-1 flex flex-col">
+            <NoteEditor
+              selectedNote={selectedNote}
+              setSelectedNote={setSelectedNote}
+              colors={colors}
+              editor={editor}
+              updateNote={updateNote}
+              insertLink={insertLink}
+              insertImage={insertImage}
+              insertTable={insertTable}
+              onClose={() => {
+                if (noteId) navigate(-1);
+                else setSelectedNote(null);
+              }}
+            />
+          </div>
         )}
       </div>
     </div>

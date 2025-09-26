@@ -25,6 +25,19 @@ const noteSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    pinnedAt: {
+      type: Date,
+      default: null,
+    },
+    status: {
+      type: String,
+      enum: ["active", "archived", "trashed"],
+      default: "active",
+    },
+    trashedAt: {
+      type: Date,
+      default: null,
+    },
     collaborators: [
       {
         user: {

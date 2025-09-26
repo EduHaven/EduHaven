@@ -9,6 +9,7 @@ function OurContributors({ isLoading, contributors }) {
       <div className="bg-sec relative w-full h-full animate-pulse"></div>
     </div>
   );
+
   return (
     <div className="mt-32 mb-14">
       <h1 className="text-3xl md:text-[4vw] xl:text-[3vw] font-light mb-12">
@@ -58,7 +59,8 @@ function OurContributors({ isLoading, contributors }) {
               ))}
         </div>
       </motion.div>
-      <div className="w-fit ml-auto my-4 ">
+
+      <div className="w-fit ml-auto my-4">
         <Button
           variant="secondary"
           className="p-2 pl-3 text-lg bg-transparent hover:bg-[var(--bg-sec)]"

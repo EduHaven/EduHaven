@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ExternalLink, Plus, X, MoreVertical } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 // Helper to get domain from a URL
 function getDomain(url) {
@@ -221,14 +222,16 @@ function PinnedLinks() {
 
   return (
     <div className="relative z-50">
-      <button
+      <Button
+        variant="transparent"
+        size="default"
         ref={buttonRef}
-        className="flex gap-3 font-bold text-lg items-center txt"
         onClick={() => setShowDropdown(!showDropdown)}
+        className="flex gap-3 font-bold text-lg items-center txt"
       >
         <ExternalLink />
         Links
-      </button>
+      </Button>
 
       {/* Dropdown of existing pinned links + add button */}
       {/* <AnimatePresence mode="wait"> */}
@@ -332,17 +335,17 @@ function PinnedLinks() {
                 </motion.div>
 
                 <div className="relative">
-                  <motion.button
+                  <Button
                     onClick={(e) => {
                       e.stopPropagation();
                       setOpenMenuId(openMenuId === item.id ? null : item.id);
                     }}
-                    className="p-1 hover:bg-ter rounded transition-colors duration-200"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
+                    variant="transparent"
+                    size="icon"
+                    className="p-1 rounded hover:bg-ter transition-colors duration-200"
                   >
                     <MoreVertical className="w-4 h-4" />
-                  </motion.button>
+                  </Button>
 
                   <AnimatePresence>
                     {openMenuId === item.id && (
@@ -368,22 +371,22 @@ function PinnedLinks() {
                         }}
                         className="absolute right-0 mt-1 bg-ter shadow-lg rounded-md p-1 z-10 min-w-[5rem] border border-opacity-10 border-gray-400"
                       >
-                        <motion.button
+                        <Button
                           onClick={() => handleEditLink(item.id)}
-                          className="block w-full text-left px-2 py-1 hover:bg-sec txt rounded-sm transition-colors duration-150"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+                          variant="secondary"
+                          size="default"
+                          className="block w-full text-left px-2 py-1 rounded-sm txt hover:bg-sec transition-colors duration-150"
                         >
                           Edit
-                        </motion.button>
-                        <motion.button
+                        </Button>
+                        <Button
                           onClick={() => handleDeleteLink(item.id)}
-                          className="block w-full text-left px-2 py-1 hover:bg-sec txt rounded-sm transition-colors duration-150"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+                          variant="destructive"
+                          size="default"
+                          className="block w-full text-left px-2 py-1 rounded-sm txt hover:bg-sec transition-colors duration-150"
                         >
                           Delete
-                        </motion.button>
+                        </Button>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -391,23 +394,11 @@ function PinnedLinks() {
               </motion.div>
             ))}
 
-            <motion.button
+            <Button
               onClick={handleAddNew}
+              variant="default"
+              size="default"
               className="block w-full px-4 py-2 txt hover:bg-ter rounded-md mt-2 flex items-center gap-2 transition-colors duration-200 border-t border-opacity-20 border-gray-300 pt-3"
-              initial={{
-                opacity: 0,
-                y: 10,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                delay: pinnedLinks.length * 0.05,
-                duration: 0.2,
-              }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
             >
               <motion.div
                 initial={{ rotate: -90, scale: 0.8 }}
@@ -429,7 +420,7 @@ function PinnedLinks() {
               >
                 Add Link
               </motion.span>
-            </motion.button>
+            </Button>
           </motion.div>
         </motion.div>
       )}
@@ -457,7 +448,7 @@ function PinnedLinks() {
                 <h2 className="text-xl font-bold txt">
                   {editItemId ? "Edit link" : "Create a link"}
                 </h2>
-                <button
+                <Button
                   onClick={() => {
                     setShowModal(false);
                     setEditItemId(null);
@@ -465,10 +456,12 @@ function PinnedLinks() {
                     setMainLink("");
                     setExtraLinks([]);
                   }}
+                  variant="transparent"
+                  size="icon"
                   className="p-1 hover:bg-ter rounded"
                 >
                   <X className="w-5 h-5 txt" />
-                </button>
+                </Button>
               </div>
 
               {/* Title */}
@@ -519,23 +512,27 @@ function PinnedLinks() {
               ))}
 
               {/* "Add another tab" button */}
-              <button
+              <Button
                 type="button"
                 onClick={handleAddAnotherLink}
+                variant="link"
+                size="default"
                 className="text-sm flex font-medium items-center gap-1 mt-2 txt hover:opacity-80 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Add another tab
-              </button>
+              </Button>
 
               {/* Save (Add/Edit) button */}
               <div className="flex justify-end mt-6">
-                <button
+                <Button
                   onClick={handleSaveLink}
+                  variant="default"
+                  size="default"
                   className="px-4 py-2 rounded txt btn hover:bg-ter/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-current transition-colors"
                 >
                   {editItemId ? "Save" : "Add"}
-                </button>
+                </Button>
               </div>
             </motion.div>
           </motion.div>
@@ -554,18 +551,22 @@ function PinnedLinks() {
               Your browser is blocking the links from opening. Please disable
               the popup blocker for this site and try again.
             </p>
-            <button
+            <Button
               onClick={handleRetryOpenLinks}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              variant="default"
+              size="default"
+              className="px-4 py-2 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-600 hover:bg-blue-700"
             >
               I have enabled popups
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setShowPopupBlockerModal(false)}
+              variant="link"
+              size="default"
               className="mt-4 block w-full text-center text-sm text-gray-400 hover:text-gray-200"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
       )}

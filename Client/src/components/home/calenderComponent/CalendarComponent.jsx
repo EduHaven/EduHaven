@@ -7,6 +7,7 @@ import AllEventsPopup from "./AllEventsPopup";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import CalendarDayTooltip from "./CalendarDayTooltip";
+import { Button } from "@/components/ui/button";
 
 function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -201,18 +202,22 @@ function Calendar() {
               {currentDate.getFullYear()}
             </h2>
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={handlePrevMonth}
+                variant="transparent"
+                size="icon"
                 className="p-1.5 rounded-full hover:bg-ter"
               >
                 <ChevronLeft />
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleNextMonth}
+                variant="transparent"
+                size="icon"
                 className="p-1.5 rounded-full hover:bg-ter"
               >
                 <ChevronRight />
-              </button>
+              </Button>
             </div>
           </div>
           <div className="grid grid-cols-7 gap-[0.4rem]">
@@ -286,13 +291,15 @@ function Calendar() {
         <div className="p-6 rounded-3xl bg-ter flex-1 mt-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold txt">Upcoming Events:</h3>
-            <button
+            <Button
               onClick={() => setShowAllEvents(true)}
-              className="text-sm txt-dim hover:txt transition-colors flex items-center gap-1"
+              variant="link"
+              size="default"
+              className="text-sm txt-dim flex items-center gap-1 transition-colors hover:txt"
             >
               See all
               <ChevronRight className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
           {upcomingEvents.length > 0 ? (
             <motion.ul

@@ -64,5 +64,13 @@ const cloudinaryUpload = async (req, res, next) => {
     });
   }
 };
+const removefromCloudinary=async(publicid,resource_type)=>{        
+      try {         
+        await cloudinary.uploader.destroy("eduhaven-notes/"+publicid,{resource_type:resource_type})
+      } catch (error) {
+        throw ApiError(500,{},"Error in deleting the cloudeinary file")
+      }
+    }
 
-export { uploadmanish, cloudinaryUpload };
+export { uploadmanish, cloudinaryUpload, removefromCloudinary };
+

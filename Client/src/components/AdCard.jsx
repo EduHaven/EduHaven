@@ -10,11 +10,10 @@ const FOCUS_DOCK_URL =
   "https://play.google.com/store/apps/details?id=com.rishukumarcodes.Standbyclock";
 
 // GSSoC Navigator Product
-const gssocNavigatorIcon =
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlkIn00HvFnjK7qiCrZZ_JGw0P8-48NKg8rw&s";
-const gssocNavigatorDisplay = "/navigator1.png";
-const gssocNavigatorDisplay2 = "/navigator2.png";
-const GSSOC_NAVIGATOR_URL = "https://girlscirpt2025.vercel.app";
+const gssocNavigatorIcon = "/gssocNavigatorIcon.jpg";
+const gssocNavigatorDisplay = "/gssocNavigatorDisplay.jpg";
+const gssocNavigatorDisplay2 = "/gssocNavigatorDisplay2.jpg";
+const GSSOC_NAVIGATOR_URL = "https://gssoc-project-navigator.example.com";
 
 // Product data
 const products = [
@@ -77,7 +76,7 @@ function AdCard({ slideInterval = 30000 }) {
         href={currentProductData.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex flex-row  gap-4"
+        className="flex flex-row gap-4"
       >
         <img
           src={currentProductData.icon}

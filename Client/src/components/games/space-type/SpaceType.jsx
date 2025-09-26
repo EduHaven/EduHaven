@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield, Bomb, Pause, Play, RefreshCw, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import wordList from "./wordList";
 
@@ -356,33 +357,39 @@ const SpaceType = () => {
           <p className="text-gray-400 text-xs">Press ENTER for bomb</p>
         </div>
         <div className="flex gap-4">
-          <button
+          <Button
             onClick={() => setShowInfo(!showInfo)}
-            className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded-lg transition-colors"
+            variant="default"
+            size="icon"
+            className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded-lg"
             title="Keyboard shortcuts"
           >
             <span className="text-white font-bold text-sm">i</span>
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={useShield}
             disabled={shields === 0}
-            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 px-3 py-2 rounded-lg transition-colors"
+            variant="default"
+            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 px-3 py-2 rounded-lg"
           >
             <Shield size={20} className="text-blue-400" /> {shields}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={triggerBomb}
             disabled={bombs === 0}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 px-3 py-2 rounded-lg transition-colors"
+            variant="default"
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 px-3 py-2 rounded-lg"
           >
             <Bomb size={20} className="text-red-400" /> {bombs}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setIsPaused(!isPaused)}
-            className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded-lg transition-colors"
+            variant="default"
+            size="icon"
+            className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded-lg"
           >
             {isPaused ? <Play size={20} /> : <Pause size={20} />}
-          </button>
+          </Button>
         </div>
       </div>
       {/* Info Panel */}
@@ -600,18 +607,22 @@ const SpaceType = () => {
               </p>
             </div>
             <div className="flex gap-4 justify-center">
-              <button
+              <Button
                 onClick={resetGame}
-                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-8 py-4 rounded-lg transition-colors text-lg font-bold"
+                variant="default"
+                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-8 py-4 rounded-lg text-lg font-bold"
               >
-                <RefreshCw size={24} /> Play Again
-              </button>
-              <button
+                <RefreshCw size={24} />
+                Play Again
+              </Button>
+              <Button
                 onClick={() => window.location.reload()}
-                className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-8 py-4 rounded-lg transition-colors text-lg font-bold"
+                variant="default"
+                className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-8 py-4 rounded-lg text-lg font-bold"
               >
-                <ArrowLeft size={24} /> Exit
-              </button>
+                <ArrowLeft size={24} />
+                Exit
+              </Button>
             </div>
           </div>
         </div>

@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import RouterSelector from "./lib/RouterSelector";
 import Layout from "./components/Layout";
 import Home from "./pages/Home.jsx";
-import Stats from "./pages/Stats"; // Updated import name
+import Stats from "./pages/Stats";
 import GameRoom from "./routes/GameRoutes.jsx";
 import Signout from "./Auth/Signout";
 import PageNotFound from "../src/pages/PageNotFound";
@@ -47,6 +47,7 @@ function App() {
                 />
                 <Route path="games/*" element={<GameRoom />} />
                 <Route path="notes" element={<Notes />} />
+                <Route path="notes/:noteId" element={<Notes />} />
                 <Route path="about" element={<About />} />
                 <Route path="settings/" element={<Settings />} />
                 <Route path="friends" element={<FriendsPage />} />

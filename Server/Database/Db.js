@@ -1,5 +1,6 @@
 // Server/Database/Db.js
 import mongoose from "mongoose";
+import { handleMissingUsernames } from "../Middlewares/usernameHandler.js";
 
 /**
  * ConnectDB - connects to MongoDB using mongoose.
@@ -56,6 +57,7 @@ export const ConnectDB = async ({
       }
 
       await mongoose.connect(uri, connectOptions);
+      await handleMissingUsernames(); // add username to users without username
       console.log("✅ MongoDB connected");
 
       // Expose a close function for graceful shutdown

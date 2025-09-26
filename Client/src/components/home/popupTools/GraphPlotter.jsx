@@ -44,7 +44,7 @@ const GraphPlotter = () => {
   useEffect(() => {
     const newFunction = Object.values(functionLibrary[category])[0];
     setFunc(newFunction);
-  }, [category]);
+  }, [category, functionLibrary]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -86,7 +86,7 @@ const GraphPlotter = () => {
         }
       }
       ctx.stroke();
-    } catch (e) {
+    } catch {
       setError(
         "Invalid function. Please use valid JavaScript Math syntax (e.g., Math.sin(x))."
       );

@@ -574,7 +574,7 @@ export default function PrivacyPolicy() {
                     hesitate to reach out.
                   </p>
                   <div
-                    className="inline-flex items-center px-4 sm:px-6 py-3 rounded-xl border shadow-sm"
+                    className="inline-flex items-center px-4 sm:px-6 py-3 rounded-xl border shadow-sm transition-colors duration-200 hover:opacity-80"
                     style={{
                       backgroundColor: "var(--bg-ter)",
                       borderColor: "var(--bg-primary)",
@@ -593,7 +593,13 @@ export default function PrivacyPolicy() {
                       className="text-base sm:text-lg font-semibold"
                       style={{ color: "var(--txt)" }}
                     >
-                      rishucodingdrive@gmail.com
+                      <a
+                        href="https://mail.google.com/mail/?view=cm&fs=1&to=rishucodingdrive@gmail.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        rishucodingdrive@gmail.com
+                      </a>
                     </span>
                   </div>
                 </div>
