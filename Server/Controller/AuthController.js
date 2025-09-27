@@ -123,7 +123,7 @@ const verifyUser = async (req, res) => {
       });
     }
 
-    // recheck for empty username
+    // validate for empty username
     let username = verify.user.Username;
     if (!username || username.trim() === "") {
       const base = verify.user.Email.split("@")[0];
@@ -246,11 +246,11 @@ const signup = async (req, res) => {
     const haspass = await argon2.hash(Password, { type: argon2.argon2id });
 
     // Create a temporary user object (not saved in the database yet)
-    user = {
-      FirstName,
-      LastName,
-      Username,
-      Email,
+    const tmpUser = {
+      FirstName: FirstName.trim(),
+      LastName: LastName.trim(),
+      Username: Username.trim(),
+      Email: Email.trim().toLowerCase(),
       Password: haspass, // Store hashed password
     };
 
@@ -259,7 +259,7 @@ const signup = async (req, res) => {
       .padStart(6, "0");
     const activationToken = jwt.sign(
       {
-        user,
+        user: tmpUser,
         otp,
       },
       process.env.Activation_Secret,
