@@ -227,7 +227,8 @@ const signup = async (req, res) => {
 
     if (!usernameRgx.test(Username)) {
       return res.status(400).json({
-        error: "Username can only contain letter, numbers, and underscores",
+        error:
+          "Username can only contain letters, numbers, underscores, and dots",
       });
     }
 
