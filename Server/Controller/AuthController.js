@@ -125,7 +125,7 @@ const verifyUser = async (req, res) => {
 
     // recheck for empty username
     let username = verify.user.Username;
-    if (!username) {
+    if (!username || username.trim() === "") {
       const base = verify.user.Email.split("@")[0];
       username = await generateUsername(base);
     }
@@ -217,8 +217,22 @@ const signup = async (req, res) => {
       return res.status(422).json({ error: "Please fill all the fields" });
     }
 
+    // server-side validation for username
+    const usernameRgx = /^[A-Za-z0-9_]+$/;
+    if (typeof Username !== "string" || Username.length < 3) {
+      return res
+        .status(400)
+        .json({ error: "Username must be at least 3 characters long" });
+    }
+
+    if (!usernameRgx.test(Username)) {
+      return res.status(400).json({
+        error: "Username can only contain letter, numbers, and underscores",
+      });
+    }
+
     // Check if user already exists
-    let user = await User.findOne({ Email: Email });
+    let user = await User.findOne({ Email });
     if (user) {
       return res.status(409).json({ error: "User already exists" });
     }
