@@ -269,6 +269,7 @@ const findUserByUsernameOrEmail = async (req, res) => {
   } catch (error) {
     console.error("Error fetching all users:", error);
     return sendError(res, 500, "Failed to fetch users", error.message);
+
   }
 };
 
