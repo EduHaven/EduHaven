@@ -11,6 +11,7 @@ import { createUserWithUniqueUsername } from "../Middlewares/usernameHandler.js"
 
 import generateAuthToken from "../utils/GenerateAuthToken.js";
 import sendMail from "../utils/sendMail.js";
+import { generateUsername } from "../utils/generateUsername.js";
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } =
   process.env;
@@ -65,7 +66,7 @@ const googleCallback = async (req, res) => {
         oauthProvider: "google",
         oauthId,
       };
-      user=await createUserWithUniqueUsername(base, userData);
+      user = await createUserWithUniqueUsername(base, userData);
     }
 
     const appToken = generateAuthToken(user);
@@ -120,6 +121,13 @@ const verifyUser = async (req, res) => {
       return res.status(400).json({
         message: "Incorrect OTP",
       });
+    }
+
+    // recheck for empty username
+    let username = verify.user.Username;
+    if (!username) {
+      const base = verify.user.Email.split("@")[0];
+      username = await generateUsername(base);
     }
 
     await User.create({
