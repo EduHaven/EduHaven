@@ -11,6 +11,7 @@ import { createUserWithUniqueUsername } from "../Middlewares/usernameHandler.js"
 
 import generateAuthToken from "../utils/GenerateAuthToken.js";
 import sendMail from "../utils/sendMail.js";
+import { generateUsername } from "../utils/generateUsername.js";
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } =
   process.env;
@@ -65,7 +66,7 @@ const googleCallback = async (req, res) => {
         oauthProvider: "google",
         oauthId,
       };
-      user=await createUserWithUniqueUsername(base, userData);
+      user = await createUserWithUniqueUsername(base, userData);
     }
 
     const appToken = generateAuthToken(user);
@@ -120,6 +121,13 @@ const verifyUser = async (req, res) => {
       return res.status(400).json({
         message: "Incorrect OTP",
       });
+    }
+
+    // validate for empty username
+    let username = verify.user.Username;
+    if (!username || username.trim() === "") {
+      const base = verify.user.Email.split("@")[0];
+      username = await generateUsername(base);
     }
 
     await User.create({
@@ -209,8 +217,23 @@ const signup = async (req, res) => {
       return res.status(422).json({ error: "Please fill all the fields" });
     }
 
+    // server-side validation for username
+    const usernameRgx = /^[A-Za-z0-9_]+$/;
+    if (typeof Username !== "string" || Username.length < 3) {
+      return res
+        .status(400)
+        .json({ error: "Username must be at least 3 characters long" });
+    }
+
+    if (!usernameRgx.test(Username)) {
+      return res.status(400).json({
+        error:
+          "Username can only contain letters, numbers, underscores, and dots",
+      });
+    }
+
     // Check if user already exists
-    let user = await User.findOne({ Email: Email });
+    let user = await User.findOne({ Email });
     if (user) {
       return res.status(409).json({ error: "User already exists" });
     }
@@ -224,11 +247,11 @@ const signup = async (req, res) => {
     const haspass = await argon2.hash(Password, { type: argon2.argon2id });
 
     // Create a temporary user object (not saved in the database yet)
-    user = {
-      FirstName,
-      LastName,
-      Username,
-      Email,
+    const tmpUser = {
+      FirstName: FirstName.trim(),
+      LastName: LastName.trim(),
+      Username: Username.trim(),
+      Email: Email.trim().toLowerCase(),
       Password: haspass, // Store hashed password
     };
 
@@ -237,7 +260,7 @@ const signup = async (req, res) => {
       .padStart(6, "0");
     const activationToken = jwt.sign(
       {
-        user,
+        user: tmpUser,
         otp,
       },
       process.env.Activation_Secret,
