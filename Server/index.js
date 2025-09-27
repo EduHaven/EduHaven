@@ -26,7 +26,8 @@ if (!globalThis.fetch) {
 }
 
 const app = express();
-export const PORT = Number(process.env.PORT) || 3000;
+export const PORT =
+  process.env.NODE_ENV === "test" ? 3001 : Number(process.env.PORT) || 3000;
 export const NODE_ENV = process.env.NODE_ENV || "development";
 export const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
 
