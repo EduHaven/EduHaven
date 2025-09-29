@@ -230,6 +230,11 @@ const ProfileCard = ({ isCurrentUser = false }) => {
           <h2 className="text-xl font-bold">
             {user.FirstName} {user.LastName}
           </h2>
+          {user?.Username && (
+            <p className="text-[var(--text-secondary)] text-sm mb-2">
+              @{user.Username}
+            </p>
+          )}
           {user?.Bio && (
             <p className="text-[var(--text-secondary)] mb-4 max-w-xs">
               {user.Bio}

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const FriendsPopup = ({
   showPopup,
@@ -10,6 +11,7 @@ const FriendsPopup = ({
   user,
   kudosCount,
 }) => {
+  const navigate = useNavigate();
   return (
     <div className="relative flex items-center mb-4 gap-4">
       <div className="w-28 h-28 rounded-full shadow-lg overflow-hidden">
@@ -87,6 +89,11 @@ const FriendsPopup = ({
                     <div
                       key={friend._id}
                       className="flex items-center gap-3 p-4 cursor-pointer hover:bg-sec/70 transition rounded-lg mx-2"
+                      onClick={() => {
+                        if (friend._id) {
+                          navigate(`/user/${friend._id}`);
+                        }
+                      }}
                     >
                       <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden">
                         {friend.ProfilePicture ? (
@@ -108,6 +115,17 @@ const FriendsPopup = ({
                             ? `${friend.FirstName} ${friend.LastName || ""}`
                             : "old-user"}
                         </p>
+                        {friend.Username && (
+                          <p
+                            className="txt-dim text-sm truncate hover:underline cursor-pointer"
+                            onClick={e => {
+                              e.stopPropagation();
+                              navigate(`/user/${friend._id}`);
+                            }}
+                          >
+                            @{friend.Username}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))
