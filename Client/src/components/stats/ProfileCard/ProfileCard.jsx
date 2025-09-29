@@ -232,7 +232,7 @@ const ProfileCard = ({ isCurrentUser = false }) => {
           </h2>
           {user?.Username && (
             <p className="text-[var(--text-secondary)] text-sm mb-2">
-              @{user.username}
+              @{user.Username}
             </p>
           )}
           {user?.Bio && (
