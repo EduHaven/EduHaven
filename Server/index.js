@@ -1,7 +1,7 @@
+import dotenv from "dotenv";
 import express from "express";
 import { createServer } from "http";
 import fetch, { Headers, Request, Response } from "node-fetch";
-import dotenv from "dotenv";
 import { applyCommonMiddleware } from "./Middlewares/commonMiddleware.js";
 import { ConnectDB } from "./Database/Db.js";
 import { mountRoutes } from "./Routes/Routes.js";
@@ -28,7 +28,7 @@ if (!globalThis.fetch) {
 const app = express();
 export const PORT = Number(process.env.PORT) || 3000;
 export const NODE_ENV = process.env.NODE_ENV || "development";
-export const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
+export const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5174";
 
 // security middleware
 applySecurity(app);

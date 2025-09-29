@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import axiosInstance from "@/utils/axios";
-import { toast } from "react-toastify";
+import { useToast } from '@/contexts/ToastContext';
 
 const Signout = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     const handleSignOut = async () => {

@@ -2,7 +2,7 @@ import axiosInstance from "@/utils/axios";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useToast } from '../contexts/ToastContext';
 import { Button } from "../components/ui/button";
 
 const Delete = () => {
@@ -14,6 +14,7 @@ const Delete = () => {
   const [otp, setOtp] = useState("");
 
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   // redirect if no token
   useEffect(() => {

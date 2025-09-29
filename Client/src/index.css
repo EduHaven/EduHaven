@@ -381,6 +381,67 @@
   display: none; /* Chrome, Safari, and Opera */
 }
 
+/* Toast Notification Styles */
+@layer components {
+  .toast-notification {
+    @apply relative overflow-hidden transform transition-all duration-300;
+    background: var(--bg-ter);
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 350px;
+    max-width: 400px;
+  }
+
+  .toast-hidden {
+    @apply translate-x-full opacity-0 scale-95;
+  }
+
+  .toast-visible {
+    @apply translate-x-0 opacity-100 scale-100;
+    animation-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .toast-exiting {
+    @apply translate-x-full opacity-0 scale-90;
+    animation-timing-function: ease-out;
+  }
+
+  /* Toast Animation Keyframes */
+  @keyframes bounceInRight {
+    0% {
+      transform: translateX(100%) scale(0.95);
+      opacity: 0;
+    }
+    60% {
+      transform: translateX(-10px) scale(1.02);
+      opacity: 0.8;
+    }
+    80% {
+      transform: translateX(5px) scale(0.98);
+      opacity: 0.9;
+    }
+    100% {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes bounceOutRight {
+    0% {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+    20% {
+      transform: translateX(-10px) scale(1.02);
+      opacity: 0.9;
+    }
+    100% {
+      transform: translateX(100%) scale(0.90);
+      opacity: 0;
+    }
+  }
+}
+
 /* code below is only and only for tic-tac-toe. nothing else. ------------------------------------------------------*/
 
 body {
@@ -432,6 +493,6 @@ body {
 /* Calendar Event title background */
 @layer components {
   .popup-overlay {
-    @apply bg-black/40 backdrop-blur-sm;
+    @apply bg-black/50 backdrop-blur-sm;
   }
 }

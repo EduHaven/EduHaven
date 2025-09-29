@@ -1,5 +1,14 @@
 import { Button } from "@/components/ui/button";
 import NotificationIndicator from "../NotificationIndicator";
+import { Users, UserPlus, UserCheck, User } from "lucide-react";
+
+const tabIcons = {
+  suggested: <UserPlus size={24} />,
+  friendRequests: <Users size={24} />,
+  sentRequests: <UserCheck size={24} />,
+  allFriends: <User size={24} />,
+};
+
 function TabNavigation({ activeTab, onTabChange }) {
   const tabs = [
     { id: "suggested", label: "Suggested" },
@@ -9,23 +18,28 @@ function TabNavigation({ activeTab, onTabChange }) {
   ];
 
   return (
-    <div className="w-60 overflow-hidden hidden sm:flex flex-col p-4 h-screen 2xl:mr-6 bg-[var(--bg-sec)]">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--txt)]">Friends</h3>
-      <div className="space-y-2">
+    <aside className="w-60 xl:w-72 h-screen bg-sec shadow-md relative hidden sm:flex flex-col">
+      <h1 className="px-8 py-4 mt-6 text-xl font-bold pb-0">Friends</h1>
+      <nav className="p-2 xl:p-4 space-y-0">
         {tabs.map((tab) => (
           <Button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            variant={activeTab === tab.id ? "default" : "secondary"}
-            size="default"
-            className="w-full text-left px-4 py-2 flex justify-between items-center"
+            variant={activeTab === tab.id ? "default" : "ghost"}
+            className={`group flex items-center justify-between p-3 rounded-lg text-md w-full text-nowrap transition relative ${
+              activeTab === tab.id
+                ? "bg-[var(--btn)] text-white"
+                : "hover:bg-ter"
+            }`}
           >
-            {tab.label}
-            {tab.id === "friendRequests" && <NotificationIndicator />}
+            <span className="flex items-center gap-1.5">
+              {tabIcons[tab.id]} {tab.label}
+              {tab.id === "friendRequests" && <NotificationIndicator />}
+            </span>
           </Button>
         ))}
-      </div>
-    </div>
+      </nav>
+    </aside>
   );
 }
 

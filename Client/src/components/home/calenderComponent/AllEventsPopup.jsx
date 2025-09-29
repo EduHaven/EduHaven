@@ -2,7 +2,7 @@ import axiosInstance from "@/utils/axios";
 import { AnimatePresence, motion } from "framer-motion";
 import { Edit, Trash2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
+import { useToast } from '@/contexts/ToastContext';
 import { Button } from "@/components/ui/button";
 
 const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
@@ -11,6 +11,7 @@ const AllEventsPopup = ({ events, onClose, refreshEvents }) => {
   const [editTime, setEditTime] = useState("");
   const [editDate, setEditDate] = useState("");
   const eventsContainerRef = useRef(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (eventsContainerRef.current) {

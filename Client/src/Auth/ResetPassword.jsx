@@ -5,7 +5,7 @@ import { CheckCircle, Eye, EyeOff, KeyRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useToast } from '@/contexts/ToastContext';
 
 const formVariants = {
   initial: {
@@ -41,6 +41,7 @@ const containerVariants = {
 
 function ResetPassword() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");

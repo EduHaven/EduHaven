@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import axiosInstance from "@/utils/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { toast } from "react-toastify";
+import { useToast } from '@/contexts/ToastContext';
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -11,6 +11,7 @@ const backendUrl = import.meta.env.VITE_API_URL;
 
 function SignUp() {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleGoogleLogin = () => {
     window.location.href = `${backendUrl}/auth/google`;

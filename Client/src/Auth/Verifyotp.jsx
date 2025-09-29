@@ -1,7 +1,7 @@
 import { ArrowLeft, CheckCircle, Mail, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useToast } from '@/contexts/ToastContext';
 import { Button } from "@/components/ui/button";
 
 const backendUrl = import.meta.env.VITE_API_URL;
@@ -16,6 +16,7 @@ const OtpInput = () => {
   const [verificationType, setVerificationType] = useState("signup");
   const inputRefs = useRef([]);
   const navigate = useNavigate();
+  const { toast } = useToast();
   const location = useLocation();
 
   useEffect(() => {

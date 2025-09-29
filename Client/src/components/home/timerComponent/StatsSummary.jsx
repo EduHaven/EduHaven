@@ -75,6 +75,7 @@ function StatsSummary() {
 
 
   // Debug: log raw and derived values to help trace any calculation issues
+  /*
   useEffect(() => {
     if (stats) {
       console.log("[StatsSummary] raw stats:", stats);
@@ -88,7 +89,7 @@ function StatsSummary() {
       console.log("[StatsSummary] level object:", userStats.level);
     }
   }, [stats, currentSessionHours]);
-
+*/
    const getEnhancedValue = (baseValue, timeFilter) => {
 
     const base = parseFloat(baseValue) || 0;

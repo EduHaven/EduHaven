@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import axiosInstance from "@/utils/axios";
 import {
   Activity,
   MoreHorizontal,
@@ -41,9 +42,65 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, [menuOpen]);
 
-  const handleJoin = () => {
+  const [joinStatus, setJoinStatus] = useState(null); // 'member', 'pending', 'none'
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    setUserId(user?._id);
+    if (room && user) {
+      axiosInstance
+        .get(`/session-room/${room._id}/join-status`)
+        .then((res) => {
+          setJoinStatus(res.data.status);
+        })
+        .catch(() => {
+          setJoinStatus(null);
+        });
+    }
+  }, [room]);
+
+  const handleJoin = async () => {
     if (loading) return;
-    navigate(`/session/${room._id}`);
+    if (room.isPrivate) {
+      if (joinStatus === "member") {
+        import("react-toastify").then(({ toast }) => {
+          toast.success("You are already a member. Entering room...");
+        });
+        navigate(`/session/${room._id}`);
+      } else if (joinStatus === "pending") {
+        import("react-toastify").then(({ toast }) => {
+          toast.info("Your join request is pending approval.");
+        });
+      } else {
+        // Send join request
+        try {
+          await axiosInstance.post(`/session-room/${room._id}/request-join`);
+          setJoinStatus("pending");
+          import("react-toastify").then(({ toast }) => {
+            toast.success("Join request sent.");
+          });
+        } catch (err) {
+          import("react-toastify").then(({ toast }) => {
+            toast.error(err.response?.data?.error || "Failed to send request");
+          });
+        }
+      }
+    } else {
+      // Public room: join directly
+      try {
+        const res = await axiosInstance.post(`/session-room/${room._id}/join`);
+        setJoinStatus("member");
+        import("react-toastify").then(({ toast }) => {
+          toast.success(res.data?.message || "Joined room.");
+        });
+        navigate(`/session/${room._id}`);
+      } catch (err) {
+        import("react-toastify").then(({ toast }) => {
+          toast.error(err.response?.data?.error || "Failed to join room");
+        });
+      }
+    }
   };
 
   const handlePin = () => {
@@ -204,13 +261,47 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
 
       {room.description && <p className="txt-dim mb-4">{room.description}</p>}
 
-      <Button
-        onClick={handleJoin}
-        className="w-full flex items-center justify-center gap-2"
-      >
-        <Activity className="w-5 h-5" />
-        Join
-      </Button>
+      {/* Join/Request Button Logic using joinStatus from backend */}
+      {room.isPrivate ? (
+        joinStatus === "member" ? (
+          <Button
+            onClick={handleJoin}
+            className="w-full flex items-center justify-center gap-2"
+          >
+            <Activity className="w-5 h-5" />
+            Enter Room
+          </Button>
+        ) : joinStatus === "pending" ? (
+          <Button
+            disabled
+            className="w-full flex items-center justify-center gap-2 bg-gray-400/30 cursor-not-allowed"
+          >
+            Request Sent
+          </Button>
+        ) : (
+          <Button
+            onClick={handleJoin}
+            className="w-full flex items-center justify-center gap-2"
+          >
+            Request Join
+          </Button>
+        )
+      ) : joinStatus !== "member" ? (
+        <Button
+          onClick={handleJoin}
+          className="w-full flex items-center justify-center gap-2"
+        >
+          <Activity className="w-5 h-5" />
+          Join
+        </Button>
+      ) : (
+        <Button
+          disabled
+          className="w-full flex items-center justify-center gap-2 bg-gray-400/30 cursor-not-allowed"
+        >
+          Already Joined
+        </Button>
+      )}
     </div>
   );
 }

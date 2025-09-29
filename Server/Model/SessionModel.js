@@ -30,6 +30,22 @@ const sessionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    isPrivate: {
+      type: Boolean,
+      default: false,
+    },
+    members: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    pendingRequests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,

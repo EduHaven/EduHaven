@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import axiosInstance from "@/utils/axios";
-import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { useUserProfile } from "../../contexts/UserProfileContext";
+import { useToast } from "../../contexts/ToastContext";
 import { Camera, User, Trash2 } from "lucide-react";
 import UpdateButton from "./UpdateButton";
 import { CropModal } from "../CropModal";
@@ -29,6 +29,9 @@ export default function BasicInfo() {
   const [hasChanged, setHasChanged] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  
+  
+  const { toast } = useToast();
 
   useEffect(() => {
     const token = localStorage.getItem("token");

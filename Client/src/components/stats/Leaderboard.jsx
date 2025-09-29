@@ -8,9 +8,11 @@ import {
 import { useLeaderboard } from "@/queries/timerQueries";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 
 const Leaderboard = () => {
+  const { userId } = useParams();
+  const location = useLocation();
   const [view, setView] = useState("weekly");
   const [friendsOnly, setFriendsOnly] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -34,10 +36,16 @@ const Leaderboard = () => {
     }
   }, []);
 
+  const highlightedUserId =
+    location.pathname.startsWith("/user/") && userId ? userId : currentUserId;
+
   const handleDropdownClick = (viewType) => setView(viewType);
   const handleFriendsOnlyToggle = () => setFriendsOnly((prev) => !prev);
 
   const currentUser = leaderboard.find((user) => user.userId === currentUserId);
+  const highlightedUser = leaderboard.find(
+    (user) => user.userId === highlightedUserId
+  );
 
   const getBadge = (rank) => {
     const baseBadgeStyle = `inline-flex items-center gap-1 rounded-full text-xs font-medium px-2 py-1 -ml-3`;
@@ -160,7 +168,7 @@ const Leaderboard = () => {
               <div
                 key={user.userId}
                 className={`flex items-center justify-between px-5 py-3 rounded-xl transition-all text-sm ${
-                  isCurrentUser
+                  user.userId === highlightedUserId
                     ? "bg-[var(--btn)] text-white"
                     : "hover:bg-[var(--bg-ter)] text-[var(--txt)]"
                 }`}
@@ -211,9 +219,24 @@ const Leaderboard = () => {
       {/* Footer */}
       {currentUser && leaderboard.length > 0 && (
         <div className="mt-6 text-center text-lg font-semibold text-[var(--txt-dim)]">
-          Your Position:{" "}
-          {leaderboard.findIndex((u) => u.userId === currentUserId) + 1} (
-          {formatDuration(currentUser.totalDuration)})
+          {highlightedUserId === currentUserId ? (
+            <>
+              Your Position:{" "}
+              {leaderboard.findIndex((u) => u.userId === currentUserId) + 1} (
+              {formatDuration(currentUser.totalDuration)})
+            </>
+          ) : (
+            <>
+              {
+                leaderboard.find((user) => user.userId === highlightedUserId)
+                  .username
+              }
+              {"'s Position: "}
+              {leaderboard.findIndex((u) => u.userId === highlightedUserId) +
+                1}{" "}
+              ({formatDuration(highlightedUser.totalDuration)})
+            </>
+          )}
         </div>
       )}
     </div>

@@ -10,6 +10,22 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const exportNote = (note) => {
+  console.log("clicked download")
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = note.content;
+  const textContent = tempDiv.textContent || tempDiv.innerText || "";
+  const content = `# ${note.title}\n\n${textContent}`;
+
+  const blob = new Blob([content], { type: "text/markdown" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${note.title || "note"}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 function BottomControls({ isSynced, rotate, notes, currentPage, onDelete }) {
   const navigate = useNavigate();
   return (
@@ -26,7 +42,7 @@ function BottomControls({ isSynced, rotate, notes, currentPage, onDelete }) {
         </Button>
         <Button
           title="Download note"
-          onClick={() => console.log("clicked download")}
+          onClick={() => exportNote(notes[currentPage])}
           variant="transparent"
           size="icon"
           className=" hover:bg-[var(--bg-ter)] rounded-full"
@@ -88,11 +104,11 @@ function BottomControls({ isSynced, rotate, notes, currentPage, onDelete }) {
       <div className="bg-[var(--bg-sec)] txt-disabled p-1 px-2 rounded-full">
         {notes[currentPage]?.createdAt
           ? new Date(notes[currentPage].createdAt).toLocaleDateString() +
-            "\u00A0\u00A0\u00A0" +
-            new Date(notes[currentPage].createdAt).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+          "\u00A0\u00A0\u00A0" +
+          new Date(notes[currentPage].createdAt).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
           : "No date available"}
       </div>
     </div>

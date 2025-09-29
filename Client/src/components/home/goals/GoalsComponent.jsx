@@ -31,6 +31,7 @@ const GoalsComponent = () => {
     todoTitle: "",
     currentDeadline: null,
   });
+  const [undoStack, setUndoStack] = useState([]);
 
   useEffect(() => {
     fetchTodos();
@@ -39,8 +40,7 @@ const GoalsComponent = () => {
   const fetchTodos = async () => {
     try {
       const { data } = await axiosInstance.get(`/todo`);
-      // console.log("Fetched todos:", data.data);
-      setTodos(data.data); // ✅ Will now be the actual Task documents
+      setTodos(data.data);
     } catch (error) {
       console.error("Error fetching todos:", error.message);
     }
@@ -67,18 +67,92 @@ const GoalsComponent = () => {
   };
 
   const handleDelete = async (id) => {
+    const todoToDelete = todos.find((todo) => todo._id === id);
+    if (!todoToDelete) {
+      console.error("Todo not found for deletion");
+      return;
+    }
+
     const previousTodos = [...todos];
+    
     setTodos((prev) => prev.filter((todo) => todo._id !== id));
 
     try {
       await axiosInstance.delete(`/todo/${id}`);
+      
+      // Store undo information
+      const undoAction = {
+        todo: todoToDelete,
+        previousTodos,
+        timestamp: Date.now(),
+        originalId: id
+      };
+      
+      setUndoStack(prev => [...prev, undoAction]);
+
+      // Show undo notification
+      const toastId = toast.success(
+        <div className="flex items-center justify-between">
+          <span>Goal "{todoToDelete.title.length > 20 ? `${todoToDelete.title.substring(0, 20)}...` : todoToDelete.title}" deleted.</span>
+          <div className="flex items-center ml-4">
+            <button 
+              onClick={() => handleUndoDelete(undoAction, toastId)}
+              className="text-blue-400 hover:text-blue-300 mr-2 text-sm font-medium"
+            >
+              Undo
+            </button>
+            <button 
+              onClick={() => toast.dismiss(toastId)}
+              className="text-gray-400 hover:text-gray-300"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>,
+        {
+          autoClose: 4000,
+          closeOnClick: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          toastId: `delete-${id}-${Date.now()}`,
+        }
+      );
+
     } catch (error) {
       console.error("Error deleting todo:", error.message);
+
       setTodos(previousTodos);
+      toast.error("Failed to delete goal");
+    }
+  };
+
+  const handleUndoDelete = async (undoAction, toastId) => {
+    try {
+      // Recreate the todo on the server
+      const { data } = await axiosInstance.post(`/todo`, undoAction.todo);
+      
+      setTodos(prev => [data.data, ...prev.filter(todo => todo._id !== undoAction.originalId)]);
+      
+      toast.dismiss(toastId);
+      
+      toast.success("Goal restored successfully!");
+    } catch (error) {
+      console.error("Error undoing delete:", error.message);
+      // If undo fails, revert to previous state
+      setTodos(undoAction.previousTodos);
+      toast.error("Failed to restore goal");
     }
   };
 
   const handleToggle = async (id) => {
+    const todo = todos.find((t) => t._id === id);
+    if (!todo) {
+      console.error("Todo not found for toggle");
+      return;
+    }
+
     const previousTodos = [...todos];
 
     setTodos((prev) =>
@@ -94,7 +168,6 @@ const GoalsComponent = () => {
     );
 
     try {
-      const todo = previousTodos.find((t) => t._id === id);
       const updatedTodo = {
         ...todo,
         completed: !todo.completed,
@@ -108,9 +181,14 @@ const GoalsComponent = () => {
   };
 
   const handleToggleRepeat = async (id) => {
+    const todo = todos.find((t) => t._id === id);
+    if (!todo) {
+      console.error("Todo not found for repeat toggle");
+      return;
+    }
+
     const previousTodos = [...todos];
 
-    // Optimistic update
     setTodos((prev) =>
       prev.map((todo) =>
         todo._id === id ? { ...todo, repeatEnabled: !todo.repeatEnabled } : todo
@@ -118,7 +196,6 @@ const GoalsComponent = () => {
     );
 
     try {
-      const todo = previousTodos.find((t) => t._id === id);
       const updatedTodo = { ...todo, repeatEnabled: !todo.repeatEnabled };
       await axiosInstance.put(`/todo/${id}`, updatedTodo);
     } catch (error) {
@@ -132,6 +209,13 @@ const GoalsComponent = () => {
       toast.warning("Title cannot be empty!");
       return;
     }
+
+    const todo = todos.find((t) => t._id === editingId);
+    if (!todo) {
+      console.error("Todo not found for edit");
+      return;
+    }
+
     const previousTodos = [...todos];
     setTodos((prev) =>
       prev.map((todo) =>
@@ -143,7 +227,7 @@ const GoalsComponent = () => {
 
     try {
       await axiosInstance.put(`/todo/${editingId}`, {
-        ...previousTodos.find((t) => t._id === editingId),
+        ...todo,
         title: editedTitle,
       });
     } catch (error) {

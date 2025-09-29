@@ -7,15 +7,17 @@ function CreateRoomModal({ isOpen, onClose, onCreate }) {
   const [roomName, setRoomName] = useState("");
   const [description, setDescription] = useState("");
   const [cateogery, setcateogery] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (roomName.trim() === "" || cateogery === "" || description.trim() === "")
       return;
-    onCreate({ name: roomName, description, cateogery });
+    onCreate({ name: roomName, description, cateogery, isPrivate });
     setRoomName("");
     setDescription("");
     setcateogery("");
+    setIsPrivate(false);
     onClose();
   };
 
@@ -113,6 +115,19 @@ function CreateRoomModal({ isOpen, onClose, onCreate }) {
                 className="w-full px-4 py-3 mb-6 rounded-lg bg-sec txt placeholder:txt-dim border border-gray-500/50 focus:outline-none"
                 style={{ "--tw-ring-color": "var(--btn)" }}
               />
+
+              <div className="flex items-center mb-6">
+                <input
+                  id="private-room"
+                  type="checkbox"
+                  checked={isPrivate}
+                  onChange={(e) => setIsPrivate(e.target.checked)}
+                  className="mr-2"
+                />
+                <label htmlFor="private-room" className="txt font-medium">
+                  Make this room private
+                </label>
+              </div>
 
               <div className="flex justify-end gap-4">
                 <Button
