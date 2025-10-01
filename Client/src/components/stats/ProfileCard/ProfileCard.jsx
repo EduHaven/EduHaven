@@ -283,6 +283,7 @@ const ProfileCard = ({ isCurrentUser = false }) => {
               <UserPlus className="w-5 h-5" />
               <span>{friendRequestStatus}</span>
             </Button>
+          
           </div>
         )}
       </div>
