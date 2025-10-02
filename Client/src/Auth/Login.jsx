@@ -5,7 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { useToast } from '@/contexts/ToastContext';
+import { useToast } from "@/contexts/ToastContext";
 
 const backendUrl = import.meta.env.VITE_API_URL;
 
@@ -61,8 +61,8 @@ function Login() {
       </div>
       <Button
         onClick={handleGoogleLogin}
-        className="flex items-center justify-center gap-2 border border-gray-400 rounded-xl text-black dark:text-white font-semibold p-2 text-lg w-full"
-        variant="default" // Or customize this if needed
+        variant="transparent"
+        className="flex items-center justify-center gap-2 border border-gray-400 rounded-xl text-black dark:text-white hover:bg-white hover:dark:bg-black font-semibold p-2 text-lg w-full"
       >
         <img src="/GoogleIcon.svg" alt="Google sign-in" className="size-6" />
         <p>Continue with Google</p>
