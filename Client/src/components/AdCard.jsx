@@ -57,10 +57,7 @@ function AdCard({ slideInterval = 30000 }) {
 
   return (
     <div className="group space-y-2.5">
-      <a
-        href={currentProductData.url}
-        target="_blank"
-        rel="noopener noreferrer"
+      <div
         className="flex flex-row  gap-4"
       >
         <img
@@ -86,7 +83,7 @@ function AdCard({ slideInterval = 30000 }) {
             </a>
           </div>
         </div>
-      </a>
+      </div>
 
       {/* Carousel area with fade */}
       <div className="relative aspect-video overflow-hidden w-full">

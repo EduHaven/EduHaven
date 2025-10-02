@@ -3,6 +3,46 @@ import ChatWindow from "../components/chats/chatwindow";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useState } from "react";
 
+// Dummy data for demonstration
+const dummyUsers = [
+  {
+    id: 1,
+    name: "Alex Johnson",
+    avatar: "/public/userProfile.webp",
+    lastMessage: "Hey, are you ready for the study session?",
+    timestamp: "2 min ago",
+    isOnline: true,
+    unreadCount: 2,
+  },
+  {
+    id: 2,
+    name: "Sarah Chen",
+    avatar: null,
+    lastMessage: "Thanks for helping with the math problem!",
+    timestamp: "15 min ago",
+    isOnline: true,
+    unreadCount: 0,
+  },
+  {
+    id: 3,
+    name: "Mike Wilson",
+    avatar: "/public/userProfile.webp",
+    lastMessage: "Can we reschedule our meeting?",
+    timestamp: "1 hour ago",
+    isOnline: false,
+    unreadCount: 1,
+  },
+  {
+    id: 4,
+    name: "Emma Davis",
+    avatar: null,
+    lastMessage: "Great job on the presentation today!",
+    timestamp: "3 hours ago",
+    isOnline: false,
+    unreadCount: 0,
+  },
+];
+
 function Chats() {
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -17,7 +57,7 @@ function Chats() {
         {/* Sidebar */}
         <Panel minSize={15} defaultSize={25} maxSize={40}>
           <UserList
-            // users={dummyUsers}
+            users={dummyUsers}
             selectedUser={selectedUser}
             onSelectUser={setSelectedUser}
           />

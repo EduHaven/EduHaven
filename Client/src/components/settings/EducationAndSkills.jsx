@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axios";
-import { toast } from "react-toastify";
+import { useToast } from '@/contexts/ToastContext';
 import { jwtDecode } from "jwt-decode";
 import { useUserProfile } from "../../contexts/UserProfileContext";
 import { Plus, X, Trash2 } from "lucide-react";
@@ -28,6 +28,7 @@ function EducationAndSkills() {
   const [newInterest, setNewInterest] = useState("");
   const [initialData, setInitialData] = useState(null);
   const [hasChanged, setHasChanged] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -38,7 +39,7 @@ function EducationAndSkills() {
 
         if (!user) {
           fetchUserDetails(decoded.id);
-        } else {
+        } else if (!initialData) { 
           const initial = {
             University: user.University || "",
             FieldOfStudy: user.FieldOfStudy || "",

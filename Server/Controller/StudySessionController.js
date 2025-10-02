@@ -4,125 +4,112 @@ import User from "../Model/UserModel.js";
 import calculateStats from "../utils/TimerStatsCalculator.js";
 import { updateStreaks } from "../utils/streakUpdater.js";
 
+// =====================
+// Utility Functions
+// =====================
+const sendError = (res, status, message, details = null) => {
+  const errorResponse = { error: message };
+  if (details) errorResponse.details = details;
+  return res.status(status).json(errorResponse);
+};
+
+const validPeriods = ["hourly", "daily", "weekly", "monthly"];
+
+const aggregateStudyHours = (userId, startDate) => {
+  return StudySession.aggregate([
+    {
+      $match: {
+        user: new mongoose.Types.ObjectId(userId),
+        startTime: { $gte: startDate },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalHours: { $sum: { $divide: ["$duration", 60] } },
+      },
+    },
+  ]);
+};
+
+// =====================
+// Controllers
+// =====================
+
 const createStudySession = async (req, res) => {
   try {
     const { startTime, endTime, duration } = req.body;
-    console.log("Timer");
-    if (duration > 10) updateStreaks(req.user.id);
+
+    if (!startTime || !endTime || !duration) {
+      return sendError(
+        res,
+        400,
+        "Start time, end time, and duration are required."
+      );
+    }
+
+    if (duration > 10) await updateStreaks(req.user.id);
+
     const session = new StudySession({
       user: req.user.id,
       startTime,
       endTime,
       duration,
     });
+
     await session.save();
+    await updateStreaks(req.user.id);
     res.status(201).json(session);
   } catch (error) {
-    console.error("Study session save error:", error); // More detailed logging
-    res.status(500).json({ error: error.message });
+    console.error("Study session save error:", error);
+    return sendError(res, 500, "Failed to save study session", error.message);
   }
 };
 
 const getStudySessionStats = async (req, res) => {
   try {
     const { period } = req.query;
-    const validPeriods = ["hourly", "daily", "weekly", "monthly"];
     if (!validPeriods.includes(period)) {
-      return res.status(400).json("Invalid period");
+      return sendError(res, 400, "Invalid period");
     }
+
     const stats = await calculateStats(req.user.id, period);
     res.json(stats);
   } catch (error) {
-    res.status(500).json(error.message);
+    console.error("Stats fetch error:", error);
+    return sendError(
+      res,
+      500,
+      "Failed to fetch study session stats",
+      error.message
+    );
   }
 };
 
-// Helper function to get user study stats without HTTP handling
+// Helper: Get stats for a user
 const getUserStats = async (userId) => {
-  // Get user's streak information
   const user = await User.findById(userId).select("streaks");
-
-  // Calculate total study hours for different time periods
   const now = new Date();
 
-  // Today (from midnight)
-  const todayStart = new Date(now);
-  todayStart.setHours(0, 0, 0, 0);
-
-  // This week (from Monday)
+  // Period start dates
+  const todayStart = new Date(now.setHours(0, 0, 0, 0));
   const weekStart = new Date(now);
-  const day = now.getDay();
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-  weekStart.setDate(diff);
+  weekStart.setDate(
+    now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1)
+  );
   weekStart.setHours(0, 0, 0, 0);
-
-  // This month
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-
-  // All time
   const allTimeStart = new Date(0);
 
-  // Aggregate study sessions for different periods
+  // Aggregations
   const [todayStats, weekStats, monthStats, allTimeStats] = await Promise.all([
-    StudySession.aggregate([
-      {
-        $match: {
-          user: new mongoose.Types.ObjectId(userId),
-          startTime: { $gte: todayStart },
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          totalHours: { $sum: { $divide: ["$duration", 60] } },
-        },
-      },
-    ]),
-    StudySession.aggregate([
-      {
-        $match: {
-          user: new mongoose.Types.ObjectId(userId),
-          startTime: { $gte: weekStart },
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          totalHours: { $sum: { $divide: ["$duration", 60] } },
-        },
-      },
-    ]),
-    StudySession.aggregate([
-      {
-        $match: {
-          user: new mongoose.Types.ObjectId(userId),
-          startTime: { $gte: monthStart },
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          totalHours: { $sum: { $divide: ["$duration", 60] } },
-        },
-      },
-    ]),
-    StudySession.aggregate([
-      {
-        $match: {
-          user: new mongoose.Types.ObjectId(userId),
-          startTime: { $gte: allTimeStart },
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          totalHours: { $sum: { $divide: ["$duration", 60] } },
-        },
-      },
-    ]),
+    aggregateStudyHours(userId, todayStart),
+    aggregateStudyHours(userId, weekStart),
+    aggregateStudyHours(userId, monthStart),
+    aggregateStudyHours(userId, allTimeStart),
   ]);
 
-  // Get user's rank among all users based on total study hours
+  // User rank
   const userRank = await StudySession.aggregate([
     {
       $group: {
@@ -132,22 +119,25 @@ const getUserStats = async (userId) => {
     },
     { $sort: { totalHours: -1 } },
   ]);
-
   const currentUserRank =
-    userRank.findIndex((item) => item._id.toString() === userId) + 1;
+    userRank.findIndex((i) => i._id.toString() === userId) + 1;
 
-  // Calculate remaining time to next level (assuming 2 hours per level)
+  // Level calculation (2 hrs per level)
   const totalHours = allTimeStats[0]?.totalHours || 0;
   const currentLevel = Math.floor(totalHours / 2) + 1;
   const hoursInCurrentLevel = totalHours % 2;
   const hoursToNextLevel = 2 - hoursInCurrentLevel;
 
-  // Determine level name based on total hours
-  let levelName = "Beginner";
-  if (totalHours >= 10) levelName = "Intermediate";
-  if (totalHours >= 25) levelName = "Advanced";
-  if (totalHours >= 50) levelName = "Expert";
-  if (totalHours >= 100) levelName = "Master";
+  const levelName =
+    totalHours >= 100
+      ? "Master"
+      : totalHours >= 50
+      ? "Expert"
+      : totalHours >= 25
+      ? "Advanced"
+      : totalHours >= 10
+      ? "Intermediate"
+      : "Beginner";
 
   return {
     timePeriods: {
@@ -170,36 +160,34 @@ const getUserStats = async (userId) => {
   };
 };
 
-// Helper function to get leaderboard data without HTTP handling
+// Helper: Leaderboard dataa
 const getLeaderboardData = async (period, friendsOnly, userId) => {
-  const validPeriods = ["hourly", "daily", "weekly", "monthly"];
-  if (!validPeriods.includes(period)) {
-    throw new Error("Invalid period");
-  }
+  if (!validPeriods.includes(period)) throw new Error("Invalid period");
 
   const now = new Date();
-  let startDate;
-  if (period === "daily") {
-    startDate = new Date(now.setHours(0, 0, 0, 0));
-  } else if (period === "weekly") {
+  let startDate = new Date(0);
+  if (period === "daily") startDate = new Date(now.setHours(0, 0, 0, 0));
+  else if (period === "weekly") {
     const day = now.getDay();
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-    startDate = new Date(now.setDate(diff));
+    startDate = new Date(
+      now.setDate(now.getDate() - day + (day === 0 ? -6 : 1))
+    );
     startDate.setHours(0, 0, 0, 0);
   } else if (period === "monthly") {
     startDate = new Date(now.getFullYear(), now.getMonth(), 1);
   }
 
-  let userIdsToInclude;
+  // 🔑 Fix: Safe handling of friendsOnly
+  let userIdsToInclude = [userId];
   if (friendsOnly) {
     const user = await User.findById(userId).select("friends");
-    userIdsToInclude = [userId, ...(user.friends || [])];
+    if (user && Array.isArray(user.friends)) {
+      userIdsToInclude = [...userIdsToInclude, ...user.friends];
+    }
   }
 
-  const matchStage = {
-    startTime: { $gte: startDate },
-  };
-  if (friendsOnly) {
+  const matchStage = { startTime: { $gte: startDate } };
+  if (friendsOnly && userIdsToInclude.length > 0) {
     matchStage.user = {
       $in: userIdsToInclude.map((id) =>
         typeof id === "string" ? new mongoose.Types.ObjectId(id) : id
@@ -207,15 +195,9 @@ const getLeaderboardData = async (period, friendsOnly, userId) => {
     };
   }
 
-  // Finding total duration of users and formatting the output
-  return await StudySession.aggregate([
+  return StudySession.aggregate([
     { $match: matchStage },
-    {
-      $group: {
-        _id: "$user",
-        totalDuration: { $sum: "$duration" },
-      },
-    },
+    { $group: { _id: "$user", totalDuration: { $sum: "$duration" } } },
     { $sort: { totalDuration: -1 } },
     { $limit: 10 },
     {
@@ -229,78 +211,77 @@ const getLeaderboardData = async (period, friendsOnly, userId) => {
     { $unwind: "$user" },
     {
       $project: {
-        _id: 0,
         userId: "$user._id",
         username: "$user.FirstName",
+        profilePicture: "$user.ProfilePicture",
         totalDuration: 1,
       },
     },
   ]);
 };
 
-// Update existing getUserStudyStats to use the helper function
+
+// Controller: User study stats
 const getUserStudyStats = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const stats = await getUserStats(userId);
+    const stats = await getUserStats(req.user.id);
     res.json(stats);
   } catch (error) {
     console.error("Error fetching user stats:", error);
-    res.status(500).json({ error: error.message });
+    return sendError(res, 500, "Failed to fetch user stats", error.message);
   }
 };
 
-// Update existing getLeaderboard to use the helper function
+// Controller: Leaderboard
 const getLeaderboard = async (req, res) => {
   try {
     const { period, friendsOnly } = req.query;
-    const userId = req.user?._id;
-
     const leaderboard = await getLeaderboardData(
       period,
       friendsOnly === "true",
-      userId
+      req.user?.id
     );
-
     res.json(leaderboard);
   } catch (error) {
     console.error("Leaderboard error:", error);
-    res.status(500).json({ error: error.message });
+    return sendError(res, 500, "Failed to fetch leaderboard", error.message);
   }
 };
 
-// Add the new consolidated endpoint
+// Controller: Consolidated stats
 const getConsolidatedStats = async (req, res) => {
   try {
     const userId = req.params.userId || req.user.id;
     const { period = "weekly", friendsOnly = "false" } = req.query;
 
-    // Fetch all relevant stats in parallel
-    const [userStats, periodStats, leaderboardData] = await Promise.all([
+    const [userStats, periodStats, leaderboard] = await Promise.all([
       getUserStats(userId),
       calculateStats(userId, period),
       getLeaderboardData(period, friendsOnly === "true", userId),
     ]);
 
-    res.json({
-      userStats,
-      periodStats,
-      leaderboard: leaderboardData,
-    });
+    res.json({ userStats, periodStats, leaderboard });
   } catch (error) {
-    console.error("Error fetching consolidated stats:", error);
-    res.status(500).json({ error: error.message });
+    console.error("Consolidated stats error:", error);
+    return sendError(
+      res,
+      500,
+      "Failed to fetch consolidated stats",
+      error.message
+    );
   }
 };
 
-// Export all controller functions
+// =====================
+// Exports
+// =====================
 export {
   createStudySession,
   getStudySessionStats,
   getUserStudyStats,
   getLeaderboard,
   getConsolidatedStats,
-  // Export helper functions too if needed elsewhere
+  // Helpers
   getUserStats,
   getLeaderboardData,
 };

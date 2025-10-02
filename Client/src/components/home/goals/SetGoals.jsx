@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { toast } from "react-toastify";
+import { useToast } from '@/contexts/ToastContext';
 import "./ReactCustomCalendar.css";
 
 const Setgoals = ({ onGoalCreated }) => {
@@ -14,6 +14,7 @@ const Setgoals = ({ onGoalCreated }) => {
   const [reminder, setReminder] = useState("On the day (9:00)");
   const [repeat, setRepeat] = useState("Never");
   const [is24, setIs24] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const format = localStorage.getItem("clock-format");

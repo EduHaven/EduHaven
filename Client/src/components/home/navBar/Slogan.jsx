@@ -242,7 +242,9 @@ function Slogan() {
               </motion.div>
             </div>
           ) : (
-            <div className="font-semibold truncate">{getGreeting()}</div>
+            <div className="font-semibold truncate text-xl 2xl:text-2xl">
+              {getGreeting()}
+            </div>
           )}
         </motion.div>
       </AnimatePresence>

@@ -74,10 +74,13 @@ function NotesComponent() {
     }
   };
 
+  // Handled adding new page at the start 
   const addNewPage = () => {
-    const newNote = { content: "", title: "", date: new Date() };
-    setNotes((prevNotes) => [...prevNotes, newNote]);
-    setCurrentPage(notes.length);
+    const newNote = { title: "", content: "", date: new Date() };
+    // Add the new note to the beginning of the array
+    setNotes((prevNotes) => [newNote, ...prevNotes]);
+    setCurrentPage(0);
+    setDirection(-1);
   };
 
   const goToNextPage = () => {
@@ -122,16 +125,20 @@ function NotesComponent() {
     }
   };
 
+  // Handled delete note
   const handleDeleteNote = async (id) => {
     try {
       const response = await axiosInstance.delete(`/note/${id}`);
       if (response.data.success) {
+        //Adjusting the current page before fetching new notes
+        if (currentPage >= notes.length - 1 && currentPage > 0) {
+          setCurrentPage((prev) => prev - 1);
+        }
         fetchNotes();
       }
     } catch (err) {
       setError(
-        err.response?.data?.error ||
-          "Failed to delete note try refreshinng page"
+        err.response?.data?.error || "Failed to delete note try refreshing page"
       );
     }
   };

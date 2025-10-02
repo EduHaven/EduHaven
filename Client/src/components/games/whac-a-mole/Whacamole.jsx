@@ -10,6 +10,7 @@ import teddyMole from "./assets/Mole.png";
 import evilPlant from "./assets/Plant.png";
 import burrowHole from "./assets/BurrowHole.png";
 import { Button } from "@/components/ui/button";
+import PopupContainer from "@/components/ui/Popup";
 
 const NUM_HOLES = 9;
 const GAME_DURATION = 30; // seconds
@@ -200,61 +201,54 @@ const Whacamole = () => {
 
       {/* Game Over Overlay */}
       {gameOver && (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 z-20">
-          <div className="bg-white/10 backdrop-blur-md p-8 rounded-2xl text-center">
-            <h2 className="text-4xl font-bold text-white mb-4">GAME OVER!</h2>
-            <h4 className="text-xl text-white mb-6">Final Score: {score}</h4>
-            <div className="flex justify-center gap-6">
-              <Button
-                onClick={() => window.location.reload()}
-                className={`${btnClass} bg-green-500 flex items-center gap-2 justify-center`}
-              >
-                <RefreshCw size={20} />
-                Play Again
-              </Button>
-              <Link
-                to="/games"
-                className={`${btnClass} bg-red-500 flex items-center gap-2 justify-center`}
-              >
-                <ArrowLeft size={20} /> Exit
-              </Link>
-            </div>
+        <PopupContainer title="GAME OVER!" onClose={() => {}}>
+          <h4 className="text-xl text-white mb-6 text-center">
+            Final Score: {score}
+          </h4>
+          <div className="flex justify-center gap-6 mt-4">
+            <Button
+              onClick={() => window.location.reload()}
+              className={`${btnClass} bg-green-500 flex items-center gap-2 justify-center`}
+            >
+              <RefreshCw size={20} />
+              Play Again
+            </Button>
+            <Link
+              to="/games"
+              className={`${btnClass} bg-red-500 flex items-center gap-2 justify-center`}
+            >
+              <ArrowLeft size={20} /> Exit
+            </Link>
           </div>
-        </div>
+        </PopupContainer>
       )}
 
       {/* Instructions Overlay */}
       {showInstructions && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-30">
-          <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl max-w-md text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">How to Play</h2>
-            <ul className="text-white mb-4 list-disc list-inside text-left space-y-2">
-              <li>
-                Tap the <span className="font-bold">Moles </span>🦦 to earn
-                points (<span className="font-bold text-green-600">+10</span>).
-              </li>
-              <li>
-                Avoid the{" "}
-                <span className="font-bold text-red-400">Evil Plants🌱</span>-
-                one hit ends the game.
-              </li>
-              <li>
-                Missing a <span className="font-bold">Mole </span>🦦 costs you
-                <span className="font-bold text-red-400"> -5 points</span>.
-              </li>
-              <li>
-                The game lasts <span className="font-bold">30 seconds </span>⏱️-
-                try to beat your High Score!
-              </li>
-            </ul>
-            <Button
-              onClick={() => setShowInstructions(false)}
-              className="px-6 py-2 bg-green-500 text-white font-semibold rounded-full shadow-md hover:opacity-90"
-            >
-              Got it!
-            </Button>
-          </div>
-        </div>
+        <PopupContainer
+          title="How to Play"
+          onClose={() => setShowInstructions(false)}
+        >
+          <ul className="list-disc list-inside space-y-2 txt text-left">
+            <li>
+              Tap the <span className="font-bold">Moles </span>🦦 to earn points
+              (<span className="font-bold text-green-600">+10</span>).
+            </li>
+            <li>
+              Avoid the{" "}
+              <span className="font-bold text-red-400">Evil Plants🌱</span> —
+              one hit ends the game.
+            </li>
+            <li>
+              Missing a <span className="font-bold">Mole </span>🦦 costs you{" "}
+              <span className="font-bold text-red-400">-5 points</span>.
+            </li>
+            <li>
+              The game lasts <span className="font-bold">30 seconds </span>⏱️ —
+              try to beat your High Score!
+            </li>
+          </ul>
+        </PopupContainer>
       )}
     </div>
   );

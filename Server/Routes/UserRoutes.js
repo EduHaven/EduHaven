@@ -8,6 +8,7 @@ import {
   giveKudos,
   updateProfile,
   uploadProfilePicture,
+  findUserByUsernameOrEmail,
 } from "../Controller/UserController.js";
 
 // these are added -> for security --
@@ -82,5 +83,7 @@ router.post(
   upload.single("profilePicture"),
   uploadProfilePicture
 );
+
+router.get("/find-user", findUserByUsernameOrEmail);
 
 export default router;

@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import Event from "../Model/EventModel.js";
@@ -65,7 +64,7 @@ const googleCallback = async (req, res) => {
         oauthProvider: "google",
         oauthId,
       };
-      user=await createUserWithUniqueUsername(base, userData);
+      user = await createUserWithUniqueUsername(base, userData);
     }
 
     const appToken = generateAuthToken(user);
@@ -156,21 +155,11 @@ const login = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    if (user.Password.startsWith("$2")) {
-      const match = await bcrypt.compare(Password, user.Password);
-      if (!match) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
-      user.Password = await argon2.hash(Password, { type: argon2.argon2id });
-
-      await user.save();
-    } else {
-      const match = await argon2.verify(user.Password, Password, {
-        type: argon2.argon2id,
-      });
-      if (!match) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
+    const match = await argon2.verify(user.Password, Password, {
+      type: argon2.argon2id,
+    });
+    if (!match) {
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     const token = generateAuthToken(user);
@@ -443,7 +432,9 @@ const resetPassword = async (req, res) => {
     }
 
     // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    const hashedPassword = await argon2.hash(newPassword, {
+      type: argon2.argon2id,
+    });
 
     // Update user password
     await User.findByIdAndUpdate(user._id, { Password: hashedPassword });

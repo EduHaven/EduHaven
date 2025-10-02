@@ -18,8 +18,21 @@ const MonthlyLevel = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-[var(--bg-sec)] rounded-3xl shadow-md p-6 flex items-center justify-center w-full">
-        <p>Loading...</p>
+      <div className="bg-[var(--bg-sec)] rounded-3xl shadow-md p-6 flex flex-col gap-4 w-full">
+        <div className="flex justify-between">
+          <h3 className="text-xl font-semibold txt">Monthly Level</h3>
+          <p className="flex gap-1 items-end txt-dim">Total: <span className="w-10 h-5 bg-ter rounded-lg animate-pulse inline-block mb-0.5"></span></p>
+        </div>
+        <div className="flex items-center gap-4 animate-pulse">
+          <div className="w-28 h-28 bg-ter rounded-full"></div>
+          <div className="flex flex-col flex-1 gap-2">
+            <p className="w-full h-10 bg-ter rounded-full"></p>
+            <p className="w-2/3 h-5 bg-ter rounded-xl"></p>
+          </div>
+        </div>
+        <div className="w-full">
+          <div className="h-10 w-full rounded-full bg-ter animate-pulse"></div>
+        </div>
       </div>
     );
   }
@@ -43,9 +56,10 @@ const MonthlyLevel = () => {
 
   const nextLevel = levels[levels.indexOf(currentLevel) + 1];
 
+  // Show progress as percentage of the next level's requirement so
+  // 10.7 hours out of 30h (next level) => ~35.7% visible on the bar
   const progress = nextLevel
-    ? ((totalHours - currentLevel.min) / (nextLevel.min - currentLevel.min)) *
-      100
+    ? Math.max(0, Math.min(100, (totalHours / nextLevel.min) * 100))
     : 100;
 
   const hoursNeeded = nextLevel ? nextLevel.min - totalHours : 0;

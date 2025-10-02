@@ -8,6 +8,7 @@ import {
   boardsEqual,
 } from "./sudokuUtils";
 import styles from "./Sudoku.module.css";
+import PopupContainer from "@/components/ui/Popup";
 
 const formatTime = (s) => {
   const mm = String(Math.floor(s / 60)).padStart(2, "0");
@@ -279,29 +280,21 @@ export default function Sudoku() {
       </div>
 
       {showHowToPlay && (
-        <div className={styles.modalBackdrop}>
-          <div className={styles.modalContent}>
-            <button
-              className={styles.modalCloseBtn}
-              onClick={() => setShowHowToPlay(false)}
-            >
-              Close
-            </button>
-            <h2 className={styles.modalTitle}>How to Play Sudoku</h2>
-            <ul>
-              <li>
-                Fill the board so that each row, column, and 3x3 grid has
-                numbers 1–9.
-              </li>
-              <li>
-                Each number can appear only once in a row, column, or grid.
-              </li>
-              <li>Use logic, not guessing, to solve the puzzle.</li>
-              <li>Hints will reveal a correct number if you’re stuck.</li>
-              <li>The game ends when the board is correctly filled.</li>
-            </ul>
-          </div>
-        </div>
+        <PopupContainer
+          title="How to Play Sudoku"
+          onClose={() => setShowHowToPlay(false)}
+        >
+          <ul className="list-disc pl-5 space-y-2 txt">
+            <li>
+              Fill the board so that each row, column, and 3x3 grid has numbers
+              1–9.
+            </li>
+            <li>Each number can appear only once in a row, column, or grid.</li>
+            <li>Use logic, not guessing, to solve the puzzle.</li>
+            <li>Hints will reveal a correct number if you’re stuck.</li>
+            <li>The game ends when the board is correctly filled.</li>
+          </ul>
+        </PopupContainer>
       )}
     </main>
   );

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { ExternalLink, Plus, X, MoreVertical } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import PopupContainer from "@/components/ui/Popup";
 
 // Helper to get domain from a URL
 function getDomain(url) {
@@ -276,25 +277,9 @@ function PinnedLinks() {
             transition={{ delay: 0.1, duration: 0.3 }}
           >
             {pinnedLinks.map((item, index) => (
-              <motion.div
+              <div
                 key={item.id}
-                initial={{
-                  opacity: 0,
-                  x: -20,
-                  filter: "blur(4px)",
-                }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  filter: "blur(0px)",
-                }}
-                transition={{
-                  delay: index * 0.05,
-                  duration: 0.2,
-                  ease: [0.15, 0.05, 0.15, 1],
-                }}
-                whileHover={{ scale: 1.02 }}
-                className="flex items-center justify-between px-4 py-2 txt hover:bg-ter rounded-md transition-colors duration-200"
+                className="flex items-center justify-between px-4 py-2 txt hover:bg-ter rounded-md transition-all duration-200 hover:px-3"
               >
                 <motion.div
                   className="flex items-center gap-2 cursor-pointer flex-1"
@@ -391,14 +376,14 @@ function PinnedLinks() {
                     )}
                   </AnimatePresence>
                 </div>
-              </motion.div>
+              </div>
             ))}
 
             <Button
               onClick={handleAddNew}
               variant="default"
               size="default"
-              className="block w-full px-4 py-2 txt hover:bg-ter rounded-md mt-2 flex items-center gap-2 transition-colors duration-200 border-t border-opacity-20 border-gray-300 pt-3"
+              className="w-full px-4 py-2 txt hover:bg-ter rounded-md mt-2 flex items-center gap-2 transition-colors duration-200 border-t border-opacity-20 border-gray-300 pt-3"
             >
               <motion.div
                 initial={{ rotate: -90, scale: 0.8 }}
@@ -428,147 +413,102 @@ function PinnedLinks() {
 
       {/* Modal for adding/editing a workspace */}
       {showModal && (
-        <AnimatePresence>
-          <motion.div
-            key="backdrop"
-            className="fixed inset-0 z-50 backdrop-blur-sm bg-black/40 flex items-center justify-center transition-colors"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+        <PopupContainer
+          title={editItemId ? "Edit link" : "Create a link"}
+          onClose={() => {
+            setShowModal(false);
+            setEditItemId(null);
+            setTitle("");
+            setMainLink("");
+            setExtraLinks([]);
+          }}
+        >
+          {/* Title */}
+          <label className="block mb-4">
+            <span className="text-md font-semibold dark:text-gray-300 tracking-wide">
+              Title
+            </span>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full mt-1 p-2 border border-gray-500 rounded-lg bg-transparent txt placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-current"
+              placeholder="e.g. Amazon"
+            />
+          </label>
+
+          {/* Main link */}
+          <label className="block mb-4">
+            <span className="text-md font-semibold dark:text-gray-300 tracking-wide">
+              Links
+            </span>
+            <input
+              type="text"
+              value={mainLink}
+              onChange={(e) => setMainLink(e.target.value)}
+              className="w-full mt-1 p-2 border border-gray-500 rounded-lg bg-transparent txt placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-current"
+              placeholder="e.g. amazon.com (protocol will be added automatically)"
+            />
+          </label>
+
+          {/* Extra links */}
+          {extraLinks.map((linkVal, idx) => (
+            <div key={idx} className="mb-2">
+              <input
+                type="text"
+                value={linkVal}
+                onChange={(e) => handleExtraLinkChange(idx, e.target.value)}
+                className="w-full mt-1 p-2 border border-gray-500 rounded-lg bg-transparent txt placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-current"
+                placeholder="Another link..."
+              />
+            </div>
+          ))}
+
+          {/* Add another tab */}
+          <Button
+            type="button"
+            onClick={handleAddAnotherLink}
+            variant="link"
+            size="default"
+            className="text-sm flex font-medium items-center gap-1 mt-2 txt hover:opacity-80 transition-colors"
           >
-            <motion.div
-              key="modal"
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="bg-sec backdrop-blur-xl border border-white/20 p-6 rounded-2xl shadow-2xl max-w-sm w-full "
+            <Plus className="w-4 h-4" />
+            Add another tab
+          </Button>
+
+          {/* Save */}
+          <div className="flex justify-end mt-6">
+            <Button
+              onClick={handleSaveLink}
+              variant="default"
+              size="default"
+              className="px-4 py-2 rounded txt btn hover:bg-ter/80"
             >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold txt">
-                  {editItemId ? "Edit link" : "Create a link"}
-                </h2>
-                <Button
-                  onClick={() => {
-                    setShowModal(false);
-                    setEditItemId(null);
-                    setTitle("");
-                    setMainLink("");
-                    setExtraLinks([]);
-                  }}
-                  variant="transparent"
-                  size="icon"
-                  className="p-1 hover:bg-ter rounded"
-                >
-                  <X className="w-5 h-5 txt" />
-                </Button>
-              </div>
-
-              {/* Title */}
-              <label className="block mb-4">
-                <span className="text-md  font-semibold  dark:text-gray-300  tracking-wide ">
-                  Title
-                </span>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full mt-1 p-2 border border-gray-500 rounded-lg 
-               bg-transparent txt placeholder:text-sm
-               focus:outline-none focus:ring-2 focus:ring-current"
-                  placeholder="e.g. Amazon"
-                />
-              </label>
-
-              {/* Main link */}
-              <label className="block mb-4">
-                <span className="text-md  font-semibold  dark:text-gray-300 tracking-wide">
-                  Links
-                </span>
-                <input
-                  type="text"
-                  value={mainLink}
-                  onChange={(e) => setMainLink(e.target.value)}
-                  className="w-full mt-1 p-2 border border-gray-500 rounded-lg 
-               bg-transparent txt placeholder:text-sm
-               focus:outline-none focus:ring-2 focus:ring-current"
-                  placeholder="e.g. amazon.com (protocol will be added automatically)"
-                />
-              </label>
-
-              {/* Additional tabs/links */}
-              {extraLinks.map((linkVal, idx) => (
-                <div key={idx} className="mb-2">
-                  <input
-                    type="text"
-                    value={linkVal}
-                    onChange={(e) => handleExtraLinkChange(idx, e.target.value)}
-                    className="w-full mt-1 p-2 border border-gray-500 rounded-lg 
-               bg-transparent txt placeholder:text-sm
-               focus:outline-none focus:ring-2 focus:ring-current"
-                    placeholder="Another link..."
-                  />
-                </div>
-              ))}
-
-              {/* "Add another tab" button */}
-              <Button
-                type="button"
-                onClick={handleAddAnotherLink}
-                variant="link"
-                size="default"
-                className="text-sm flex font-medium items-center gap-1 mt-2 txt hover:opacity-80 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Add another tab
-              </Button>
-
-              {/* Save (Add/Edit) button */}
-              <div className="flex justify-end mt-6">
-                <Button
-                  onClick={handleSaveLink}
-                  variant="default"
-                  size="default"
-                  className="px-4 py-2 rounded txt btn hover:bg-ter/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-current transition-colors"
-                >
-                  {editItemId ? "Save" : "Add"}
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        </AnimatePresence>
+              {editItemId ? "Save" : "Add"}
+            </Button>
+          </div>
+        </PopupContainer>
       )}
 
       {/* --- NEW POPUP BLOCKER MODAL --- */}
       {showPopupBlockerModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
-          <div
-            ref={popupBlockerModalRef}
-            className="bg-sec p-6 rounded-lg shadow-lg w-full max-w-sm text-center"
+        <PopupContainer
+          title="Popups Blocked"
+          onClose={() => setShowPopupBlockerModal(false)}
+        >
+          <p className="txt mb-4">
+            Your browser is blocking the links from opening. Please disable the
+            popup blocker for this site and try again.
+          </p>
+          <Button
+            onClick={handleRetryOpenLinks}
+            variant="default"
+            size="default"
+            className="px-4 py-2 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-600 hover:bg-blue-700"
           >
-            <h3 className="text-xl font-bold txt mb-4">Popups Blocked</h3>
-            <p className="txt mb-4">
-              Your browser is blocking the links from opening. Please disable
-              the popup blocker for this site and try again.
-            </p>
-            <Button
-              onClick={handleRetryOpenLinks}
-              variant="default"
-              size="default"
-              className="px-4 py-2 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-600 hover:bg-blue-700"
-            >
-              I have enabled popups
-            </Button>
-            <Button
-              onClick={() => setShowPopupBlockerModal(false)}
-              variant="link"
-              size="default"
-              className="mt-4 block w-full text-center text-sm text-gray-400 hover:text-gray-200"
-            >
-              Cancel
-            </Button>
-          </div>
-        </div>
+            Got it
+          </Button>
+        </PopupContainer>
       )}
     </div>
   );

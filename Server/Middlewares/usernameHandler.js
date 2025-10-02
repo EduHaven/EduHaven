@@ -31,6 +31,12 @@ export async function handleMissingUsernames() {
   });
 
   for (const user of usersWithoutUsername) {
+    // 🔒 Guard: skip if Email missing/invalid
+    if (!user.Email || typeof user.Email !== "string" || !user.Email.includes("@")) {
+      console.warn(`⚠️ Skipping user ${user._id}: invalid or missing Email`);
+      continue;
+    }
+
     const base = user.Email.split("@")[0];
 
     let updated = false;
@@ -42,18 +48,17 @@ export async function handleMissingUsernames() {
         await user.save();
         console.log(`✅ Updated ${user.Email} → ${newUsername}`);
         updated = true;
-        break; 
+        break;
       } catch (err) {
         if (err.code === 11000) {
           continue; // try again
         }
-        throw err; 
+        throw err;
       }
     }
 
     if (!updated) {
-      console.error(`Failed to assign username after retries`);
+      console.error(`❌ Failed to assign username after retries for ${user.Email || user._id}`);
     }
   }
 }
-

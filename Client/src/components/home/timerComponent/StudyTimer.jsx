@@ -166,11 +166,14 @@ function StudyTimer() {
 
   const handleStartPause = () => {
     if (!isRunning) {
-      if (!startTime) {
-        setStartTime(new Date().toISOString());
-        setHasPosted(false);
-        setLastSavedSeconds(0);
-      }
+      // Compute startTime such that elapsed time = current stored `time`.
+      // This avoids creating a startTime in the past that double-counts paused durations
+      const now = new Date();
+      const elapsedMs = getTotalSeconds(time) * 1000;
+      const computedStart = new Date(now.getTime() - elapsedMs).toISOString();
+      setStartTime(computedStart);
+      setHasPosted(false);
+      setLastSavedSeconds(0);
       startTimer();
     } else {
       pauseTimer();

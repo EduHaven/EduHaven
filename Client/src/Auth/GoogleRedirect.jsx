@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useToast } from '@/contexts/ToastContext';
 
 export default function GoogleRedirect() {
   const navigate = useNavigate();
   const { search } = useLocation();
+  const { toast } = useToast();
 
   useEffect(() => {
     const params = new URLSearchParams(search);

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Button as UIButton } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import axiosInstance from "@/utils/axios";
 import { motion, AnimatePresence } from "framer-motion";
@@ -47,6 +48,35 @@ export default function YourRooms({ myRooms }) {
     setRoomToDelete(null);
   };
 
+  // Handle join request approval/rejection
+  const handleRequest = async (roomId, targetUserId, action) => {
+    try {
+      await axiosInstance.post(`/session-room/${roomId}/handle-request`, {
+        targetUserId,
+        action,
+      });
+      // Refresh sessions (ideally, fetch again, but for now, update state)
+      setSessions((prev) =>
+        prev.map((room) =>
+          room._id === roomId
+            ? {
+                ...room,
+                pendingRequests: room.pendingRequests.filter(
+                  (id) => id !== targetUserId
+                ),
+                members:
+                  action === "approve"
+                    ? [...room.members, targetUserId]
+                    : room.members,
+              }
+            : room
+        )
+      );
+    } catch (err) {
+      alert(err.response?.data?.error || "Failed to handle request");
+    }
+  };
+
   return (
     <div className="flex-1">
       <h1 className="text-lg 2xl:text-2xl font-semibold txt mb-3 2xl:mb-6">
@@ -55,12 +85,49 @@ export default function YourRooms({ myRooms }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 2xl:gap-6">
         {sessions.map((room) => (
-          <RoomCard
-            key={room._id}
-            room={room}
-            onDelete={() => handleDeleteClick(room)}
-            showCategory={true}
-          />
+          <div key={room._id}>
+            <RoomCard
+              room={room}
+              onDelete={() => handleDeleteClick(room)}
+              showCategory={true}
+            />
+            {/* Show join requests for private rooms */}
+            {room.isPrivate &&
+              room.pendingRequests &&
+              room.pendingRequests.length > 0 && (
+                <div className="bg-gray-800/40 rounded-xl p-3 mt-2">
+                  <div className="font-semibold mb-2 txt">Join Requests:</div>
+                  {room.pendingRequests.map((userId) => (
+                    <div
+                      key={userId}
+                      className="flex items-center justify-between mb-2"
+                    >
+                      <span className="txt-dim">User: {userId}</span>
+                      <div className="flex gap-2">
+                        <UIButton
+                          size="sm"
+                          variant="secondary"
+                          onClick={() =>
+                            handleRequest(room._id, userId, "approve")
+                          }
+                        >
+                          Approve
+                        </UIButton>
+                        <UIButton
+                          size="sm"
+                          variant="destructive"
+                          onClick={() =>
+                            handleRequest(room._id, userId, "reject")
+                          }
+                        >
+                          Reject
+                        </UIButton>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+          </div>
         ))}
 
         <Button

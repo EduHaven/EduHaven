@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { ArrowLeft } from "lucide-react";
 import styles from "./Game2048.module.css";
 import { Button } from "@/components/ui/button";
+import PopupContainer from "@/components/ui/Popup";
 
 const Game2048 = () => {
   const [board, setBoard] = useState(getInitialBoard());
@@ -253,30 +254,23 @@ const Game2048 = () => {
       </div>
 
       {showHowToPlay && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-[var(--bg-primary)] rounded-xl shadow-lg p-8 max-w-md w-full relative">
-            <Button
-              onClick={() => setShowHowToPlay(false)}
-              variant="secondary"
-              className="absolute top-2 right-2 px-2 py-1 text-[var(--txt-dim)] bg-sec rounded-lg hover:bg-ter"
-            >
-              Close
-            </Button>
-            <h2 className="text-xl font-bold mb-2">How to Play 2048</h2>
-            <ul className="list-disc pl-5 space-y-2 text-base">
-              <li>Use your arrow keys to move the tiles.</li>
-              <li>
-                When two tiles with the same number touch, they merge into one.
-              </li>
-              <li>
-                Each merge increases your score by the value of the new tile.
-              </li>
-              <li>Try to reach the 2048 tile!</li>
-              <li>The game ends when no moves are possible.</li>
-              <li>Your highest score is saved automatically.</li>
-            </ul>
-          </div>
-        </div>
+        <PopupContainer
+          title="How to Play 2048"
+          onClose={() => setShowHowToPlay(false)}
+        >
+          <ul className="list-disc pl-5 space-y-2 text-base">
+            <li>Use your arrow keys to move the tiles.</li>
+            <li>
+              When two tiles with the same number touch, they merge into one.
+            </li>
+            <li>
+              Each merge increases your score by the value of the new tile.
+            </li>
+            <li>Try to reach the 2048 tile!</li>
+            <li>The game ends when no moves are possible.</li>
+            <li>Your highest score is saved automatically.</li>
+          </ul>
+        </PopupContainer>
       )}
     </div>
   );

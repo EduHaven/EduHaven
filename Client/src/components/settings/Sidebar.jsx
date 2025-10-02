@@ -56,17 +56,17 @@ const Sidebar = ({ user, activeTab, setActiveTab }) => {
                 className="border-t border-gray-400/30 !my-2"
               />
             ) : (
-              <button
+              <Button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`group flex items-center justify-between p-3 rounded-lg text-md w-full text-nowrap transition relative
-                  ${
-                    activeTab === tab.key
-                      ? "bg-[var(--btn)] text-white"
-                      : tab.incomplete
-                        ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
-                        : "hover:bg-ter"
-                  }`}
+                variant={activeTab === tab.key ? "default" : "ghost"}
+                className={`group flex items-center justify-between p-3 rounded-lg text-md w-full text-nowrap transition relative ${
+                  activeTab === tab.key
+                    ? "bg-[var(--btn)] text-white"
+                    : tab.incomplete
+                    ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                    : "hover:bg-ter"
+                }`}
               >
                 <span className="flex items-center gap-1.5">
                   {tab.icon} {tab.label}
@@ -76,7 +76,7 @@ const Sidebar = ({ user, activeTab, setActiveTab }) => {
                     </span>
                   )}
                 </span>
-              </button>
+              </Button>
             )
           )}
         </nav>

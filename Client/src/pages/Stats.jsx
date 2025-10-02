@@ -16,14 +16,18 @@ const Stats = ({ isCurrentUser = false }) => {
   const { userId } = useParams();
   const { user: currentUser, fetchUserDetails } = useUserProfile();
   const [userStats, setUserStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
+  const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
         if (isCurrentUser) {
           const token = localStorage.getItem("token");
-          if (!token) return;
+          if (!token) {
+            setFetched(true);
+            return;
+          };
 
           const decoded = jwtDecode(token);
           await fetchUserDetails(decoded.id);
@@ -68,30 +72,29 @@ const Stats = ({ isCurrentUser = false }) => {
       } catch (error) {
         console.error("Error fetching user stats:", error);
       } finally {
-        setLoading(false);
+        setFetched(true);
       }
     };
 
     fetchStats();
   }, [isCurrentUser, userId, currentUser, fetchUserDetails]);
 
-  if (isCurrentUser && !currentUser) {
+  if (fetched && isCurrentUser && !currentUser) {
     return <NotLogedInPage />;
   }
 
-  if (loading) return <div className="m-3 2xl:m-6">Loading profile...</div>;
-  if (!userStats)
+  if (fetched && !userStats)
     return (
       <div className="m-3 2xl:m-6">
         User not found or error loading profile.
       </div>
-    );
+  );
 
   return (
     <div className="m-3 2xl:m-6">
       <div className="flex justify-between items-center mb-3 2xl:mb-6">
         <h1 className="text-2xl font-bold">
-          {isCurrentUser ? "Analytics" : userStats.name}
+          {isCurrentUser ? "Analytics" : userStats?.name || ""}
         </h1>
         {isCurrentUser && (
           <div className="flex items-center gap-4">
@@ -110,26 +113,26 @@ const Stats = ({ isCurrentUser = false }) => {
 
         <div className="flex-1">
           <div className="mb-3 2xl:mb-6">
-            <StudyStats stats={userStats.studyStats} />
+            <StudyStats stats={userStats?.studyStats} />
           </div>
           <div className="flex flex-col xl:flex-col 2xl:flex-row">
             <div className="flex-1 mr-0 2xl:mr-6">
               <div className="flex gap-3 2xl:gap-6 mb-4 2xl:mb-6">
-                <MonthlyLevel data={userStats.monthlyLevel} />
-                <Badges data={userStats.badges} />
+                <MonthlyLevel data={userStats?.monthlyLevel} />
+                <Badges data={userStats?.badges} />
               </div>
               <div className="gap-3 2xl:gap-6 mb-3 2xl:mb-6">
-                <Goals goals={userStats.goals} isCurrentUser={isCurrentUser} />
+                <Goals goals={userStats?.goals} isCurrentUser={isCurrentUser} />
               </div>
             </div>
             <div>
-              <Leaderboard data={userStats.leaderboard} />
+              <Leaderboard data={userStats?.leaderboard} />
             </div>
           </div>
         </div>
       </div>
 
-      <Test data={userStats.testData} />
+      <Test data={userStats?.testData} />
     </div>
   );
 };

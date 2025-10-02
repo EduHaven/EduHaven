@@ -216,7 +216,7 @@ export const getUserStats = async (req, res) => {
       )
       .populate({
         path: "friends",
-        select: "FirstName LastName ProfilePicture",
+        select: "FirstName LastName ProfilePicture Username",
       })
       .lean();
 

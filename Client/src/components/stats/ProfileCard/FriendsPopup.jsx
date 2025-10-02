@@ -1,6 +1,6 @@
-import { AnimatePresence, motion } from "framer-motion";
+import PopupContainer from "@/components/ui/Popup";
 import { User, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const FriendsPopup = ({
   showPopup,
@@ -40,83 +40,58 @@ const FriendsPopup = ({
       </div>
 
       {/* Updated Popup */}
-      <AnimatePresence>
-        {showPopup && (
-          <motion.div
-            key="backdrop"
-            className="fixed inset-0 flex items-center justify-center z-50 p-4 sm:p-4"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              key="modal"
-              ref={popupRef}
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="w-full max-w-80 sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl 
-                       h-2/5 sm:h-96 md:h-[28rem] lg:h-[32rem] 
-                       bg-sec rounded-2xl shadow-2xl flex flex-col overflow-hidden"
-            >
-              {/* Header */}
-              <div className="bg-ter border-b border-gray-600/50 p-4 flex items-center justify-between flex-shrink-0">
-                <h2 className="text-2xl font-bold txt">Friends List</h2>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm txt-dim bg-sec px-3 py-1 rounded-full">
-                    {friendsList.length} friends
-                  </span>
-                  <Button
-                    onClick={() => setShowPopup(false)}
-                    variant="transparent"
-                    className="txt hover:text-[var(--btn)] p-1"
-                  >
-                    <X className="w-5 h-5" />
-                  </Button>
-                </div>
-              </div>
+      {showPopup && (
+        <PopupContainer
+          title="Friends List"
+          onClose={() => setShowPopup(false)}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm txt-dim bg-sec px-3 py-1 rounded-full">
+              {friendsList.length} friends
+            </span>
+          </div>
 
-              {/* Scrollable Friends List */}
-              <div className="flex-1 overflow-y-auto bg-sec-light pt-4">
-                {friendsList.length === 0 ? (
-                  <p className="txt-dim text-center mt-10">No friends yet</p>
-                ) : (
-                  friendsList.map((friend) => (
-                    <div
-                      key={friend._id}
-                      className="flex items-center gap-3 p-4 cursor-pointer hover:bg-sec/70 transition rounded-lg mx-2"
-                    >
-                      <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden">
-                        {friend.ProfilePicture ? (
-                          <img
-                            src={friend.ProfilePicture}
-                            className="w-full h-full object-cover"
-                            alt={`${friend.FirstName}'s profile`}
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-sec flex items-center justify-center">
-                            <User className="w-5 h-5 txt-dim" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <p className="txt font-medium text-lg truncate">
-                          {friend.FirstName
-                            ? `${friend.FirstName} ${friend.LastName || ""}`
-                            : "old-user"}
-                        </p>
-                      </div>
+          {/* Scrollable Friends List */}
+          <div className="flex-1 overflow-y-auto max-h-[28rem]">
+            {friendsList.length === 0 ? (
+              <p className="txt-dim text-center mt-10">No friends yet</p>
+            ) : (
+              friendsList.map((friend) => (
+                <Link key={friend._id} to={`/user/${friend._id}`}>
+                  <div className="flex items-center gap-3 p-4 cursor-pointer hover:bg-sec/70 transition rounded-lg mx-2">
+                    <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden">
+                      {friend.ProfilePicture ? (
+                        <img
+                          src={friend.ProfilePicture}
+                          className="w-full h-full object-cover"
+                          alt={`${friend.FirstName}'s profile`}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-sec flex items-center justify-center">
+                          <User className="w-5 h-5 txt-dim" />
+                        </div>
+                      )}
                     </div>
-                  ))
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="txt font-medium leading-tight text-lg truncate">
+                        {friend.FirstName
+                          ? `${friend.FirstName} ${friend.LastName || ""}`
+                          : "old-user"}
+                      </p>
+                      {friend.Username && (
+                        <span className="text-sm txt-dim">
+                          @{friend.Username}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
+        </PopupContainer>
+      )}
     </div>
   );
 };

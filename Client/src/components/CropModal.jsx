@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Cropper from "react-easy-crop";
-import { Dialog } from "@headlessui/react";
+import PopupContainer from "@/components/ui/Popup";
 import { X, RotateCw, Check } from "lucide-react";
 import { getCroppedWebpFile } from "@/utils/imageUtils";
 import { Button } from "@/components/ui/button";
@@ -33,23 +33,10 @@ export const CropModal = ({ isOpen, onClose, imageSrc, onCropDone }) => {
   if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
-      <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4">
-        <Dialog.Panel className="bg-[var(--bg-primary)] rounded-xl shadow-lg w-full max-w-md overflow-hidden">
-          <div className="flex items-center justify-between p-4">
-            <Dialog.Title className="text-lg font-medium text-[var(--txt)]">
-              Crop Image
-            </Dialog.Title>
-            <Button
-              onClick={onClose}
-              variant="transparent"
-              size="icon"
-              className="hover:bg-[var(--bg-sec)]"
-            >
-              <X className="w-5 h-5 text-[var(--txt-dim)]" />
-            </Button>
-          </div>
-
+    <>
+      {isOpen && (
+        <PopupContainer title="Crop Image" onClose={onClose}>
+          {/* Cropper Section */}
           <div className="relative h-80 bg-[var(--bg-sec)]">
             <Cropper
               image={imageSrc}
@@ -65,8 +52,10 @@ export const CropModal = ({ isOpen, onClose, imageSrc, onCropDone }) => {
             />
           </div>
 
+          {/* Controls Section */}
           <div className="p-4 flex flex-col gap-4">
             <div className="flex items-center justify-between">
+              {/* Zoom Control */}
               <div className="flex items-center gap-2">
                 <label className="text-sm text-[var(--txt-dim)]">Zoom:</label>
                 <input
@@ -83,6 +72,7 @@ export const CropModal = ({ isOpen, onClose, imageSrc, onCropDone }) => {
                 </span>
               </div>
 
+              {/* Rotate Button */}
               <Button
                 onClick={handleRotate}
                 variant="secondary"
@@ -94,6 +84,7 @@ export const CropModal = ({ isOpen, onClose, imageSrc, onCropDone }) => {
               </Button>
             </div>
 
+            {/* Action Buttons */}
             <div className="flex gap-3">
               <Button
                 onClick={onClose}
@@ -112,8 +103,8 @@ export const CropModal = ({ isOpen, onClose, imageSrc, onCropDone }) => {
               </Button>
             </div>
           </div>
-        </Dialog.Panel>
-      </div>
-    </Dialog>
+        </PopupContainer>
+      )}
+    </>
   );
 };

@@ -5,12 +5,13 @@ import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useToast } from '@/contexts/ToastContext';
 
 const backendUrl = import.meta.env.VITE_API_URL;
 
 function Login() {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleGoogleLogin = () => {
     window.location.href = `${backendUrl}/auth/google`;

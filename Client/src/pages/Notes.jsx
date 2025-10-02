@@ -37,7 +37,7 @@ import {
 import "@/components/notes/note.css";
 import TrashNotes from "@/components/notes/TrashNote";
 import axiosInstance from "@/utils/axios";
-import { toast } from "react-toastify";
+import { useToast } from '@/contexts/ToastContext';
 
 const colors = [
   { name: "default", style: { backgroundColor: "var(--note-default)" } },
@@ -53,6 +53,7 @@ const colors = [
 const Notes = () => {
   const { noteId } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const isFullScreen = !!noteId;
   const { data: notes = [], isLoading } = useNotes();
   const { data: archiveNotes = [], isLoading: isArchiveLoading } =
@@ -505,9 +506,7 @@ const Notes = () => {
       <div className="flex h-screen">
         {/* notes page (also works as sidebar} */}
         <div
-          className={`${
-            isFullScreen ? "hidden" : selectedNote ? "w-80" : "w-full"
-          } overflow-auto p-4`}
+          className={`${selectedNote ? "w-80" : "w-full"} overflow-auto p-4`}
         >
           <NoteHeader
             selectedNote={selectedNote}
