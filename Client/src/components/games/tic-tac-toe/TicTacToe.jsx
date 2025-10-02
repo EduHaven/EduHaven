@@ -251,6 +251,7 @@ function TicTacToe() {
     }
   };
 
+  // fixed logic
   // Bot move logic
   useEffect(() => {
     if (
