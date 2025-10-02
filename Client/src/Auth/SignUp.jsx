@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import axiosInstance from "@/utils/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { useToast } from '@/contexts/ToastContext';
+import { useToast } from "@/contexts/ToastContext";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -129,7 +129,7 @@ function SignUp() {
       <Button
         onClick={handleGoogleLogin}
         variant="transparent" // You can create a custom "google" variant if you prefer
-        className="flex items-center justify-center gap-2 border border-gray-400 rounded-xl text-black dark:text-white font-semibold p-2 text-lg w-full"
+        className="flex items-center justify-center gap-2 border border-gray-400 rounded-xl text-black dark:text-white hover:dark:bg-black font-semibold p-2 text-lg w-full"
       >
         <img src="/GoogleIcon.svg" alt="Google sign-in" className="size-6" />
         <p>Continue with Google</p>
