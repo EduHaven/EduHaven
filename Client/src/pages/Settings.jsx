@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useUserStore } from "@/stores/userStore";
 import Sidebar from "@/components/settings/Sidebar";
 import BasicInfo from "@/components/settings/BasicInfo";
 import Account from "@/components/settings/Account";
@@ -12,7 +12,8 @@ import NotLogedInPage from "@/components/NotLogedInPage";
 import { useSearchParams } from "react-router-dom";
 
 const Settings = () => {
-  const { user, fetchUserDetails } = useUserProfile();
+  const user = useUserStore((state) => state.user);
+  const fetchUserDetails = useUserStore((state) => state.fetchUserDetails);
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {

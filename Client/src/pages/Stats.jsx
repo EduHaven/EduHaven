@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { useUserProfile, fetchUserStats } from "@/contexts/UserProfileContext";
+import { useUserStore } from "@/stores/userStore";
 import NotLogedInPage from "@/components/NotLogedInPage";
 import ProfileCard from "../components/stats/ProfileCard/ProfileCard";
 import MonthlyLevel from "../components/stats/MonthlyLevel";
@@ -14,7 +14,9 @@ import AdCard from "@/components/AdCard";
 
 const Stats = ({ isCurrentUser = false }) => {
   const { userId } = useParams();
-  const { user: currentUser, fetchUserDetails } = useUserProfile();
+  const currentUser = useUserStore((state) => state.user);
+  const fetchUserDetails = useUserStore((state) => state.fetchUserDetails);
+  const fetchUserStats = useUserStore((state) => state.fetchUserStats);
   const [userStats, setUserStats] = useState(null);
   // const [loading, setLoading] = useState(true);
   const [fetched, setFetched] = useState(false);

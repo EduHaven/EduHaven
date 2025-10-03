@@ -6,12 +6,12 @@ import GoalsComponent from "@/components/home/goals/GoalsComponent.jsx";
 import NavBar from "@/components/home/navBar/NavBar";
 import PinnedRooms from "@/components/home/PinnedRooms";
 import LandingPage from "./LandingPage";
-import { useUserProfile } from "../contexts/UserProfileContext";
+import { useUserStore } from "../stores/userStore";
 import { Link } from "react-router-dom";
 
 function StudyRoom() {
   const token = localStorage.getItem("token");
-  const { isProfileComplete } = useUserProfile();
+  const isProfileComplete = useUserStore((state) => state.isProfileComplete);
 
   if (!token) {
     return <LandingPage />;

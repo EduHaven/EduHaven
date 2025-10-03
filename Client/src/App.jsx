@@ -11,7 +11,6 @@ import Session from "./pages/Sessions.jsx";
 import StudyRoom from "./pages/SessionRoom";
 import OtpInput from "./Auth/Verifyotp.jsx";
 import Settings from "./pages/Settings";
-import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import GoogleRedirect from "./Auth/GoogleRedirect";
 import ForgotPassword from "./Auth/ForgotPassword";
 import ResetPassword from "./Auth/ResetPassword";
@@ -34,10 +33,9 @@ function App() {
 
   return (
     <ToastProvider>
-      <UserProfileProvider>
-        <QueryClientProvider client={queryClient}>
-          <SocketProvider>
-            <RouterSelector>
+      <QueryClientProvider client={queryClient}>
+        <SocketProvider>
+          <RouterSelector>
               <Routes>
                 <Route path="/" element={<Layout />}>
                   <Route index element={<Home />} />
@@ -88,7 +86,6 @@ function App() {
             />
           </SocketProvider>
         </QueryClientProvider>
-      </UserProfileProvider>
     </ToastProvider>
   );
 }

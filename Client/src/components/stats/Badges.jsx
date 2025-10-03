@@ -3,7 +3,7 @@ import { Award, Info } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import axiosInstance from "@/utils/axios";
 import { getAllBadges } from "@/utils/badgeSystem";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useUserStore } from "../../stores/userStore";
 import BadgeModal from "./BadgeModal";
 import BadgeTooltip from "./BadgeTooltip";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,8 @@ const Badges = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userId, setUserId] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const { user, fetchUserDetails } = useUserProfile();
+  const user = useUserStore((state) => state.user);
+  const fetchUserDetails = useUserStore((state) => state.fetchUserDetails);
 
   // Get user ID from token
   useEffect(() => {

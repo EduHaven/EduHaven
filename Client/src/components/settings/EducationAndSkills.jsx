@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axios";
 import { useToast } from '@/contexts/ToastContext';
 import { jwtDecode } from "jwt-decode";
-import { useUserProfile } from "../../contexts/UserProfileContext";
+import { useUserStore } from "../../stores/userStore";
 import { Plus, X, Trash2 } from "lucide-react";
 import UpdateButton from "./UpdateButton";
 import { Button } from "@/components/ui/button";
 
 function EducationAndSkills() {
   const { user, setUser, fetchUserDetails, isEduSkillsComplete } =
-    useUserProfile();
+  useUserStore();
   const [profileData, setProfileData] = useState({
     University: "",
     FieldOfStudy: "",

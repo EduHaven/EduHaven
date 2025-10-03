@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import axiosInstance from "@/utils/axios";
 import { jwtDecode } from "jwt-decode";
-import { useUserProfile } from "../../contexts/UserProfileContext";
+import { useUserStore } from "../../stores/userStore";
 import { useToast } from "../../contexts/ToastContext";
 import { Camera, User, Trash2 } from "lucide-react";
 import UpdateButton from "./UpdateButton";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 export default function BasicInfo() {
   const { user, setUser, fetchUserDetails, isBasicInfoComplete } =
-    useUserProfile();
+  useUserStore();
   const [profileData, setProfileData] = useState({
     Username: "",
     FirstName: "",
