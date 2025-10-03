@@ -302,9 +302,7 @@ export const deleteNoteImage = async (req, res) => {
       return res.status(400).json({ error: "No image specified" });
     }
     await removefromCloudinary(publicId, "image");
-    return res
-      .status(200)
-      .json({ message: "Note image deleted successfully" });
+    return res.status(200).json({ message: "Note image deleted successfully" });
   } catch (error) {
     console.error("Note image deletion error:", error);
     return res.status(500).json({
@@ -313,4 +311,3 @@ export const deleteNoteImage = async (req, res) => {
     });
   }
 };
-
