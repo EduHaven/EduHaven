@@ -29,7 +29,7 @@ const Stats = ({ isCurrentUser = false }) => {
           if (!token) {
             setFetched(true);
             return;
-          };
+          }
 
           const decoded = jwtDecode(token);
           await fetchUserDetails(decoded.id);
@@ -90,7 +90,7 @@ const Stats = ({ isCurrentUser = false }) => {
       <div className="m-3 2xl:m-6">
         User not found or error loading profile.
       </div>
-  );
+    );
 
   return (
     <div className="m-3 2xl:m-6">

@@ -24,7 +24,10 @@ export default function FindPeople() {
         placeholder="Search by name, email, skills, or interests..."
       />
 
-      <div id="scrollableDiv2" style={{ height: "calc(100vh - 92px)", overflow: "auto" }}>
+      <div
+        id="scrollableDiv2"
+        style={{ height: "calc(100vh - 92px)", overflow: "auto" }}
+      >
         {isLoading && <FriendsSkeletonLoader />}
 
         {!isLoading && !isFetchingNextPage && users.length === 0 && (

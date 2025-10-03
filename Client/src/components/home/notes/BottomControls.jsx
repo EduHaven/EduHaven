@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 const exportNote = (note) => {
-  console.log("clicked download")
+  console.log("clicked download");
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = note.content;
   const textContent = tempDiv.textContent || tempDiv.innerText || "";
@@ -104,11 +104,11 @@ function BottomControls({ isSynced, rotate, notes, currentPage, onDelete }) {
       <div className="bg-[var(--bg-sec)] txt-disabled p-1 px-2 rounded-full">
         {notes[currentPage]?.createdAt
           ? new Date(notes[currentPage].createdAt).toLocaleDateString() +
-          "\u00A0\u00A0\u00A0" +
-          new Date(notes[currentPage].createdAt).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })
+            "\u00A0\u00A0\u00A0" +
+            new Date(notes[currentPage].createdAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
           : "No date available"}
       </div>
     </div>

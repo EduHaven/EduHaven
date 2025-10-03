@@ -165,45 +165,49 @@ const StatsSkeleton = () => (
   <div className="bg-ter rounded-3xl flex items-center">
     <div className="flex bg-[var(--bg-sec)] shadow-md rounded-3xl text-center w-full overflow-hidden p-6">
       <div className="w-full space-y-6">
-
         <div className="flex justify-between items-center">
           {/* Stats */}
           <div className="flex gap-6 flex-wrap justify-center">
-            <div className="flex gap-2">Total Study Hours: 
+            <div className="flex gap-2">
+              Total Study Hours:
               <p className="h-6 bg-ter rounded-xl w-12 md:w-16 animate-pulse"></p>
             </div>
-            <div className="flex gap-2">Average: 
+            <div className="flex gap-2">
+              Average:
               <p className="h-6 bg-ter rounded-xl w-12 md:w-16 animate-pulse"></p>
             </div>
-            <div className="flex gap-2">Maximum: 
+            <div className="flex gap-2">
+              Maximum:
               <p className="h-6 bg-ter rounded-xl w-12 md:w-16 animate-pulse"></p>
             </div>
           </div>
-          
+
           {/* Dropdown  */}
           <div className="h-8 bg-ter rounded-xl w-24 animate-pulse"></div>
         </div>
-        
+
         {/* Chart Area Skeleton */}
         <div className="relative h-64 w-full">
-
           <div className="absolute inset-0 flex flex-col justify-between">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="h-px bg-ter"></div>
             ))}
           </div>
-          
+
           <div className="absolute inset-0 flex justify-between">
             {[...Array(7)].map((_, i) => (
               <div key={i} className="w-px bg-ter h-full"></div>
             ))}
           </div>
         </div>
-        
+
         {/* labels*/}
         <div className="flex justify-between px-2">
           {[...Array(7)].map((_, i) => (
-            <div key={i} className="h-4 bg-ter rounded w-10 md:w-16 animate-pulse"></div>
+            <div
+              key={i}
+              className="h-4 bg-ter rounded w-10 md:w-16 animate-pulse"
+            ></div>
           ))}
         </div>
       </div>
@@ -211,7 +215,7 @@ const StatsSkeleton = () => (
 
     {/* side stats */}
     <div className="text-sm p-6 text-left w-fit flex flex-col gap-2">
-      Rank: 
+      Rank:
       <div className="h-10 w-5 bg-sec rounded-lg animate-pulse"></div>
       Current Streak:
       <div className="h-10 w-5 bg-sec rounded-lg animate-pulse"></div>
@@ -219,7 +223,7 @@ const StatsSkeleton = () => (
       <div className="h-10 w-5 bg-sec rounded-lg animate-pulse"></div>
     </div>
   </div>
-)
+);
 
 // ──────────────────────────────────────────────────────────────
 // Main Component
@@ -274,9 +278,7 @@ const StudyStats = () => {
 
   // Add loading and error states
   if (isLoading) {
-    return (
-      <StatsSkeleton />
-    );
+    return <StatsSkeleton />;
   }
 
   if (error) {

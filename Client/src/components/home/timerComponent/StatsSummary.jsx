@@ -62,17 +62,14 @@ function StatsSummary() {
     const start = new Date(startTime);
     const sessionSeconds = Math.floor((now - start) / 1000);
     // const totalCurrentSeconds = sessionSeconds + (currentTimerTime.hours * 3600 + currentTimerTime.minutes * 60 + currentTimerTime.seconds);
-    
-    // return totalCurrentSeconds / 3600;
-    return sessionSeconds/3600;
-   
 
+    // return totalCurrentSeconds / 3600;
+    return sessionSeconds / 3600;
   };
 
   const stats = data?.userStats;
 
   const currentSessionHours = getCurrentSessionHours();
-
 
   // Debug: log raw and derived values to help trace any calculation issues
   /*
@@ -90,8 +87,7 @@ function StatsSummary() {
     }
   }, [stats, currentSessionHours]);
 */
-   const getEnhancedValue = (baseValue, timeFilter) => {
-
+  const getEnhancedValue = (baseValue, timeFilter) => {
     const base = parseFloat(baseValue) || 0;
 
     if (timeFilter === "Today" && currentSessionHours > 0) {
@@ -174,7 +170,8 @@ function StatsSummary() {
     const nextMin = nextLevel ? Number(nextLevel.min) : null;
 
     // Compute hours left to next level (absolute hours)
-    const hoursToNextTotal = nextMin !== null ? Math.max(0, nextMin - totalHours) : 0;
+    const hoursToNextTotal =
+      nextMin !== null ? Math.max(0, nextMin - totalHours) : 0;
 
     // Progress should be numeric
     const progress = Number(lvl.progress) || 0;
@@ -182,14 +179,23 @@ function StatsSummary() {
     return { totalHours, hoursToNextTotal, progress };
   };
 
-  const { totalHours: computedTotalHours, hoursToNextTotal, progress: computedProgress } = computeLevelNumbers();
+  const {
+    totalHours: computedTotalHours,
+    hoursToNextTotal,
+    progress: computedProgress,
+  } = computeLevelNumbers();
   // Prefer to compute level based on monthly total (same source used earlier). If missing, fall back to computed total.
-  const monthlyTotal = Number(getEnhancedValue(stats?.timePeriods?.thisMonth || "0.0", "Today")) || computedTotalHours;
+  const monthlyTotal =
+    Number(getEnhancedValue(stats?.timePeriods?.thisMonth || "0.0", "Today")) ||
+    computedTotalHours;
   const totalForLevel = monthlyTotal;
 
   // Compute hours left to next level based on totalForLevel and levels array
   const findNextLevelThreshold = () => {
-    const baseLevel = levels.find((lvl) => totalForLevel >= lvl.min && totalForLevel < lvl.max) || levels[levels.length - 1];
+    const baseLevel =
+      levels.find(
+        (lvl) => totalForLevel >= lvl.min && totalForLevel < lvl.max
+      ) || levels[levels.length - 1];
     const next = levels[levels.indexOf(baseLevel) + 1];
     if (!next) return 0;
     return Math.max(0, next.min - totalForLevel);
@@ -341,7 +347,6 @@ function StatsSummary() {
           {userStats.streak || 0} days
         </p>
       </motion.div>
- 
 
       <motion.p
         className="text-md txt-dim pl-2"
@@ -349,11 +354,8 @@ function StatsSummary() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.4 }}
       >
-
-        {getMonthlyLevel(totalForLevel.toString()).name} 
-        ({getMonthlyLevel(totalForLevel.toString()).range})
-
-       
+        {getMonthlyLevel(totalForLevel.toString()).name}(
+        {getMonthlyLevel(totalForLevel.toString()).range})
       </motion.p>
 
       <div className="relative w-full bg-ter h-5 rounded-2xl mt-2">

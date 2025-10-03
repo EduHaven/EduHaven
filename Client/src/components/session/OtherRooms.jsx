@@ -103,7 +103,6 @@ export default function OtherRoom({ otherRooms, isLoading = false }) {
             onClick={() => scroll("left")}
             size="icon"
             className="rounded-full bg-transparent hover:bg-[var(--btn)] text-gray-300 transition-colors"
-
             disabled={isLoading}
           >
             <ChevronLeft size={26} />
@@ -167,4 +166,3 @@ export default function OtherRoom({ otherRooms, isLoading = false }) {
     </div>
   );
 }
-

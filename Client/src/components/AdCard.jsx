@@ -57,9 +57,7 @@ function AdCard({ slideInterval = 30000 }) {
 
   return (
     <div className="group space-y-2.5">
-      <div
-        className="flex flex-row  gap-4"
-      >
+      <div className="flex flex-row  gap-4">
         <img
           src={currentProductData.icon}
           alt="Ad Preview"

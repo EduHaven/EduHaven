@@ -18,8 +18,12 @@ const Sidebar = ({ user, activeTab, setActiveTab }) => {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const isBasicInfoComplete = useUserStore((state) => state.isBasicInfoComplete);
-  const isEduSkillsComplete = useUserStore((state) => state.isEduSkillsComplete);
+  const isBasicInfoComplete = useUserStore(
+    (state) => state.isBasicInfoComplete
+  );
+  const isEduSkillsComplete = useUserStore(
+    (state) => state.isEduSkillsComplete
+  );
 
   const tabs = [
     {
@@ -65,8 +69,8 @@ const Sidebar = ({ user, activeTab, setActiveTab }) => {
                   activeTab === tab.key
                     ? "bg-[var(--btn)] text-white"
                     : tab.incomplete
-                    ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
-                    : "hover:bg-ter"
+                      ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                      : "hover:bg-ter"
                 }`}
               >
                 <span className="flex items-center gap-1.5">

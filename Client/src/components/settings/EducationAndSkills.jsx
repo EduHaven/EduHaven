@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axios";
-import { useToast } from '@/contexts/ToastContext';
+import { useToast } from "@/contexts/ToastContext";
 import { jwtDecode } from "jwt-decode";
 import { useUserStore } from "../../stores/userStore";
 import { Plus, X, Trash2 } from "lucide-react";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 function EducationAndSkills() {
   const { user, setUser, fetchUserDetails, isEduSkillsComplete } =
-  useUserStore();
+    useUserStore();
   const [profileData, setProfileData] = useState({
     University: "",
     FieldOfStudy: "",
@@ -39,7 +39,7 @@ function EducationAndSkills() {
 
         if (!user) {
           fetchUserDetails(decoded.id);
-        } else if (!initialData) { 
+        } else if (!initialData) {
           const initial = {
             University: user.University || "",
             FieldOfStudy: user.FieldOfStudy || "",

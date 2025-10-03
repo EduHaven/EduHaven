@@ -74,7 +74,7 @@ function NotesComponent() {
     }
   };
 
-  // Handled adding new page at the start 
+  // Handled adding new page at the start
   const addNewPage = () => {
     const newNote = { title: "", content: "", date: new Date() };
     // Add the new note to the beginning of the array

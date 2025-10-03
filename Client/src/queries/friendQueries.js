@@ -122,7 +122,6 @@ export const useAllSuggestedUsers = (searchTerm) => {
   });
 };
 
-
 export const useSendRequest = () => {
   const qc = useQueryClient();
   return useMutation({

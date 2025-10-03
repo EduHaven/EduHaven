@@ -387,7 +387,9 @@
     @apply relative overflow-hidden transform transition-all duration-300;
     background: var(--bg-ter);
     border-radius: 20px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow:
+      0 8px 25px rgba(0, 0, 0, 0.3),
+      0 4px 12px rgba(0, 0, 0, 0.15);
     min-width: 350px;
     max-width: 400px;
   }
@@ -425,7 +427,7 @@
       opacity: 1;
     }
   }
-  
+
   @keyframes bounceOutRight {
     0% {
       transform: translateX(0) scale(1);
@@ -436,7 +438,7 @@
       opacity: 0.9;
     }
     100% {
-      transform: translateX(100%) scale(0.90);
+      transform: translateX(100%) scale(0.9);
       opacity: 0;
     }
   }

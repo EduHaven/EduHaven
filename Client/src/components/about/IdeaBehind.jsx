@@ -14,13 +14,24 @@ function IdeaBehindEduhaven() {
 
       <div className="md:w-2/3 txt-dim leading-relaxed space-y-4 text-lg">
         <li>
-          Back in our student days, we leaned on <strong>Discord</strong> to connect with friends and collaborate. It worked to some extent- but it wasn’t designed for learning. The constant distractions and lack of structure made it hard to stay focused.
+          Back in our student days, we leaned on <strong>Discord</strong> to
+          connect with friends and collaborate. It worked to some extent- but it
+          wasn’t designed for learning. The constant distractions and lack of
+          structure made it hard to stay focused.
         </li>
         <li>
-          We also tried other “study platforms”, but most fell flat. They simply matched random people online to silently self-study with cameras on. No real collaboration. No sense of community. Nothing to keep students truly motivated.
+          We also tried other “study platforms”, but most fell flat. They simply
+          matched random people online to silently self-study with cameras on.
+          No real collaboration. No sense of community. Nothing to keep students
+          truly motivated.
         </li>
         <li>
-          That’s why we created <strong>EduHaven</strong>- a platform built for students, by students. Here, learning is social, structured, and engaging. From private study rooms with friends, collaborative notes, and meaningful discussions to progress analytics, leaderboards, and gamified motivation, EduHaven transforms studying into something both productive and fun.
+          That’s why we created <strong>EduHaven</strong>- a platform built for
+          students, by students. Here, learning is social, structured, and
+          engaging. From private study rooms with friends, collaborative notes,
+          and meaningful discussions to progress analytics, leaderboards, and
+          gamified motivation, EduHaven transforms studying into something both
+          productive and fun.
         </li>
       </div>
     </div>

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 export default function BasicInfo() {
   const { user, setUser, fetchUserDetails, isBasicInfoComplete } =
-  useUserStore();
+    useUserStore();
   const [profileData, setProfileData] = useState({
     Username: "",
     FirstName: "",
@@ -29,8 +29,7 @@ export default function BasicInfo() {
   const [hasChanged, setHasChanged] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  
-  
+
   const { toast } = useToast();
 
   useEffect(() => {

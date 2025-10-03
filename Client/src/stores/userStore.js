@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import axiosInstance from '@/utils/axios';
+import { create } from "zustand";
+import axiosInstance from "@/utils/axios";
 
 export const useUserStore = create((set, get) => {
   return {
@@ -11,7 +11,7 @@ export const useUserStore = create((set, get) => {
         set({ user: response.data });
         return response.data;
       } catch (error) {
-        console.error('Error fetching user details:', error);
+        console.error("Error fetching user details:", error);
         return null;
       }
     },
@@ -19,40 +19,43 @@ export const useUserStore = create((set, get) => {
       const user = get().user;
       if (!user) return false;
       const requiredFields = [
-        'FirstName',
-        'LastName',
-        'Email',
-        'Bio',
-        'Gender',
-        'University',
-        'Country',
-        'FieldOfStudy',
-        'GraduationYear',
+        "FirstName",
+        "LastName",
+        "Email",
+        "Bio",
+        "Gender",
+        "University",
+        "Country",
+        "FieldOfStudy",
+        "GraduationYear",
       ];
       return requiredFields.every((field) => {
         const value = user[field];
-        return value !== null && value !== undefined && value !== '';
+        return value !== null && value !== undefined && value !== "";
       });
     },
     isBasicInfoComplete: () => {
       const user = get().user;
       if (!user) return false;
-      const basicFields = ['FirstName', 'LastName', 'Country', 'Bio', 'Gender'];
+      const basicFields = ["FirstName", "LastName", "Country", "Bio", "Gender"];
       return basicFields.every((f) => user[f]);
     },
     isEduSkillsComplete: () => {
       const user = get().user;
       if (!user) return false;
-      const eduFields = ['University', 'FieldOfStudy', 'GraduationYear'];
+      const eduFields = ["University", "FieldOfStudy", "GraduationYear"];
       return eduFields.every((f) => user[f]);
     },
     updateUser: async (userId, updatedData) => {
       try {
-        const response = await axiosInstance.put(`/user/update?id=${userId}`, updatedData);
+        const response = await axiosInstance.put(
+          `/user/update?id=${userId}`,
+          updatedData
+        );
         set({ user: response.data });
         return response.data;
       } catch (error) {
-        console.error('Error updating user:', error);
+        console.error("Error updating user:", error);
         return null;
       }
     },
@@ -61,7 +64,10 @@ export const useUserStore = create((set, get) => {
         const response = await axiosInstance.get(`/friends/${userId}/stats`);
         return response.data;
       } catch (error) {
-        console.error('Error fetching user stats:', error.response?.data || error.message);
+        console.error(
+          "Error fetching user stats:",
+          error.response?.data || error.message
+        );
         throw error;
       }
     },

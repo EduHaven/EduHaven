@@ -26,7 +26,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AuthLayout from "./components/AuthLayout";
 import Login from "./Auth/Login";
 import SignUp from "./Auth/SignUp";
-import { ToastProvider } from './contexts/ToastContext';
+import { ToastProvider } from "./contexts/ToastContext";
 
 function App() {
   const queryClient = new QueryClient();
@@ -36,56 +36,56 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <SocketProvider>
           <RouterSelector>
-              <Routes>
-                <Route path="/" element={<Layout />}>
-                  <Route index element={<Home />} />
-                  <Route path="session" element={<Session />} />
-                  <Route path="stats" element={<Stats isCurrentUser={true} />} />
-                  <Route
-                    path="user/:userId"
-                    element={<Stats isCurrentUser={false} />}
-                  />
-                  <Route path="games/*" element={<GameRoom />} />
-                  <Route path="notes" element={<Notes />} />
-                  <Route path="notes/:noteId" element={<Notes />} />
-                  <Route path="about" element={<About />} />
-                  <Route path="settings/" element={<Settings />} />
-                  <Route path="friends" element={<FriendsPage />} />
-                  <Route path="chat" element={<Chats />} />
-                  <Route path="*" element={<PageNotFound />} />
-                </Route>
-
-                <Route path="/auth" element={<AuthLayout />}>
-                  <Route path="login" element={<Login />} />
-                  <Route path="signup" element={<SignUp />} />
-                  <Route path="verify" element={<OtpInput />} />
-                  <Route path="delete-account" element={<Delete />} />
-                  <Route path="forgot-password" element={<ForgotPassword />} />
-                  <Route path="verify-reset-otp" element={<OtpInput />} />
-                  <Route path="reset-password" element={<ResetPassword />} />
-                </Route>
-
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Home />} />
+                <Route path="session" element={<Session />} />
+                <Route path="stats" element={<Stats isCurrentUser={true} />} />
                 <Route
-                  path="/auth/google/callback"
-                  element={<GoogleRedirect />}
+                  path="user/:userId"
+                  element={<Stats isCurrentUser={false} />}
                 />
-
-                <Route path="/signout" element={<Signout />} />
-                <Route path="session/:id" element={<StudyRoom />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="games/*" element={<GameRoom />} />
+                <Route path="notes" element={<Notes />} />
+                <Route path="notes/:noteId" element={<Notes />} />
+                <Route path="about" element={<About />} />
+                <Route path="settings/" element={<Settings />} />
+                <Route path="friends" element={<FriendsPage />} />
+                <Route path="chat" element={<Chats />} />
                 <Route path="*" element={<PageNotFound />} />
-              </Routes>
-            </RouterSelector>
-            <ToastContainer
-              position="top-right"
-              autoClose={5000}
-              hideProgressBar={false}
-              closeOnClick
-              pauseOnHover
-              theme="light"
-            />
-          </SocketProvider>
-        </QueryClientProvider>
+              </Route>
+
+              <Route path="/auth" element={<AuthLayout />}>
+                <Route path="login" element={<Login />} />
+                <Route path="signup" element={<SignUp />} />
+                <Route path="verify" element={<OtpInput />} />
+                <Route path="delete-account" element={<Delete />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="verify-reset-otp" element={<OtpInput />} />
+                <Route path="reset-password" element={<ResetPassword />} />
+              </Route>
+
+              <Route
+                path="/auth/google/callback"
+                element={<GoogleRedirect />}
+              />
+
+              <Route path="/signout" element={<Signout />} />
+              <Route path="session/:id" element={<StudyRoom />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="*" element={<PageNotFound />} />
+            </Routes>
+          </RouterSelector>
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            closeOnClick
+            pauseOnHover
+            theme="light"
+          />
+        </SocketProvider>
+      </QueryClientProvider>
     </ToastProvider>
   );
 }
