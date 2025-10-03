@@ -250,10 +250,10 @@ const ProfileCard = ({ isCurrentUser = false }) => {
               variant={
                 isCurrentUser || hasGivenKudos ? "transparent" : "default"
               }
-              className={`px-6 py-2 h-10 rounded-lg flex items-center space-x-2 flex-1 transition-all duration-200 ${
+              className={`px-6 py-2 h-10 rounded-lg flex items-center space-x-2 flex-1 ${
                 isCurrentUser || hasGivenKudos
-                  ? "bg-[var(--bg-ter)] text-[var(--txt-disabled)] cursor-not-allowed opacity-60"
-                  : "bg-[var(--btn)] hover:bg-[var(--btn-hover)] text-white"
+                  ? "bg-gray-400/30 cursor-not-allowed"
+                  : ""
               }`}
             >
               <ThumbsUp className="w-5 h-5" />
@@ -262,7 +262,7 @@ const ProfileCard = ({ isCurrentUser = false }) => {
 
             <Button
               variant="default"
-              className="px-6 py-2 h-10 rounded-lg flex items-center space-x-2 flex-1 bg-[var(--bg-ter)] hover:bg-[var(--bg-sec)] text-[var(--txt)] border border-[var(--btn)] transition-all duration-200"
+              className="px-6 py-2 h-10 rounded-lg flex items-center space-x-2 flex-1 bg-white/20 hover:bg-white/30 text-[var(--text-primary)]"
             >
               <MessageCircle className="w-5 h-5" />
               <span>Chat</span>
@@ -272,18 +272,17 @@ const ProfileCard = ({ isCurrentUser = false }) => {
               disabled={isFriendRequestLoading}
               onClick={handleFriendRequestAction}
               variant="default"
-              className={`px-6 py-2 h-10 rounded-lg flex items-center space-x-2 w-full sm:w-auto text-center flex-1 text-nowrap cursor-pointer transition-all duration-200 ${
+              className={`px-6 py-2 h-10 rounded-lg flex items-center space-x-2 w-full sm:w-auto text-center flex-1 text-nowrap transition-all duration-200 shadow-sm ${
                 friendRequestStatus === "Add Friend"
-                  ? "bg-[var(--btn)] hover:bg-[var(--btn-hover)] text-white"
+                  ? "bg-[var(--btn)] hover:bg-[var(--btn-hover)] text-white cursor-pointer"
                   : friendRequestStatus === "Cancel Request"
-                    ? "bg-[var(--bg-ter)] hover:bg-[var(--bg-sec)] text-[var(--btn)] border border-[var(--btn)]"
-                    : "bg-[var(--bg-sec)] text-[var(--txt)] border border-[var(--btn)] cursor-default"
+                    ? "bg-[var(--bg-ter)] hover:bg-[var(--bg-sec)] text-[var(--btn)] border-2 border-[var(--btn)] cursor-pointer"
+                    : "bg-[var(--bg-sec)] text-[var(--txt)] border border-[var(--btn)] cursor-default opacity-80"
               }`}
             >
               <UserPlus className="w-5 h-5" />
               <span>{friendRequestStatus}</span>
             </Button>
-          
           </div>
         )}
       </div>
