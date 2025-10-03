@@ -279,6 +279,27 @@ const findUserByUsernameOrEmail = async (req, res) => {
   }
 };
 
+// Check if username exists
+const checkUsernameExists = async (req, res) => {
+  try {
+    const { username } = req.query;
+    if (!username) {
+      return res.status(400).json({ error: "Username is required" });
+    }
+
+    const user = await User.findOne({ Username: username }).select("_id");
+    if (user) {
+      return res.status(200).json({ exists: true });
+    }
+
+    return res.status(200).json({ exists: false });
+  } catch (error) {
+    console.error("Error checking username:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 export {
   getUserBadges,
   getUserDetails,
@@ -286,4 +307,5 @@ export {
   updateProfile,
   uploadProfilePicture,
   findUserByUsernameOrEmail,
+  checkUsernameExists,
 };

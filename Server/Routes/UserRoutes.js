@@ -9,6 +9,7 @@ import {
   updateProfile,
   uploadProfilePicture,
   findUserByUsernameOrEmail,
+  checkUsernameExists,
 } from "../Controller/UserController.js";
 
 // these are added -> for security --
@@ -85,5 +86,6 @@ router.post(
 );
 
 router.get("/find-user", findUserByUsernameOrEmail);
+router.get("/check-username", checkUsernameExists);
 
 export default router;

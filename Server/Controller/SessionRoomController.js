@@ -86,6 +86,32 @@ export const requestJoinRoom = async (req, res) => {
   }
 };
 
+// Cancel a pending join request for a private room
+export const cancelJoinRequest = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const roomId = req.params.id;
+    const room = await SessionRoom.findById(roomId);
+    if (!room) return res.status(404).json({ error: "Room not found" });
+    // Only meaningful for private rooms
+    if (!room.isPrivate)
+      return res.status(400).json({ error: "Room is public" });
+    const wasPending = room.pendingRequests
+      .map((id) => id.toString())
+      .includes(userId.toString());
+    if (!wasPending) {
+      return res.status(400).json({ error: "No pending request to cancel" });
+    }
+    room.pendingRequests = room.pendingRequests.filter(
+      (id) => id.toString() !== userId.toString()
+    );
+    await room.save();
+    return res.json({ success: true, message: "Request canceled." });
+  } catch (e) {
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
 // Approve or reject join request (room creator only)
 export const handleJoinRequest = async (req, res) => {
   try {

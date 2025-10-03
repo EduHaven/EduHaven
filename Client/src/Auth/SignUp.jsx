@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import axiosInstance from "@/utils/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { useToast } from "@/contexts/ToastContext";
+import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -11,15 +11,77 @@ const backendUrl = import.meta.env.VITE_API_URL;
 
 function SignUp() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
+  const [strength, setStrength] = useState(0);
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [typingTimeout, setTypingTimeout] = useState(null);
 
-  const handleGoogleLogin = () => {
-    window.location.href = `${backendUrl}/auth/google`;
+  // --- Validation Functions ---
+  const validateEmail = (value) => {
+    if (!value) return "Email is required";
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return pattern.test(value) ? true : "Enter a valid email address";
   };
 
-  const [showPassword, setShowPassword] = useState(false);
+  const validateName = (value, fieldName) => {
+    if (!value) return `${fieldName} is required`;
+    if (!/^[A-Za-z]*$/.test(value)) return "Please input only letters";
+    if (value.length < 2) return "Please enter at least 2 letters";
+    if (value.length > 12) return "Character limit exceeds";
+  };
 
-  // Single useForm call with everything you need
+  const validateUsername = async (value) => {
+    if (!value) return "Username is required";
+    if (!/^[A-Za-z0-9_]*$/.test(value))
+      return "Username can only contain letters, numbers, and underscores";
+    if (value.length < 3) return "Username must be at least 3 characters long";
+
+    // Check for Username Exist or not?
+    try {
+      setIsCheckingUsername(true);
+      const response = await axiosInstance.get(
+        `/user/check-username?username=${value}`
+      );
+      if (response.data.exists) {
+        return "This username is already taken";
+      }
+    } catch (error) {
+      console.error("Error validating username:", error);
+      return "Could not validate username, try again";
+    } finally {
+      setIsCheckingUsername(false); // stop loader
+    }
+
+    return true;
+  };
+
+  const validatePassword = (value) => {
+    if (!value) return "Password is required";
+    if (value.length < 6) return "Password must be at least 6 characters";
+    return true;
+  };
+
+  // --- Password Strength Function ---
+  const passwordEdgeCases = (pwd) => {
+    let score = 0;
+    if (pwd.trim().length >= 6) score++;
+    if (/\d/.test(pwd)) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[a-z]/.test(pwd)) score++;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) score++;
+    return score;
+  };
+
+  // --- Password Strength Logic ---
+  const strengthLevels = [
+    { level: "Very Weak", color: "text-red-600" },
+    { level: "Weak", color: "text-orange-500" },
+    { level: "Medium", color: "text-yellow-500" },
+    { level: "Strong", color: "text-green-500" },
+    { level: "Very Strong", color: "text-emerald-600" },
+  ];
+
+  // --- Single useForm call with everything you need ---
   const {
     register,
     handleSubmit,
@@ -27,35 +89,48 @@ function SignUp() {
     reset,
     watch,
     setError,
-    trigger,
     setValue,
+    control,
   } = useForm({
-    mode: "onBlur",
+    mode: "onChange",
     reValidateMode: "onChange",
   });
 
-  // Track blur state for each field
-  const [blurred, setBlurred] = useState({
-    Email: false,
-    FirstName: false,
-    LastName: false,
-    Password: false,
-  });
+  const password = watch("Password", "");
+  const username = watch("Username", "");
 
+  useEffect(() => {
+    if (username) {
+      // User is typing
+      setIsCheckingUsername(true);
+
+      if (typingTimeout) clearTimeout(typingTimeout);
+
+      const timeout = setTimeout(() => {
+        setIsCheckingUsername(false); // stop loader after 500ms of inactivity
+      }, 500);
+
+      setTypingTimeout(timeout);
+    } else {
+      setIsCheckingUsername(false);
+    }
+
+    return () => typingTimeout && clearTimeout(typingTimeout);
+  }, [username]);
+
+  useEffect(() => {
+    setStrength(passwordEdgeCases(password));
+  }, [password]);
+
+  // --- Google Login ---
+  const handleGoogleLogin = () => {
+    window.location.href = `${backendUrl}/auth/google`;
+  };
+
+  // --- Form Submit ---
   const onSubmit = async (data) => {
-    console.log("Form submitted:", data);
     try {
-      const url = `/auth/signup`;
-      if (!data.FirstName || !data.LastName) {
-        throw new Error("First Name and Last Name are required");
-      }
-
-      if (!data.Username) {
-        throw new Error("Username is required");
-      }
-
-      const response = await axiosInstance.post(url, data);
-
+      const response = await axiosInstance.post(`/auth/signup`, data);
       reset();
 
       const { activationToken } = response.data;
@@ -70,7 +145,6 @@ function SignUp() {
         navigate("/auth/login");
       }
     } catch (error) {
-      console.error(`Signup failed:`, error.response?.data || error.message);
       const errMsg = error.response?.data?.error || error.message;
       if (errMsg.toLowerCase().includes("username")) {
         setError("Username", {
@@ -88,36 +162,6 @@ function SignUp() {
     }
   };
 
-  const password = watch("Password", "");
-  const [strength, setStrength] = useState(0);
-
-  const strengthLevels = [
-    { level: "Very Weak", color: "text-red-600" },
-
-    { level: "Weak", color: "text-orange-500" },
-
-    { level: "Medium", color: "text-yellow-500" },
-
-    { level: "Strong", color: "text-green-500" },
-
-    { level: "Very Strong", color: "text-emerald-600" },
-  ];
-
-  const passwordEdgeCases = (pwd) => {
-    let score = 0;
-
-    if (pwd.trim().length >= 6) score++;
-    if (/\d/.test(pwd)) score++;
-    if (/[A-Z]/.test(pwd)) score++;
-    if (/[a-z]/.test(pwd)) score++;
-    if (/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) score++;
-    return score;
-  };
-
-  useEffect(() => {
-    setStrength(passwordEdgeCases(password));
-  }, [password]);
-
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -126,6 +170,7 @@ function SignUp() {
         </h2>
       </div>
 
+      {/* Google Login */}
       <Button
         onClick={handleGoogleLogin}
         variant="transparent" // You can create a custom "google" variant if you prefer
@@ -134,6 +179,7 @@ function SignUp() {
         <img src="/GoogleIcon.svg" alt="Google sign-in" className="size-6" />
         <p>Continue with Google</p>
       </Button>
+
       {/* or */}
       <div className="flex items-center my-6">
         <div className="flex-grow h-px bg-gray-300"></div>
@@ -142,6 +188,7 @@ function SignUp() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Email */}
         <div>
           <label
             htmlFor="email"
@@ -149,39 +196,27 @@ function SignUp() {
           >
             Email
           </label>
-          <div className="mt-2.5">
+          <div className="mt-2.5 relative">
             <input
               id="email"
               type="email"
               placeholder="you@example.com"
-              {...register("Email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Enter a valid email address",
-                },
-              })}
+              {...register("Email", { validate: validateEmail })}
               className="block w-full rounded-xl bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
-              onBlur={() => {
-                setBlurred((prev) => ({ ...prev, Email: true }));
-                trigger("Email");
-              }}
-              onChange={(e) => {
-                register("Email").onChange(e);
-                if (blurred.Email) {
-                  trigger("Email");
-                }
-              }}
             />
-            {blurred.Email && errors.Email && (
-              <p className="text-red-600 text-sm mt-1">
+
+            {/*Show Email Validation */}
+            {errors.Email && (
+              <p className="absolute left-0 top-full text-red-600 text-sm mt-0.5">
                 {errors.Email.message}
               </p>
             )}
           </div>
         </div>
 
+        {/* First & Last Name */}
         <div className="flex gap-4">
+          {/* First Name */}
           <div className="w-1/2">
             <label
               htmlFor="first-name"
@@ -189,42 +224,49 @@ function SignUp() {
             >
               First Name
             </label>
-            <div className="mt-2.5">
-              <input
-                id="first-name"
-                type="text"
-                placeholder="John"
-                {...register("FirstName", {
-                  required: "First Name is required",
-                  validate: (value) => {
-                    if (!/^[A-Za-z]*$/.test(value)) {
-                      return "Please input only letters";
-                    }
-                    if (value.length < 2) {
-                      return "Please enter at least 2 letters";
-                    }
-                    return true;
-                  },
-                })}
-                onBlur={() => {
-                  setBlurred((prev) => ({ ...prev, FirstName: true }));
-                  trigger("FirstName");
+
+            <div className="mt-2.5 relative">
+              <Controller
+                name="FirstName"
+                control={control}
+                rules={{
+                  validate: (v) => validateName(v, "First Name"),
                 }}
-                onChange={(e) => {
-                  register("FirstName").onChange(e);
-                  if (blurred.FirstName) {
-                    trigger("FirstName");
-                  }
-                }}
-                className="block w-full rounded-xl border bg-transparent border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
+                render={({ field }) => (
+                  <>
+                    <input
+                      id="first-name"
+                      type="text"
+                      placeholder="John"
+                      maxLength={12}
+                      {...field}
+                      className="block w-full rounded-xl border bg-transparent border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
+                    />
+
+                    {/*Show Character Remaining*/}
+                    <span
+                      className={`absolute top-2 right-2 text-sm ${
+                        field.value?.length === 12
+                          ? "text-red-600"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {12 - (field.value ? field.value.length : 0)}
+                    </span>
+
+                    {/*Show FirstName Validation */}
+                    {errors.FirstName && (
+                      <p className="absolute left-0 top-full text-red-600 text-sm mt-0.5">
+                        {errors.FirstName.message}
+                      </p>
+                    )}
+                  </>
+                )}
               />
-              {blurred.FirstName && errors.FirstName && (
-                <p className="text-red-600 text-sm mt-1">
-                  {errors.FirstName.message}
-                </p>
-              )}
             </div>
           </div>
+
+          {/* Last Name */}
           <div className="w-1/2">
             <label
               htmlFor="last-name"
@@ -232,94 +274,131 @@ function SignUp() {
             >
               Last Name
             </label>
-            <div className="mt-2.5">
-              <input
-                id="last-name"
-                type="text"
-                placeholder="Doe"
-                {...register("LastName", {
-                  required: "Last Name is required",
-                  validate: (value) => {
-                    if (!/^[A-Za-z]*$/.test(value)) {
-                      return "Please input only letters";
-                    }
-                    if (value.length < 2) {
-                      return "Please enter at least 2 letters";
-                    }
-                    return true;
-                  },
-                })}
-                onBlur={() => {
-                  setBlurred((prev) => ({ ...prev, LastName: true }));
-                  trigger("LastName");
+            <div className="mt-2.5 relative">
+              <Controller
+                name="LastName"
+                control={control}
+                rules={{
+                  validate: (v) => validateName(v, "Last Name"),
                 }}
-                onChange={(e) => {
-                  register("LastName").onChange(e);
-                  if (blurred.LastName) {
-                    trigger("LastName");
-                  }
-                }}
-                className="block w-full rounded-xl border bg-transparent border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
+                render={({ field }) => (
+                  <>
+                    <input
+                      id="last-name"
+                      type="text"
+                      placeholder="Doe"
+                      maxLength={12}
+                      {...field}
+                      className="block w-full rounded-xl border bg-transparent border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
+                    />
+
+                    {/*Show Character Remaining */}
+                    <span
+                      className={`absolute top-2 right-2 text-sm ${
+                        field.value?.length === 12
+                          ? "text-red-600"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {12 - (field.value ? field.value.length : 0)}
+                    </span>
+
+                    {/*Show LastName Validation */}
+                    {errors.LastName && (
+                      <p className="absolute left-0 top-full text-red-600 text-sm mt-0.5">
+                        {errors.LastName.message}
+                      </p>
+                    )}
+                  </>
+                )}
               />
-              {blurred.LastName && errors.LastName && (
-                <p className="text-red-600 text-sm mt-1">
-                  {errors.LastName.message}
-                </p>
-              )}
             </div>
           </div>
         </div>
 
+        {/* Username */}
         <div>
-          <label
-            htmlFor="Username"
-            className="block tesxt-sm font-medium text-gray-900 dark:text-gray-300"
-          >
-            Username
-          </label>
-        </div>
-        <div className="mt-2.5">
-          <input
-            id="Username"
-            type="text"
-            placeholder="knight_owl"
-            {...register("Username", {
-              required: "Username is required",
-              validate: (value) => {
-                if (!/^[A-Za-z0-9_]*$/.test(value)) {
-                  return "Username can only contain letters, numbers, and underscores";
-                }
-                if (value.length < 3) {
-                  return "Username must be at least 3 characters long";
-                }
-                return true;
-              },
-            })}
-            onBlur={() => {
-              setBlurred((prev) => ({ ...prev, Username: true }));
-              trigger("Username");
-            }}
-            onChange={(e) => {
-              register("Username").onChange(e);
-              if (blurred.Username) {
-                trigger("Username");
-              }
-            }}
-            className="block w-full rounded-xl border bg-transparent border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
-          ></input>
-          {blurred.Username && errors.Username && (
-            <p className="text-red-600 text-sm mt-1">
-              {errors.Username.message}
-            </p>
-          )}
+          <div className="mt-2.5 relative">
+            <Controller
+              name="Username"
+              control={control}
+              defaultValue=""
+              rules={{ validate: validateUsername }}
+              render={({ field }) => (
+                <div>
+                  <label
+                    htmlFor="Username"
+                    className="block text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >
+                    Username
+                  </label>
+                  <div className="mt-2.5 relative">
+                    <input
+                      id="Username"
+                      type="text"
+                      placeholder="knight_owl"
+                      maxLength={20}
+                      {...field}
+                      className="block w-full rounded-xl border bg-transparent border-gray-400 pl-3 pr-12 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
+                    />
+
+                    {/* Loader on right */}
+                    {isCheckingUsername && (
+                      <div className="absolute right-6 top-1/2 -translate-y-1/2">
+                        <svg
+                          className="animate-spin h-5 w-5 text-gray-500"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                          />
+                        </svg>
+                      </div>
+                    )}
+
+                    {/*Show Character Remaining */}
+                    <span
+                      className={`absolute top-2 right-2 text-sm ${
+                        field.value?.length === 20
+                          ? "text-red-600"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {20 - (field.value ? field.value.length : 0)}
+                    </span>
+
+                    {/*Show Username Validation */}
+                    {errors.Username && (
+                      <p className="absolute left-0 top-full text-red-600 text-sm mt-0.5">
+                        {errors.Username.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            />
+          </div>
         </div>
 
+        {/* Password */}
         <div>
           <label
             htmlFor="password"
             className="block text-sm font-medium text-gray-900 dark:text-gray-300"
           >
-            Password{" "}
+            Password {/* Show password Strength */}
             <span
               className={`text-sm ml-52 font-semibold ${
                 strengthLevels[strength - 1]?.color
@@ -334,16 +413,10 @@ function SignUp() {
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="********"
-              {...register("Password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-              })}
-              onChange={(e) => {
-                setValue("Password", e.target.value, { shouldValidate: true });
-              }}
+              {...register("Password", { validate: validatePassword })}
+              onChange={(e) =>
+                setValue("Password", e.target.value, { shouldValidate: true })
+              }
               className="block w-full rounded-lg bg-transparent border border-gray-400 px-3 py-2 text-gray-900 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
             />
             <button
@@ -354,14 +427,16 @@ function SignUp() {
               {showPassword ? <Eye size={19} /> : <EyeOff size={19} />}
             </button>
 
+            {/*Show Password Validation */}
             {errors.Password && (
-              <p className="text-red-600 text-sm mt-1">
+              <p className="absolute left-0 top-full text-red-600 text-sm mt-0.5">
                 {errors.Password.message}
               </p>
             )}
           </div>
         </div>
 
+        {/* Submit Button */}
         <div>
           <Button
             type="submit"
@@ -377,6 +452,8 @@ function SignUp() {
           </Button>
         </div>
       </form>
+
+      {/* Already have account? */}
       <motion.div
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}

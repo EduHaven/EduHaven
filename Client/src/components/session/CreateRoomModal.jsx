@@ -98,6 +98,20 @@ function CreateRoomModal({ isOpen, onClose, onCreate }) {
               className="w-full px-4 py-3 mb-6 rounded-lg bg-sec txt placeholder:txt-dim border border-gray-500/50 focus:outline-none"
             />
 
+            {/* Privacy */}
+            <div className="flex items-center gap-3 mb-6">
+              <input
+                id="private-room"
+                type="checkbox"
+                checked={isPrivate}
+                onChange={(e) => setIsPrivate(e.target.checked)}
+                className="h-4 w-4"
+              />
+              <label htmlFor="private-room" className="font-medium txt">
+                Make this room private
+              </label>
+            </div>
+
             {/* Actions */}
             <div className="flex justify-end gap-4">
               <Button

@@ -60,14 +60,52 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
     }
   }, [room]);
 
+  // Poll join-status so UI updates after creator approves without manual refresh
+  useEffect(() => {
+    if (!room?._id) return;
+    let intervalId;
+    let canceled = false;
+
+    const fetchStatus = () => {
+      axiosInstance
+        .get(`/session-room/${room._id}/join-status`)
+        .then((res) => {
+          if (!canceled) setJoinStatus(res.data.status);
+        })
+        .catch(() => {});
+    };
+
+    // initial immediate fetch to sync
+    fetchStatus();
+    intervalId = setInterval(fetchStatus, 5000);
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") fetchStatus();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      canceled = true;
+      if (intervalId) clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [room?._id]);
+
   const handleJoin = async () => {
     if (loading) return;
     if (room.isPrivate) {
       if (joinStatus === "member") {
-        import("react-toastify").then(({ toast }) => {
-          toast.success("You are already a member. Entering room...");
-        });
-        navigate(`/session/${room._id}`);
+        try {
+          const res = await axiosInstance.post(`/session-room/${room._id}/join`);
+          import("react-toastify").then(({ toast }) => {
+            toast.success(res.data?.message || "Entering room...");
+          });
+          navigate(`/session/${room._id}`);
+        } catch (err) {
+          import("react-toastify").then(({ toast }) => {
+            toast.error(err.response?.data?.error || "Failed to enter room");
+          });
+        }
       } else if (joinStatus === "pending") {
         import("react-toastify").then(({ toast }) => {
           toast.info("Your join request is pending approval.");
@@ -81,9 +119,18 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
             toast.success("Join request sent.");
           });
         } catch (err) {
-          import("react-toastify").then(({ toast }) => {
-            toast.error(err.response?.data?.error || "Failed to send request");
-          });
+          const message = err.response?.data?.error;
+          if (message && message.toLowerCase().includes("already a member")) {
+            setJoinStatus("member");
+            import("react-toastify").then(({ toast }) => {
+              toast.success("You are already a member. Entering room...");
+            });
+            navigate(`/session/${room._id}`);
+          } else {
+            import("react-toastify").then(({ toast }) => {
+              toast.error(message || "Failed to send request");
+            });
+          }
         }
       }
     } else {
@@ -100,6 +147,21 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
           toast.error(err.response?.data?.error || "Failed to join room");
         });
       }
+    }
+  };
+
+  const handleCancelRequest = async () => {
+    if (loading) return;
+    try {
+      await axiosInstance.post(`/session-room/${room._id}/cancel-request`);
+      setJoinStatus("none");
+      import("react-toastify").then(({ toast }) => {
+        toast.success("Join request canceled.");
+      });
+    } catch (err) {
+      import("react-toastify").then(({ toast }) => {
+        toast.error(err.response?.data?.error || "Failed to cancel request");
+      });
     }
   };
 
@@ -272,12 +334,14 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
             Enter Room
           </Button>
         ) : joinStatus === "pending" ? (
-          <Button
-            disabled
-            className="w-full flex items-center justify-center gap-2 bg-gray-400/30 cursor-not-allowed"
-          >
-            Request Sent
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleCancelRequest}
+              className="w-full flex items-center justify-center gap-2"
+            >
+              Cancel Request
+            </Button>
+          </div>
         ) : (
           <Button
             onClick={handleJoin}
