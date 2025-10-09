@@ -9,24 +9,28 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import SharePopup from "./SharePopup";
+import useNoteStore from '@/stores/useNoteStore';
 
 const NoteCard = ({
   note,
-  onSelect,
   onPin,
   onSendToTrash,
   onArchive,
   onExport,
   onColorChange,
   onShare,
-  showColorPicker,
-  setShowColorPicker,
   colors,
   getPlainTextPreview,
 }) => {
   const [hovered, setHovered] = useState(false);
-  const [showSharePopup, setShowSharePopup] = useState(false);
+  
+  // Zustand store
+  const {
+    setSelectedNote,
+    showColorPicker,
+    setShowColorPicker,
+    openSharePopup
+  } = useNoteStore();
 
   const getColorStyle = (colorName) => {
     const color = colors.find((c) => c.name === colorName);
@@ -46,7 +50,7 @@ const NoteCard = ({
         ...getColorStyle(note?.color),
         minHeight: "140px",
       }}
-      onClick={() => onSelect(note)}
+      onClick={() => setSelectedNote(note)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -132,7 +136,7 @@ const NoteCard = ({
           <Button
             onClick={(e) => {
               e.stopPropagation();
-              setShowSharePopup(true);
+              openSharePopup(note);
             }}
             variant="transparent"
             size="icon"
@@ -173,14 +177,6 @@ const NoteCard = ({
             />
           ))}
         </motion.div>
-      )}
-
-      {showSharePopup && (
-        <SharePopup
-          note={note}
-          onClose={() => setShowSharePopup(false)}
-          onShare={onShare}
-        />
       )}
     </div>
   );

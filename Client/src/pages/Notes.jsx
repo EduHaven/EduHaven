@@ -16,11 +16,12 @@ import Underline from "@tiptap/extension-underline";
 
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import NoteEditor from "@/components/notes/NoteEditor.jsx";
 import NoteHeader from "@/components/notes/NoteHeader.jsx";
 import NotesList from "@/components/notes/NotesList.jsx";
+import SharePopup from "@/components/notes/SharePopup";
 
 import {
   useArchivedNotes,
@@ -38,6 +39,7 @@ import "@/components/notes/note.css";
 import TrashNotes from "@/components/notes/TrashNote";
 import axiosInstance from "@/utils/axios";
 import { useToast } from '@/contexts/ToastContext';
+import useNoteStore from '@/stores/useNoteStore';
 
 const colors = [
   { name: "default", style: { backgroundColor: "var(--note-default)" } },
@@ -54,6 +56,19 @@ const Notes = () => {
   const { noteId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Zustand store
+  const {
+    status,
+    searchTerm,
+    selectedNote,
+    showColorPicker,
+    setStatus,
+    setSearchTerm,
+    setSelectedNote,
+    setShowColorPicker
+  } = useNoteStore();
+
   const isFullScreen = !!noteId;
   const { data: notes = [], isLoading } = useNotes();
   const { data: archiveNotes = [], isLoading: isArchiveLoading } =
@@ -68,11 +83,6 @@ const Notes = () => {
   const sendToTrashMutation = useTrashNote();
   const restoreMutation = useRestoreTrashedNote();
 
-  const [status, setStatus] = useState("active"); // active, archive, trash
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedNote, setSelectedNote] = useState(null);
-  const [showColorPicker, setShowColorPicker] = useState(null);
-
   useEffect(() => {
     if (noteId && notes.length > 0) {
       const foundNote = notes.find((n) => n._id === noteId);
@@ -80,7 +90,7 @@ const Notes = () => {
         setSelectedNote(foundNote);
       }
     }
-  }, [noteId, notes]);
+  }, [noteId, notes, setSelectedNote]);
 
   const notesObj = {
     active: notes,
@@ -473,6 +483,27 @@ const Notes = () => {
     return text.substring(0, 100) + (text.length > 100 ? "..." : "");
   };
 
+  const handleShareNote = async (noteId, userId, accessLevel) => {
+    try {
+      const response = await axiosInstance.post(`/note/${noteId}/collaborators`, {
+        userId,
+        access: accessLevel
+      });
+
+      if (response.status === 200) {
+        return Promise.resolve();
+      } else {
+        throw new Error(response.data.error || "Failed to share note");
+      }
+    } catch (error) {
+      if (error.response) {
+        throw new Error(error.response.data?.error || error.response.data?.message || "Failed to share note");
+      } else {
+        throw error;
+      }
+    }
+  };
+
   const filteredNotes = notesObj[status].filter((note) => {
     const plainContent = getPlainTextPreview(note.content);
     const matchesSearch =
@@ -509,13 +540,7 @@ const Notes = () => {
           className={`${selectedNote ? "w-80" : "w-full"} overflow-auto p-4`}
         >
           <NoteHeader
-            selectedNote={selectedNote}
             createNewNote={createNewNote}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            setStatus={setStatus}
-            setSelectedNote={setSelectedNote}
-            status={status}
           />
 
           {(status == "active" || status == "archive") && (
@@ -523,15 +548,11 @@ const Notes = () => {
               pinnedNotes={pinnedNotes}
               unpinnedNotes={unpinnedNotes}
               filteredNotes={filteredNotes}
-              searchTerm={searchTerm}
-              setSelectedNote={setSelectedNote}
               togglePin={togglePin}
               sendToTrashNote={sendToTrashNote}
               archiveNote={archiveNote}
               exportNote={exportNote}
               changeColor={changeColor}
-              showColorPicker={showColorPicker}
-              setShowColorPicker={setShowColorPicker}
               colors={colors}
               getPlainTextPreview={getPlainTextPreview}
             />
@@ -567,6 +588,9 @@ const Notes = () => {
           </div>
         )}
       </div>
+
+      {/* Share Popup */}
+      <SharePopup onShare={handleShareNote} />
     </div>
   );
 };

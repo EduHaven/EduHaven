@@ -1,17 +1,21 @@
 import { Archive, FileText, Plus, Search, Trash2 } from "lucide-react";
-// import { Button } from "../ui/button";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import useNoteStore from '@/stores/useNoteStore';
 
 const NoteHeader = ({
   createNewNote,
-  searchTerm,
-  setSearchTerm,
-  selectedNote,
-  setStatus,
-  setSelectedNote,
-  status,
 }) => {
+  // Zustand store
+  const {
+    searchTerm,
+    selectedNote,
+    status,
+    setSearchTerm,
+    setStatus,
+    setSelectedNote
+  } = useNoteStore();
+
   return (
     <header
       className={`flex justify-between items-center w-full ${

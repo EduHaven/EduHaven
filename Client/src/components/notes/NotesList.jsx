@@ -1,22 +1,25 @@
 import NoteCard from "./NoteCard";
 import axiosInstance from "@/utils/axios";
+import useNoteStore from '@/stores/useNoteStore';
 
 const NotesList = ({
   pinnedNotes,
   unpinnedNotes,
   filteredNotes,
-  searchTerm,
-  setSelectedNote,
   togglePin,
   sendToTrashNote,
   archiveNote,
   exportNote,
   changeColor,
-  showColorPicker,
-  setShowColorPicker,
   colors,
   getPlainTextPreview,
 }) => {
+  // Zustand store
+  const {
+    searchTerm,
+    showColorPicker,
+    setShowColorPicker
+  } = useNoteStore();
 
   const handleShareNote = async (noteId, userId, accessLevel) => {
     try {
@@ -60,7 +63,6 @@ const NotesList = ({
               <NoteCard
                 key={note?._id}
                 note={note}
-                onSelect={setSelectedNote}
                 onPin={togglePin}
                 onSendToTrash={sendToTrashNote}
                 onArchive={archiveNote}
@@ -98,7 +100,6 @@ const NotesList = ({
               <NoteCard
                 key={note?._id}
                 note={note}
-                onSelect={setSelectedNote}
                 onPin={togglePin}
                 onSendToTrash={sendToTrashNote}
                 onArchive={archiveNote}

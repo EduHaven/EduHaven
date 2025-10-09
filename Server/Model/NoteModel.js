@@ -66,6 +66,12 @@ const noteSchema = new mongoose.Schema(
   }
 );
 
-noteSchema.index({ shareToken: 1 }, { unique: true, sparse: true, partialFilterExpression: { shareToken: { $ne: null } } });
+noteSchema.index({ shareToken: 1 }, { 
+  unique: true, 
+  sparse: true,
+  partialFilterExpression: { 
+    shareToken: { $ne: null } 
+  } 
+});
 
 export default mongoose.model("Note", noteSchema);
