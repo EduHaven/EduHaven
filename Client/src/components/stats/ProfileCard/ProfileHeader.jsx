@@ -1,56 +1,57 @@
-// components/ProfileCard/ProfileHeader.jsx
-import { Edit3, Share2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { Share2, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
-const ProfileHeader = ({
-  isCurrentUser,
-  user,
-  profilelink,
-  showLink,
-  toggleLink,
-  copyLink,
-  shareRef,
-}) => {
+const ProfileHeader = ({ user, profilelink, isCurrentUser }) => {
+  const handleCopyLink = () => {
+    if (!profilelink) return;
+    navigator.clipboard
+      .writeText(profilelink)
+      .then(() => toast.success("Copied profile link!"))
+      .catch(() => toast.error("Failed to copy link"));
+  };
+
   return (
-    <div className="flex justify-end gap-6 px-4">
-      {isCurrentUser && (
-        <Link to={"/settings/"}>
-          <Edit3 className="h-6 w-6 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" />
-        </Link>
-      )}
+    <div className="flex items-center justify-between px-6 mb-4">
+      <div>
+        <h1 className="text-2xl font-semibold text-[var(--text-primary)]">
+          {user.FirstName} {user.LastName}
+        </h1>
+        <p className="text-[var(--text-secondary)] text-sm">@{user.Username}</p>
+      </div>
 
-      {user?._id && (
-        <div className="relative inline-block">
-          <Share2
-            className="h-6 w-6 text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
-            onClick={toggleLink}
-          />
+      <div className="flex items-center gap-3">
+        {isCurrentUser && (
+          <Link to="/settings/">
+            <Edit3 className="h-6 w-6 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" />
+          </Link>
+        )}
 
-          {showLink && (
-            <div
-              ref={shareRef}
-              className="absolute top-full mt-2 right-0 flex items-center bg-[#1f2937] rounded-lg px-3 py-2 shadow-md border border-gray-700 w-64 z-20"
+        {/* Dropdown for sharing profile link */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="flex items-center space-x-2 text-sm"
             >
-              <input
-                type="text"
-                value={profilelink}
-                readOnly
-                title={profilelink}
-                className="flex-1 bg-transparent text-sm text-white outline-none truncate"
-              />
-              <Button
-                onClick={copyLink}
-                variant="default"
-                size="sm"
-                className="ml-2 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium"
-              >
-                Copy
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
+              <Share2 className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem onClick={handleCopyLink}>
+              Copy Profile Link
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   );
 };

@@ -3,23 +3,8 @@ import $ from "jquery";
 import styles from "./snake.module.css";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const ChevronDown = ({ size = 20, className }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <polyline points="6 9 12 15 18 9"></polyline>
-  </svg>
-);
+import {DropdownMenu, DropdownMenuContent,  DropdownMenuItem,DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 const ToggleSwitch = ({ label, checked, onChange }) => {
   return (
@@ -507,50 +492,53 @@ const SnakeGame = () => {
 
         <div className={styles.hiScore}>High Score: {hiScore}</div>
         {/* REMOVED UNNECESSARY WRAPPER DIVS AND CORRECTED className USAGE */}
-        <div className={styles.customDropdown} ref={dropdownRef}>
-          <div
-            className={styles.dropdownHeader}
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <span>{gameMode}</span>
-            <ChevronDown
-              size={20}
-              className={`${styles.chevron} ${
-                isOpen ? styles.chevronOpen : ""
-              }`}
-            />
-          </div>
-          {isOpen && (
-            <div className={styles.dropdownList}>
-              {dropdownOptions.map((option) => {
-                if (option.type === "setting") {
-                  return (
-                    <div
-                      key={option.key}
-                      className={styles.dropdownItemNoHover}
-                    >
-                      <ToggleSwitch
-                        label={option.label}
-                        checked={drawingOptions[option.key]}
-                        onChange={() => handleDrawingChange(option.key)}
-                      />
-                    </div>
-                  );
-                }
+          <div className={styles.customDropdown}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex justify-between items-center w-48 px-4 py-2 bg-[var(--bg-sec)] text-[var(--txt)] rounded-xl border border-transparent hover:bg-[var(--bg-ter)] focus:ring-2 focus:ring-[var(--btn)]"
+                >
+                  {gameMode}
+                  <ChevronDown className="w-5 h-5 opacity-70" />
+                </Button>
+              </DropdownMenuTrigger>
 
-                return (
-                  <div
-                    key={option.label}
-                    className={styles.dropdownItem}
-                    onClick={() => handleModeClick(option)}
-                  >
-                    {option.label}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+              <DropdownMenuContent
+                align="start"
+                className="w-48 bg-[var(--bg-sec)] border border-gray-700/30 rounded-md shadow-lg"
+              >
+                {dropdownOptions.map((option) => {
+                  if (option.type === "setting") {
+                    return (
+                      <DropdownMenuItem
+                        key={option.key}
+                        className="cursor-default select-none flex justify-between items-center px-3 py-2"
+                      >
+                        <span>{option.label}</span>
+                        <input
+                          type="checkbox"
+                          checked={drawingOptions[option.key]}
+                          onChange={() => handleDrawingChange(option.key)}
+                          className="cursor-pointer"
+                        />
+                      </DropdownMenuItem>
+                    );
+                  }
+
+                  return (
+                    <DropdownMenuItem
+                      key={option.label}
+                      onClick={() => handleModeClick(option)}
+                      className="cursor-pointer hover:bg-[var(--bg-ter)]"
+                    >
+                      {option.label}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
       </nav>
 
       <canvas className={`flex-1 ${styles.canvas}`} id="c"></canvas>
