@@ -2,7 +2,7 @@ import axiosInstance from "@/utils/axios";
 import { AnimatePresence, motion } from "framer-motion";
 import { Edit, Trash2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useToast } from '@/contexts/ToastContext';
+import { useToast } from "@/contexts/ToastContext";
 import { Button } from "@/components/ui/button";
 
 const AllEventsPopup = ({ events, onClose, refreshEvents }) => {

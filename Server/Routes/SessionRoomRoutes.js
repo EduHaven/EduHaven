@@ -14,7 +14,6 @@ import {
 
 const router = express.Router();
 
-
 router.get("/", authMiddleware, getRoomLists);
 router.post("/", authMiddleware, createRoom);
 router.delete("/:id", authMiddleware, deleteRoom);

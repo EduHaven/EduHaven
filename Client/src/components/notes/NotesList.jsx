@@ -17,13 +17,15 @@ const NotesList = ({
   colors,
   getPlainTextPreview,
 }) => {
-
   const handleShareNote = async (noteId, userId, accessLevel) => {
     try {
-      const response = await axiosInstance.post(`/note/${noteId}/collaborators`, {
-        userId,
-        access: accessLevel
-      });
+      const response = await axiosInstance.post(
+        `/note/${noteId}/collaborators`,
+        {
+          userId,
+          access: accessLevel,
+        }
+      );
 
       if (response.status === 200) {
         return Promise.resolve();
@@ -32,7 +34,11 @@ const NotesList = ({
       }
     } catch (error) {
       if (error.response) {
-        throw new Error(error.response.data?.error || error.response.data?.message || "Failed to share note");
+        throw new Error(
+          error.response.data?.error ||
+            error.response.data?.message ||
+            "Failed to share note"
+        );
       } else {
         throw error;
       }

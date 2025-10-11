@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Mail, Send } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useToast } from '@/contexts/ToastContext';
+import { useToast } from "@/contexts/ToastContext";
 import { Button } from "../components/ui/button";
 
 // const backendUrl = import.meta.env.VITE_API_URL;

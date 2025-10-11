@@ -18,15 +18,17 @@ const SharedNoteView = ({ sharedNote, onClose }) => {
       { name: "yellow", style: { backgroundColor: "#fef9c3" } },
       { name: "orange", style: { backgroundColor: "#ffedd5" } },
     ];
-    
-    return colors.find(c => c.name === colorName)?.style || colors[0].style;
+
+    return colors.find((c) => c.name === colorName)?.style || colors[0].style;
   };
 
   if (!sharedNote) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[var(--bg-primary)]">
         <div className="text-center">
-          <div className="text-[var(--txt-dim)]">Note not found or link has expired</div>
+          <div className="text-[var(--txt-dim)]">
+            Note not found or link has expired
+          </div>
           <Button onClick={onClose} className="mt-4">
             Close
           </Button>
@@ -52,7 +54,6 @@ const SharedNoteView = ({ sharedNote, onClose }) => {
         {/* Header */}
         <div className="p-6 pb-4 border-b border-[var(--bg-ter)]">
           <div className="flex items-center justify-end mb-4">
-            
             <Button
               variant="transparent"
               size="icon"
@@ -79,15 +80,15 @@ const SharedNoteView = ({ sharedNote, onClose }) => {
 
         {/* Note Content */}
         <div className="flex-1 p-6 overflow-auto">
-          <div 
+          <div
             className="prose max-w-none min-h-full"
-            style={{ 
+            style={{
               color: "var(--txt)",
-              fontFamily: "inherit"
+              fontFamily: "inherit",
             }}
           >
             {/* Render the HTML content safely */}
-            <div 
+            <div
               dangerouslySetInnerHTML={renderNoteContent(sharedNote.content)}
               className="shared-note-content"
               style={{
@@ -97,7 +98,6 @@ const SharedNoteView = ({ sharedNote, onClose }) => {
             />
           </div>
         </div>
-
       </motion.div>
     </motion.div>
   );

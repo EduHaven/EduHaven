@@ -3,7 +3,6 @@ import { Send, MoreVertical, Smile, User, Users } from "lucide-react";
 import EmojiPicker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 
-
 // Dummy messages for demonstration
 const getDummyMessages = (userId) => {
   const messageTemplates = {
@@ -116,7 +115,6 @@ function ChatWindow({ selectedUser }) {
   const emojiPickerRef = useRef(null);
   const emojiButtonRef = useRef(null);
   const textareaRef = useRef(null);
-  
 
   // Load messages when user is selected
   useEffect(() => {
@@ -145,29 +143,29 @@ function ChatWindow({ selectedUser }) {
 
     setMessages((prev) => [...prev, newMessage]);
     setMessage("");
-    setCursorPosition(0); 
+    setCursorPosition(0);
 
-  // This hook is to close the emojipicker when clicked outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        emojiPickerRef.current &&
-        !emojiPickerRef.current.contains(event.target) &&
-        emojiButtonRef.current &&
-        !emojiButtonRef.current.contains(event.target)
-      ) {
-        setShowEmoji(false);
+    // This hook is to close the emojipicker when clicked outside
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (
+          emojiPickerRef.current &&
+          !emojiPickerRef.current.contains(event.target) &&
+          emojiButtonRef.current &&
+          !emojiButtonRef.current.contains(event.target)
+        ) {
+          setShowEmoji(false);
+        }
+      };
+
+      if (showEmoji) {
+        document.addEventListener("mousedown", handleClickOutside);
       }
-    };
 
-    if (showEmoji) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showEmoji]);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [showEmoji]);
 
     // TODO: Connect to backend - Send message via socket/API
     // Example: socket.emit('sendMessage', { userId: selectedUser.id, message: message });
@@ -198,7 +196,7 @@ function ChatWindow({ selectedUser }) {
 
   // To make sure to track the emojipicker state
   const toggleEmojiPicker = () => {
-  setShowEmoji(!showEmoji);
+    setShowEmoji(!showEmoji);
   };
 
   // To insert emoji into our message
@@ -206,12 +204,13 @@ function ChatWindow({ selectedUser }) {
     const textarea = textareaRef.current;
     if (textarea) {
       const position = textarea.selectionStart || cursorPosition;
-      
-      const newMessage = message.slice(0, position) + emoji.native + message.slice(position);
-      
+
+      const newMessage =
+        message.slice(0, position) + emoji.native + message.slice(position);
+
       setMessage(newMessage);
       setShowEmoji(false);
-      
+
       textarea.focus();
       const newCursorPosition = position + emoji.native.length;
       textarea.setSelectionRange(newCursorPosition, newCursorPosition);
@@ -230,8 +229,6 @@ function ChatWindow({ selectedUser }) {
       setCursorPosition(textareaRef.current.selectionStart);
     }
   };
-
-  
 
   // Empty state when no user is selected
   if (!selectedUser) {
@@ -389,9 +386,9 @@ function ChatWindow({ selectedUser }) {
         }}
       >
         <div className="flex items-end gap-2 sm:gap-3">
-                    {/* Emoji Button */}
+          {/* Emoji Button */}
           <div className="relative">
-            <button 
+            <button
               ref={emojiButtonRef}
               onClick={toggleEmojiPicker}
               className="p-2 rounded-full hover:opacity-70 transition-colors txt-dim hover:txt"
@@ -401,7 +398,7 @@ function ChatWindow({ selectedUser }) {
 
             {/* Emoji Picker Popup */}
             {showEmoji && (
-              <div 
+              <div
                 ref={emojiPickerRef}
                 className="absolute bottom-full left-0 mb-2 z-50"
                 style={{ zIndex: 9999 }}
@@ -439,7 +436,6 @@ function ChatWindow({ selectedUser }) {
               style={{ maxHeight: "120px" }}
             />
           </div>
-
 
           {/* Send Button - Responsive */}
           <button

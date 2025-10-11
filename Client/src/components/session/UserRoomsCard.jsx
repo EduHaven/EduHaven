@@ -8,8 +8,8 @@ import { Lock, DoorOpen, XCircle, ArrowRight } from "lucide-react";
 
 // Helper function to truncate text
 const truncateText = (text, maxLength) => {
-  if (!text) return '';
-  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  if (!text) return "";
+  return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 };
 
 // Custom hook to fetch the join status for all rooms (Logic unchanged as it was correct)
@@ -20,15 +20,15 @@ const useRoomStatus = (myRooms) => {
     if (myRooms && myRooms.length > 0) {
       const fetchStatuses = async () => {
         const statuses = {};
-        const statusPromises = myRooms.map(room =>
+        const statusPromises = myRooms.map((room) =>
           axiosInstance
             .get(`/session-room/${room._id}/join-status`)
-            .then(res => ({ id: room._id, status: res.data.status }))
-            .catch(() => ({ id: room._id, status: 'none' }))
+            .then((res) => ({ id: room._id, status: res.data.status }))
+            .catch(() => ({ id: room._id, status: "none" }))
         );
 
         const results = await Promise.all(statusPromises);
-        results.forEach(result => {
+        results.forEach((result) => {
           statuses[result.id] = result.status;
         });
         setJoinStatus(statuses);
@@ -38,19 +38,18 @@ const useRoomStatus = (myRooms) => {
   }, [myRooms]);
 
   const updateJoinStatus = (roomId, status) => {
-    setJoinStatus(prev => ({ ...prev, [roomId]: status }));
+    setJoinStatus((prev) => ({ ...prev, [roomId]: status }));
   };
 
   return { joinStatus, updateJoinStatus };
 };
-
 
 const UserRoomsCard = ({ isCurrentUser, myRooms }) => {
   const navigate = useNavigate();
   const { joinStatus, updateJoinStatus } = useRoomStatus(myRooms);
 
   const handleJoin = async (room) => {
-    const status = joinStatus[room._id] || (room.isJoined ? 'member' : 'none');
+    const status = joinStatus[room._id] || (room.isJoined ? "member" : "none");
 
     if (room.isPrivate) {
       if (status === "member") {
@@ -81,12 +80,14 @@ const UserRoomsCard = ({ isCurrentUser, myRooms }) => {
         toast.success("Joined room. Entering...");
         navigate(`/session/${room._id}`);
       } catch (err) {
-        if (err.response?.data?.error?.toLowerCase().includes("already a member")) {
-            updateJoinStatus(room._id, "member");
-            toast.success("Entering room...");
-            navigate(`/session/${room._id}`);
+        if (
+          err.response?.data?.error?.toLowerCase().includes("already a member")
+        ) {
+          updateJoinStatus(room._id, "member");
+          toast.success("Entering room...");
+          navigate(`/session/${room._id}`);
         } else {
-            toast.error(err.response?.data?.error || "Failed to join room");
+          toast.error(err.response?.data?.error || "Failed to join room");
         }
       }
     }
@@ -106,39 +107,42 @@ const UserRoomsCard = ({ isCurrentUser, myRooms }) => {
     <div
       className="rounded-3xl shadow-lg p-6 w-full h-fit relative"
       style={{
-        backgroundColor: 'var(--bg-sec)',
+        backgroundColor: "var(--bg-sec)",
       }}
     >
       <div className="inner">
-        <h2 
+        <h2
           className="text-xl font-semibold mb-6"
-          style={{ 
-            color: 'var(--txt)',
+          style={{
+            color: "var(--txt)",
           }}
         >
-          {isCurrentUser ? 'My Rooms' : "User's Rooms"}
+          {isCurrentUser ? "My Rooms" : "User's Rooms"}
         </h2>
 
         {myRooms.length === 0 ? (
           <p
             className="text-center p-4 rounded-lg"
-            style={{ 
-              color: 'var(--txt-dim)', 
-              backgroundColor: 'var(--bg-primary)',
+            style={{
+              color: "var(--txt-dim)",
+              backgroundColor: "var(--bg-primary)",
             }}
           >
-            {isCurrentUser ? "You haven't created any rooms yet." : "This user hasn't created any rooms."}
+            {isCurrentUser
+              ? "You haven't created any rooms yet."
+              : "This user hasn't created any rooms."}
           </p>
         ) : (
           <ul className="space-y-4">
             {myRooms.map((room) => {
-              const status = joinStatus[room._id] || (room.isJoined ? 'member' : 'none');
+              const status =
+                joinStatus[room._id] || (room.isJoined ? "member" : "none");
               const categoryText = truncateText(room.cateogery, 25);
 
               let buttonText = "Join";
               let buttonAction = () => handleJoin(room);
               let buttonVariant = "default";
-              
+
               // Determine button state and text
               if (room.isPrivate) {
                 if (status === "member") {
@@ -148,14 +152,17 @@ const UserRoomsCard = ({ isCurrentUser, myRooms }) => {
                   buttonText = "Cancel Request";
                   buttonAction = () => handleCancelRequest(room);
                   buttonVariant = "destructive";
-                } else { // status === "none"
+                } else {
+                  // status === "none"
                   buttonText = "Request Join";
                 }
-              } else { // Public Room
+              } else {
+                // Public Room
                 if (status === "member") {
                   buttonText = "Enter Room";
                   buttonVariant = "secondary";
-                } else { // status === "none"
+                } else {
+                  // status === "none"
                   buttonText = "Join";
                 }
               }
@@ -165,21 +172,27 @@ const UserRoomsCard = ({ isCurrentUser, myRooms }) => {
                   key={room._id}
                   className="flex items-center justify-between p-4 rounded-xl shadow-inner transition-all duration-300"
                   style={{
-                    backgroundColor: 'var(--bg-primary)',
+                    backgroundColor: "var(--bg-primary)",
                   }}
                 >
                   {/* Room Details */}
                   <div className="flex flex-col min-w-0 pr-4 flex-grow">
-                    <span 
-                      className="font-medium text-lg truncate mb-0.5" 
-                      style={{ color: 'var(--txt)' }} 
+                    <span
+                      className="font-medium text-lg truncate mb-0.5"
+                      style={{ color: "var(--txt)" }}
                       title={room.name}
                     >
-                      {room.name} {room.isPrivate && <Lock className="inline-block w-4 h-4 ml-1 align-sub" style={{ color: 'var(--txt-dim)' }} />}
+                      {room.name}{" "}
+                      {room.isPrivate && (
+                        <Lock
+                          className="inline-block w-4 h-4 ml-1 align-sub"
+                          style={{ color: "var(--txt-dim)" }}
+                        />
+                      )}
                     </span>
-                    <span 
+                    <span
                       className="text-sm"
-                      style={{ color: 'var(--txt-dim)' }} 
+                      style={{ color: "var(--txt-dim)" }}
                       title={room.cateogery}
                     >
                       Category: {categoryText}

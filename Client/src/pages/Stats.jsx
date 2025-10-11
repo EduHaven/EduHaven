@@ -26,13 +26,12 @@ const Stats = ({ isCurrentUser = false }) => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-
         if (isCurrentUser) {
           const token = localStorage.getItem("token");
           if (!token) {
             setFetched(true);
             return;
-          };
+          }
 
           const decoded = jwtDecode(token);
           await fetchUserDetails(decoded.id);
@@ -62,7 +61,9 @@ const Stats = ({ isCurrentUser = false }) => {
 
           const { data } = await axiosInstance.get("/session-room");
 
-          const filteredRooms = data.otherRooms.filter(room => room.createdBy === userId);
+          const filteredRooms = data.otherRooms.filter(
+            (room) => room.createdBy === userId
+          );
           setUserRooms(filteredRooms);
 
           setUserStats({
@@ -102,7 +103,7 @@ const Stats = ({ isCurrentUser = false }) => {
       <div className="m-3 2xl:m-6">
         User not found or error loading profile.
       </div>
-  );
+    );
 
   return (
     <div className="m-3 2xl:m-6">
@@ -121,7 +122,10 @@ const Stats = ({ isCurrentUser = false }) => {
         <div className="lg:w-[20%] min-w-72 space-y-3 2xl:space-y-6">
           <ProfileCard isCurrentUser={isCurrentUser} user={userStats} />
           {(isCurrentUser ? myRooms : userRooms)?.length > 0 && (
-            <UserRoomsCard isCurrentUser={isCurrentUser} myRooms={isCurrentUser ? myRooms : userRooms} />
+            <UserRoomsCard
+              isCurrentUser={isCurrentUser}
+              myRooms={isCurrentUser ? myRooms : userRooms}
+            />
           )}
 
           {/*  Here we will add room created by me */}

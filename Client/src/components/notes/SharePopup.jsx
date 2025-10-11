@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { X, Search, User, Link, Copy, Shield, Globe, Trash2 } from "lucide-react";
+import {
+  X,
+  Search,
+  User,
+  Link,
+  Copy,
+  Shield,
+  Globe,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import axiosInstance from "@/utils/axios";
 import { toast } from "react-toastify";
@@ -20,13 +29,17 @@ const SharePopup = ({ note, onClose, onShare }) => {
   const generateShareLink = async () => {
     setGeneratingLink(true);
     try {
-      const response = await axiosInstance.post(`/note/${note._id}/generate-share-link`);
+      const response = await axiosInstance.post(
+        `/note/${note._id}/generate-share-link`
+      );
       const { shareLink } = response.data;
       setShareLink(shareLink);
       toast.success("Share link generated!");
     } catch (error) {
       console.error("Error generating share link:", error);
-      toast.error(error.response?.data?.error || "Failed to generate share link");
+      toast.error(
+        error.response?.data?.error || "Failed to generate share link"
+      );
     } finally {
       setGeneratingLink(false);
     }
@@ -50,7 +63,9 @@ const SharePopup = ({ note, onClose, onShare }) => {
 
     setLoading(true);
     try {
-      const response = await axiosInstance.get(`/user/find-user?search=${encodeURIComponent(query)}`);
+      const response = await axiosInstance.get(
+        `/user/find-user?search=${encodeURIComponent(query)}`
+      );
       const data = response.data;
 
       if (data.users) {
@@ -85,7 +100,7 @@ const SharePopup = ({ note, onClose, onShare }) => {
     setVisibility(newVisibility);
     try {
       await axiosInstance.put(`/note/${note._id}`, {
-        visibility: newVisibility
+        visibility: newVisibility,
       });
 
       if (newVisibility === "public" && !shareLink) {
@@ -93,7 +108,9 @@ const SharePopup = ({ note, onClose, onShare }) => {
       }
     } catch (error) {
       console.error("Error updating note visibility:", error);
-      toast.error(error.response?.data?.error || "Failed to update note visibility");
+      toast.error(
+        error.response?.data?.error || "Failed to update note visibility"
+      );
     }
   };
 
@@ -102,8 +119,13 @@ const SharePopup = ({ note, onClose, onShare }) => {
 
     try {
       await onShare(note._id, selectedUser._id, accessLevel);
-      toast.success(`Note shared successfully with ${selectedUser.FirstName + " " + selectedUser.LastName + "(" + selectedUser.Username + ")"}!`);
-      setCollaborators((prev) => [...prev, { user: selectedUser, access: accessLevel }]);
+      toast.success(
+        `Note shared successfully with ${selectedUser.FirstName + " " + selectedUser.LastName + "(" + selectedUser.Username + ")"}!`
+      );
+      setCollaborators((prev) => [
+        ...prev,
+        { user: selectedUser, access: accessLevel },
+      ]);
       setSelectedUser(null);
       setSearchTerm("");
       setUsers([]);
@@ -116,14 +138,18 @@ const SharePopup = ({ note, onClose, onShare }) => {
   const handleDeleteCollaborator = async (collaborator) => {
     try {
       // console.log(collaborators)
-      await axiosInstance.delete(`/note/${note._id}/collaborators/${collaborator._id}`);
+      await axiosInstance.delete(
+        `/note/${note._id}/collaborators/${collaborator._id}`
+      );
       setCollaborators((prev) =>
         prev.filter((c) => c.user._id !== collaborator.user._id)
       );
       toast.success("Collaborator removed successfully");
     } catch (error) {
       console.error("Error removing collaborator:", error);
-      toast.error(error.response?.data?.error || "Failed to remove collaborator");
+      toast.error(
+        error.response?.data?.error || "Failed to remove collaborator"
+      );
     }
   };
 
@@ -201,7 +227,9 @@ const SharePopup = ({ note, onClose, onShare }) => {
                       </div>
                       <div className="flex-1">
                         <div className="text-[var(--txt)] text-sm">
-                          {user.FirstName + " " + user.LastName || user.Username || 'Unknown User'}
+                          {user.FirstName + " " + user.LastName ||
+                            user.Username ||
+                            "Unknown User"}
                         </div>
                         <div className="text-xs text-[var(--txt-dim)]">
                           {user.Email}
@@ -230,10 +258,7 @@ const SharePopup = ({ note, onClose, onShare }) => {
                   <option value="view">Can view</option>
                   <option value="edit">Can edit</option>
                 </select>
-                <Button
-                  onClick={handleAddCollaborator}
-                  className="text-sm"
-                >
+                <Button onClick={handleAddCollaborator} className="text-sm">
                   Add
                 </Button>
               </div>
@@ -257,7 +282,9 @@ const SharePopup = ({ note, onClose, onShare }) => {
                         <User size={16} className="text-[var(--btn-txt)]" />
                       </div>
                       <div className="text-[var(--txt)] text-sm">
-                        {collaborator.user.FirstName + " " + collaborator.user.LastName}
+                        {collaborator.user.FirstName +
+                          " " +
+                          collaborator.user.LastName}
                       </div>
                       <div className="text-xs text-[var(--txt-dim)]">
                         {collaborator.user.Email} • {collaborator.access}
@@ -316,7 +343,9 @@ const SharePopup = ({ note, onClose, onShare }) => {
                 <div className="flex items-center gap-3">
                   <Globe size={20} className="text-[var(--btn)]" />
                   <div className="flex-1">
-                    <div className="font-medium text-[var(--txt)]">Public on the web</div>
+                    <div className="font-medium text-[var(--txt)]">
+                      Public on the web
+                    </div>
                     <div className="text-xs text-[var(--txt-dim)]">
                       Anyone on the internet can find and view
                     </div>
@@ -330,7 +359,9 @@ const SharePopup = ({ note, onClose, onShare }) => {
               <div className="mt-4 p-3 rounded-lg bg-[var(--bg-ter)] border border-[var(--bg-secondary)]">
                 <div className="flex items-center gap-2 mb-2">
                   <Link size={16} className="text-[var(--txt-dim)]" />
-                  <span className="text-sm font-medium text-[var(--txt)]">Shareable Link</span>
+                  <span className="text-sm font-medium text-[var(--txt)]">
+                    Shareable Link
+                  </span>
                 </div>
                 <div className="flex gap-2">
                   <input
@@ -358,10 +389,7 @@ const SharePopup = ({ note, onClose, onShare }) => {
 
           {/* Close Button */}
           <div className="flex justify-end pt-2">
-            <Button
-              onClick={onClose}
-              variant="secondary"
-            >
+            <Button onClick={onClose} variant="secondary">
               Done
             </Button>
           </div>

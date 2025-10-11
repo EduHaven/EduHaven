@@ -49,7 +49,7 @@ export default function FindPeople() {
         scrollableTarget="scrollableDiv"
         style={{ overflow: "visible" }}
       >
-        <div className="flex flex-wrap justify-center gap-3 2xl:gap-4 mt-4" >
+        <div className="flex flex-wrap justify-center gap-3 2xl:gap-4 mt-4">
           {users.map((user) => (
             <UserCard key={user._id} user={user} selectedTab="findFriends" />
           ))}

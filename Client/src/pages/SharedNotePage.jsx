@@ -19,7 +19,9 @@ const SharedNotePage = () => {
         setSharedNote(response.data.data);
       } catch (error) {
         console.error("Error fetching shared note:", error);
-        toast.error(error.response?.data?.error || "Failed to load shared note");
+        toast.error(
+          error.response?.data?.error || "Failed to load shared note"
+        );
       } finally {
         setLoading(false);
       }
@@ -42,10 +44,7 @@ const SharedNotePage = () => {
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
-      <SharedNoteView 
-        sharedNote={sharedNote} 
-        onClose={handleClose}
-      />
+      <SharedNoteView sharedNote={sharedNote} onClose={handleClose} />
     </div>
   );
 };

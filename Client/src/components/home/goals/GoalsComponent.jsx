@@ -74,34 +74,40 @@ const GoalsComponent = () => {
     }
 
     const previousTodos = [...todos];
-    
+
     setTodos((prev) => prev.filter((todo) => todo._id !== id));
 
     try {
       await axiosInstance.delete(`/todo/${id}`);
-      
+
       // Store undo information
       const undoAction = {
         todo: todoToDelete,
         previousTodos,
         timestamp: Date.now(),
-        originalId: id
+        originalId: id,
       };
-      
-      setUndoStack(prev => [...prev, undoAction]);
+
+      setUndoStack((prev) => [...prev, undoAction]);
 
       // Show undo notification
       const toastId = toast.success(
         <div className="flex items-center justify-between">
-          <span>Goal "{todoToDelete.title.length > 20 ? `${todoToDelete.title.substring(0, 20)}...` : todoToDelete.title}" deleted.</span>
+          <span>
+            Goal "
+            {todoToDelete.title.length > 20
+              ? `${todoToDelete.title.substring(0, 20)}...`
+              : todoToDelete.title}
+            " deleted.
+          </span>
           <div className="flex items-center ml-4">
-            <button 
+            <button
               onClick={() => handleUndoDelete(undoAction, toastId)}
               className="text-blue-400 hover:text-blue-300 mr-2 text-sm font-medium"
             >
               Undo
             </button>
-            <button 
+            <button
               onClick={() => toast.dismiss(toastId)}
               className="text-gray-400 hover:text-gray-300"
             >
@@ -119,7 +125,6 @@ const GoalsComponent = () => {
           toastId: `delete-${id}-${Date.now()}`,
         }
       );
-
     } catch (error) {
       console.error("Error deleting todo:", error.message);
 
@@ -132,11 +137,14 @@ const GoalsComponent = () => {
     try {
       // Recreate the todo on the server
       const { data } = await axiosInstance.post(`/todo`, undoAction.todo);
-      
-      setTodos(prev => [data.data, ...prev.filter(todo => todo._id !== undoAction.originalId)]);
-      
+
+      setTodos((prev) => [
+        data.data,
+        ...prev.filter((todo) => todo._id !== undoAction.originalId),
+      ]);
+
       toast.dismiss(toastId);
-      
+
       toast.success("Goal restored successfully!");
     } catch (error) {
       console.error("Error undoing delete:", error.message);

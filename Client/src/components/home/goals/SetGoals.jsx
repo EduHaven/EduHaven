@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { useToast } from '@/contexts/ToastContext';
+import { useToast } from "@/contexts/ToastContext";
 import "./ReactCustomCalendar.css";
 
 const Setgoals = ({ onGoalCreated }) => {

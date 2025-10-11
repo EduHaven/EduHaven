@@ -132,12 +132,12 @@ const getUserStats = async (userId) => {
     totalHours >= 100
       ? "Master"
       : totalHours >= 50
-      ? "Expert"
-      : totalHours >= 25
-      ? "Advanced"
-      : totalHours >= 10
-      ? "Intermediate"
-      : "Beginner";
+        ? "Expert"
+        : totalHours >= 25
+          ? "Advanced"
+          : totalHours >= 10
+            ? "Intermediate"
+            : "Beginner";
 
   return {
     timePeriods: {
@@ -219,7 +219,6 @@ const getLeaderboardData = async (period, friendsOnly, userId) => {
     },
   ]);
 };
-
 
 // Controller: User study stats
 const getUserStudyStats = async (req, res) => {

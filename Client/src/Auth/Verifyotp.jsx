@@ -1,7 +1,7 @@
 import { ArrowLeft, CheckCircle, Mail, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useToast } from '@/contexts/ToastContext';
+import { useToast } from "@/contexts/ToastContext";
 import { Button } from "@/components/ui/button";
 
 const backendUrl = import.meta.env.VITE_API_URL;

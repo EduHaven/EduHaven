@@ -36,7 +36,6 @@ function UserCard({ user, selectedTab }) {
             {`${user.FirstName} ${user.LastName || ""}`}
           </div>
           <p className={"text-sm txt-dim line-clamp-2"}>{user.Bio}</p>
-          
 
           <div className="mt-2 mb-1">
             {user.OtherDetails?.interests && (

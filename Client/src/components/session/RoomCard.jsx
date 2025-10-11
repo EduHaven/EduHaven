@@ -96,7 +96,9 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
     if (room.isPrivate) {
       if (joinStatus === "member") {
         try {
-          const res = await axiosInstance.post(`/session-room/${room._id}/join`);
+          const res = await axiosInstance.post(
+            `/session-room/${room._id}/join`
+          );
           import("react-toastify").then(({ toast }) => {
             toast.success(res.data?.message || "Entering room...");
           });

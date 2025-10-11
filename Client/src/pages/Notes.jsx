@@ -37,7 +37,7 @@ import {
 import "@/components/notes/note.css";
 import TrashNotes from "@/components/notes/TrashNote";
 import axiosInstance from "@/utils/axios";
-import { useToast } from '@/contexts/ToastContext';
+import { useToast } from "@/contexts/ToastContext";
 
 const colors = [
   { name: "default", style: { backgroundColor: "var(--note-default)" } },
