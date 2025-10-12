@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { X } from "lucide-react";
 
-const PopupContainer = ({ title, onClose, children }) => {
+const PopupContainer = ({ title, onClose, children, width = "w-96" }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isShaking, setIsShaking] = useState(false);
 
@@ -35,7 +35,7 @@ const PopupContainer = ({ title, onClose, children }) => {
           onClick={handleBackdropClick}
         >
           <motion.div
-            className={`relative w-96 bg-sec rounded-3xl p-6 shadow-2xl shadow-black/40 border ${
+            className={`relative ${width} bg-sec rounded-3xl p-6 shadow-2xl shadow-black/40 border ${
               isShaking
                 ? "border-2 border-[var(--txt-dim)] "
                 : "border-[var(--bg-ter)]"
