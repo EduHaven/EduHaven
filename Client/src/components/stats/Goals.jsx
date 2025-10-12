@@ -24,6 +24,7 @@ const Goals = ({ isCurrentUser = false }) => {
   const [view, setView] = useState("weekly");
   const [isOpen, setIsOpen] = useState(false);
   const [chartData, setChartData] = useState({
+    hourly: [],
     daily: [],
     weekly: [],
     monthly: [],
@@ -79,6 +80,9 @@ const Goals = ({ isCurrentUser = false }) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => handleDropdownClick("hourly")}>
+              Hourly
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleDropdownClick("daily")}>
               Daily
             </DropdownMenuItem>
