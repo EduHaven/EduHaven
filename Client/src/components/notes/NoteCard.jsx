@@ -9,30 +9,61 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import useNoteStore from '@/stores/useNoteStore';
+import SharePopup from "./SharePopup";
+import { useNoteStore } from '@/stores/useNoteStore';
+import { useUpdateNote, useArchiveNote, useTrashNote } from "@/queries/NoteQueries";
+import axiosInstance from "@/utils/axios";
 
 const NoteCard = ({
   note,
-  onPin,
-  onSendToTrash,
-  onArchive,
-  onExport,
-  onColorChange,
-  onShare,
-  colors,
   getPlainTextPreview,
+  onExport,
 }) => {
   const [hovered, setHovered] = useState(false);
-  
-  // Zustand store
+  const [showSharePopup, setShowSharePopup] = useState(false);
+
   const {
     setSelectedNote,
+    togglePin,
+    changeColor,
     showColorPicker,
     setShowColorPicker,
-    openSharePopup
   } = useNoteStore();
 
+  const updateNoteMutation = useUpdateNote();
+  const archiveNoteMutation = useArchiveNote();
+  const trashNoteMutation = useTrashNote();
+
+  // Create handlers that combine store actions with mutations
+  const handleTogglePin = (id, pinnedAt) => {
+    const { updates } = togglePin(id, pinnedAt);
+    updateNoteMutation.mutate({ id, ...updates });
+  };
+
+  const handleChangeColor = (id, color) => {
+    const { updates } = changeColor(id, color);
+    updateNoteMutation.mutate({ id, ...updates });
+  };
+
+  const handleArchiveNote = (noteToArchive) => {
+    archiveNoteMutation.mutate(noteToArchive._id);
+  };
+
+  const handleSendToTrash = (id) => {
+    trashNoteMutation.mutate(id);
+  };
+
   const getColorStyle = (colorName) => {
+    const colors = [
+      { name: "default", style: { backgroundColor: "var(--note-default)" } },
+      { name: "red", style: { backgroundColor: "var(--note-red)" } },
+      { name: "orange", style: { backgroundColor: "var(--note-orange)" } },
+      { name: "yellow", style: { backgroundColor: "var(--note-yellow)" } },
+      { name: "green", style: { backgroundColor: "var(--note-green)" } },
+      { name: "blue", style: { backgroundColor: "var(--note-blue)" } },
+      { name: "purple", style: { backgroundColor: "var(--note-purple)" } },
+      { name: "pink", style: { backgroundColor: "var(--note-pink)" } },
+    ];
     const color = colors.find((c) => c.name === colorName);
     return color ? color.style : colors[0].style;
   };
@@ -41,6 +72,27 @@ const NoteCard = ({
     if (!text) return "";
     if (text.length <= limit) return text;
     return text.substring(0, limit) + "...";
+  };
+
+  const handleShareNote = async (noteId, userId, accessLevel) => {
+    try {
+      const response = await axiosInstance.post(`/note/${noteId}/collaborators`, {
+        userId,
+        access: accessLevel
+      });
+
+      if (response.status === 200) {
+        return Promise.resolve();
+      } else {
+        throw new Error(response.data.error || "Failed to share note");
+      }
+    } catch (error) {
+      if (error.response) {
+        throw new Error(error.response.data?.error || error.response.data?.message || "Failed to share note");
+      } else {
+        throw error;
+      }
+    }
   };
 
   return (
@@ -57,7 +109,7 @@ const NoteCard = ({
       <button
         onClick={(e) => {
           e.stopPropagation();
-          onPin(note?._id, note?.pinnedAt);
+          handleTogglePin(note?._id, note?.pinnedAt);
         }}
         className={`absolute top-2 right-2 p-1 rounded-full bg-black/10 hover:bg-black/20 transition-opacity
         ${
@@ -116,7 +168,7 @@ const NoteCard = ({
           </Button>
 
           <Button
-            onClick={() => onArchive(note)}
+            onClick={() => handleArchiveNote(note)}
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
@@ -136,7 +188,7 @@ const NoteCard = ({
           <Button
             onClick={(e) => {
               e.stopPropagation();
-              openSharePopup(note);
+              setShowSharePopup(true);
             }}
             variant="transparent"
             size="icon"
@@ -146,7 +198,7 @@ const NoteCard = ({
           </Button>
 
           <Button
-            onClick={() => onSendToTrash(note?._id)}
+            onClick={() => handleSendToTrash(note?._id)}
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
@@ -163,10 +215,19 @@ const NoteCard = ({
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
         >
-          {colors.map((color) => (
+          {[
+            { name: "default", style: { backgroundColor: "var(--note-default)" } },
+            { name: "red", style: { backgroundColor: "var(--note-red)" } },
+            { name: "orange", style: { backgroundColor: "var(--note-orange)" } },
+            { name: "yellow", style: { backgroundColor: "var(--note-yellow)" } },
+            { name: "green", style: { backgroundColor: "var(--note-green)" } },
+            { name: "blue", style: { backgroundColor: "var(--note-blue)" } },
+            { name: "purple", style: { backgroundColor: "var(--note-purple)" } },
+            { name: "pink", style: { backgroundColor: "var(--note-pink)" } },
+          ].map((color) => (
             <button
               key={color.name}
-              onClick={() => onColorChange(note?._id, color.name)}
+              onClick={() => handleChangeColor(note?._id, color.name)}
               className="w-6 h-6 cursor-pointer rounded-full border"
               style={{
                 ...color.style,
@@ -177,6 +238,14 @@ const NoteCard = ({
             />
           ))}
         </motion.div>
+      )}
+
+      {showSharePopup && (
+        <SharePopup
+          note={note}
+          onClose={() => setShowSharePopup(false)}
+          onShare={handleShareNote}
+        />
       )}
     </div>
   );

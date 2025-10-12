@@ -1,43 +1,33 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { X, Search, User, Link, Copy, Shield, Globe, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import axiosInstance from "@/utils/axios";
 import { toast } from "react-toastify";
-import useNoteStore from '@/stores/useNoteStore';
 
-const SharePopup = ({ onShare, onNoteUpdated }) => {
-  // Zustand store
-  const {
-    sharePopup,
-    closeSharePopup,
-    setSharePopupState,
-  } = useNoteStore();
+const SharePopup = ({ note, onClose, onShare }) => {
+  const [visibility, setVisibility] = useState(note?.visibility || "private");
+  const [shareLink, setShareLink] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [accessLevel, setAccessLevel] = useState("view");
+  const [loading, setLoading] = useState(false);
+  const [generatingLink, setGeneratingLink] = useState(false);
+  const [collaborators, setCollaborators] = useState(note?.collaborators || []);
 
-  const { 
-    isOpen, 
-    note, 
-    shareLink, 
-    searchTerm, 
-    users, 
-    selectedUser, 
-    accessLevel, 
-    loading, 
-    generatingLink 
-  } = sharePopup;
-
-  // Generate share link for public notes
   const generateShareLink = async () => {
-    setSharePopupState({ generatingLink: true });
+    setGeneratingLink(true);
     try {
       const response = await axiosInstance.post(`/note/${note._id}/generate-share-link`);
       const { shareLink } = response.data;
-      setSharePopupState({ shareLink, generatingLink: false });
+      setShareLink(shareLink);
       toast.success("Share link generated!");
     } catch (error) {
       console.error("Error generating share link:", error);
       toast.error(error.response?.data?.error || "Failed to generate share link");
-      setSharePopupState({ generatingLink: false });
+    } finally {
+      setGeneratingLink(false);
     }
   };
 
@@ -53,25 +43,25 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
 
   const searchUsers = async (query) => {
     if (!query.trim()) {
-      setSharePopupState({ users: [] });
+      setUsers([]);
       return;
     }
 
-    setSharePopupState({ loading: true });
+    setLoading(true);
     try {
       const response = await axiosInstance.get(`/user/find-user?search=${encodeURIComponent(query)}`);
       const data = response.data;
 
       if (data.users) {
-        setSharePopupState({ users: data.users });
+        setUsers(data.users);
       } else {
-        setSharePopupState({ users: [] });
+        setUsers([]);
       }
     } catch (error) {
       console.error("Error searching users:", error);
-      setSharePopupState({ users: [] });
+      setUsers([]);
     } finally {
-      setSharePopupState({ loading: false });
+      setLoading(false);
     }
   };
 
@@ -83,25 +73,22 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Auto-generate link when visibility is set to public
   useEffect(() => {
-    if (note?.visibility === "public" && !shareLink) {
+    if (visibility === "public" && !shareLink) {
       generateShareLink();
     }
-  }, [note?.visibility]);
+  }, [visibility]);
 
   const handleVisibilityChange = async (newVisibility) => {
+    setVisibility(newVisibility);
     try {
       await axiosInstance.put(`/note/${note._id}`, {
         visibility: newVisibility
       });
 
-      // Notify parent component to refresh notes data
-      if (onNoteUpdated) {
-        onNoteUpdated();
+      if (newVisibility === "public" && !shareLink) {
+        await generateShareLink();
       }
-
-      toast.success(`Note visibility updated to ${newVisibility}`);
     } catch (error) {
       console.error("Error updating note visibility:", error);
       toast.error(error.response?.data?.error || "Failed to update note visibility");
@@ -114,17 +101,10 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
     try {
       await onShare(note._id, selectedUser._id, accessLevel);
       toast.success(`Note shared successfully with ${selectedUser.FirstName + " " + selectedUser.LastName + "(" + selectedUser.Username + ")"}!`);
-      
-      // Notify parent component to refresh notes data
-      if (onNoteUpdated) {
-        onNoteUpdated();
-      }
-      
-      setSharePopupState({ 
-        selectedUser: null,
-        searchTerm: "",
-        users: []
-      });
+      setCollaborators((prev) => [...prev, { user: selectedUser, access: accessLevel }]);
+      setSelectedUser(null);
+      setSearchTerm("");
+      setUsers([]);
     } catch (error) {
       console.error("Error sharing note:", error);
       toast.error(error.message || "Failed to share note");
@@ -134,20 +114,15 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
   const handleDeleteCollaborator = async (collaborator) => {
     try {
       await axiosInstance.delete(`/note/${note._id}/collaborators/${collaborator._id}`);
-      
-      // Notify parent component to refresh notes data
-      if (onNoteUpdated) {
-        onNoteUpdated();
-      }
-      
+      setCollaborators((prev) =>
+        prev.filter((c) => c.user._id !== collaborator.user._id)
+      );
       toast.success("Collaborator removed successfully");
     } catch (error) {
       console.error("Error removing collaborator:", error);
       toast.error(error.response?.data?.error || "Failed to remove collaborator");
     }
   };
-
-  if (!isOpen) return null;
 
   return (
     <motion.div
@@ -169,7 +144,7 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
           <Button
             variant="transparent"
             size="icon"
-            onClick={closeSharePopup}
+            onClick={onClose}
             className="p-1 rounded-full hover:bg-[var(--bg-ter)]"
           >
             <X size={20} />
@@ -177,13 +152,11 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
         </div>
 
         <div className="space-y-6">
-          {/* Section 1: Add People */}
           <div>
             <h4 className="text-sm font-medium mb-3 text-[var(--txt)]">
               Add people
             </h4>
 
-            {/* Search Input */}
             <div className="relative mb-3">
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--txt-dim)]"
@@ -193,12 +166,11 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
                 type="text"
                 placeholder="Search by username or email..."
                 value={searchTerm}
-                onChange={(e) => setSharePopupState({ searchTerm: e.target.value })}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-[var(--bg-ter)] bg-[var(--bg-secondary)] text-[var(--txt)] focus:outline-none focus:ring-2 focus:ring-[var(--btn)]"
               />
             </div>
 
-            {/* Search Results */}
             {loading && (
               <div className="text-center py-2 rounded text-[var(--txt-dim)] bg-[var(--bg-ter)] text-sm">
                 Searching users...
@@ -215,7 +187,7 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
                         ? "bg-[var(--btn)]/20"
                         : "hover:bg-[var(--bg-ter)]"
                     }`}
-                    onClick={() => setSharePopupState({ selectedUser: user })}
+                    onClick={() => setSelectedUser(user)}
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-[var(--btn)] flex items-center justify-center">
@@ -241,12 +213,11 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
               </div>
             )}
 
-            {/* Access Level and Add Button */}
             {selectedUser && (
               <div className="flex gap-2 items-center">
                 <select
                   value={accessLevel}
-                  onChange={(e) => setSharePopupState({ accessLevel: e.target.value })}
+                  onChange={(e) => setAccessLevel(e.target.value)}
                   className="flex-1 p-2 rounded-lg border border-[var(--bg-ter)] bg-[var(--bg-secondary)] text-[var(--txt)] focus:outline-none focus:ring-2 focus:ring-[var(--btn)] text-sm"
                 >
                   <option value="view">Can view</option>
@@ -262,16 +233,15 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
             )}
           </div>
 
-          {/* Section 2: Current Collaborators */}
-          {note?.collaborators && note.collaborators.length > 0 && (
+          {collaborators && collaborators.length > 0 && (
             <div>
               <h4 className="text-sm font-medium mb-3 text-[var(--txt)]">
                 People with access
               </h4>
               <div className="space-y-2">
-                {note.collaborators.map((collaborator) => (
+                {collaborators.map((collaborator) => (
                   <div
-                    key={collaborator._id || collaborator.user._id}
+                    key={collaborator._id}
                     className="flex items-center justify-between p-2 rounded-lg hover:bg-[var(--bg-ter)]"
                   >
                     <div className="flex items-center gap-3">
@@ -299,17 +269,15 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
             </div>
           )}
 
-          {/* Section 3: General Access */}
           <div className="border-t border-[var(--bg-ter)] pt-4">
             <h4 className="text-sm font-medium mb-3 text-[var(--txt)]">
               General access
             </h4>
 
             <div className="space-y-2">
-              {/* Private Option */}
               <div
                 className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                  note?.visibility === "private"
+                  visibility === "private"
                     ? "border-[var(--btn)] bg-[var(--btn)]/10"
                     : "border-[var(--bg-ter)] hover:border-[var(--btn)]/50"
                 }`}
@@ -326,10 +294,9 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
                 </div>
               </div>
 
-              {/* Public Option */}
               <div
                 className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                  note?.visibility === "public"
+                  visibility === "public"
                     ? "border-[var(--btn)] bg-[var(--btn)]/10"
                     : "border-[var(--bg-ter)] hover:border-[var(--btn)]/50"
                 }`}
@@ -347,8 +314,7 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
               </div>
             </div>
 
-            {/* Share Link for Public Notes */}
-            {note?.visibility === "public" && shareLink && (
+            {visibility === "public" && shareLink && (
               <div className="mt-4 p-3 rounded-lg bg-[var(--bg-ter)] border border-[var(--bg-secondary)]">
                 <div className="flex items-center gap-2 mb-2">
                   <Link size={16} className="text-[var(--txt-dim)]" />
@@ -378,10 +344,9 @@ const SharePopup = ({ onShare, onNoteUpdated }) => {
             )}
           </div>
 
-          {/* Close Button */}
           <div className="flex justify-end pt-2">
             <Button
-              onClick={closeSharePopup}
+              onClick={onClose}
               variant="secondary"
             >
               Done

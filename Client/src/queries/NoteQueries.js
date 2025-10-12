@@ -15,7 +15,9 @@ import { toast } from "react-toastify";
 
 const handleError = (error, defaultMsg) => {
   if (error?.response?.status === 403) {
-    toast.error("Unauthorized: You do not have permission to perform this action.");
+    toast.error(
+      "Unauthorized: You do not have permission to perform this action."
+    );
   } else {
     toast.error(`${defaultMsg}: ${error.message}`);
   }
@@ -52,7 +54,10 @@ export const useCreateNote = () => {
     mutationFn: createNote,
     onSuccess: (newNote) => {
       queryClient.setQueryData(["notes"], (old = []) => [...old, newNote]);
-      queryClient.setQueryData(["archivedNotes"], (old = []) => [...old, newNote]);
+      queryClient.setQueryData(["archivedNotes"], (old = []) => [
+        ...old,
+        newNote,
+      ]);
     },
     onError: (error) => handleError(error, "Failed to create note"),
   });

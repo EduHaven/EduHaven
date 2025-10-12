@@ -21,18 +21,30 @@ import {
 import ToolbarButton from "./ToolbarButton";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useNoteStore } from '@/stores/useNoteStore';
+import { useUpdateNote } from "@/queries/NoteQueries";
 
 const NoteEditor = ({
-  selectedNote,
-  setSelectedNote,
   colors,
   editor,
-  updateNote,
   insertLink,
   insertImage,
   insertTable,
   onClose,
 }) => {
+  const {
+    selectedNote,
+    updateNote,
+  } = useNoteStore();
+
+  const updateNoteMutation = useUpdateNote();
+
+  const handleUpdateNote = (id, updates) => {
+    updateNote(id, updates);
+    // Call the mutation
+    updateNoteMutation.mutate({ id, ...updates });
+  };
+
   return (
     <motion.div
       className="flex-1 flex flex-col rounded-tl-3xl"
@@ -45,7 +57,6 @@ const NoteEditor = ({
       animate={{ x: 1, opacity: 1 }}
       transition={{ delay: 0.2 }}
     >
-      {/* Editor Header */}
       <div
         className="p-4 pb-0 flex flex-col gap-3"
         style={{ borderColor: "var(--bg-sec)" }}
@@ -56,7 +67,7 @@ const NoteEditor = ({
             placeholder="Untitled"
             value={selectedNote.title}
             onChange={(e) =>
-              updateNote(selectedNote._id, { title: e.target.value })
+              handleUpdateNote(selectedNote._id, { title: e.target.value })
             }
             className="flex-1 border-none outline-none text-2xl font-semibold bg-transparent font-inherit"
             style={{ color: "var(--txt)" }}
@@ -74,7 +85,6 @@ const NoteEditor = ({
           </Button>
         </div>
 
-        {/* Formatting Toolbar */}
         <div
           className={`flex items-center gap-0.5 flex-wrap p-1.5 rounded-lg`}
           style={{
@@ -82,7 +92,6 @@ const NoteEditor = ({
               ?.style.backgroundColor,
           }}
         >
-          {/* Headings */}
           <ToolbarButton
             onClick={() =>
               editor?.chain().focus().toggleHeading({ level: 1 }).run()
@@ -115,7 +124,6 @@ const NoteEditor = ({
             style={{ backgroundColor: "var(--txt-disabled)" }}
           />
 
-          {/* Text Formatting */}
           <ToolbarButton
             onClick={() => editor?.chain().focus().toggleBold().run()}
             isActive={editor?.isActive("bold")}
@@ -163,7 +171,6 @@ const NoteEditor = ({
             style={{ backgroundColor: "var(--txt-disabled)" }}
           />
 
-          {/* Lists */}
           <ToolbarButton
             onClick={() => editor?.chain().focus().toggleBulletList().run()}
             isActive={editor?.isActive("bulletList")}
@@ -194,7 +201,6 @@ const NoteEditor = ({
             style={{ backgroundColor: "var(--txt-disabled)" }}
           />
 
-          {/* Other formatting */}
           <ToolbarButton
             onClick={() => editor?.chain().focus().toggleBlockquote().run()}
             isActive={editor?.isActive("blockquote")}
@@ -214,7 +220,6 @@ const NoteEditor = ({
             style={{ backgroundColor: "var(--txt-disabled)" }}
           />
 
-          {/* Media & Links */}
           <ToolbarButton
             onClick={insertLink}
             isActive={editor?.isActive("link")}
@@ -238,7 +243,6 @@ const NoteEditor = ({
         </div>
       </div>
 
-      {/* Editor Content */}
       <div className="flex-1 p-4 overflow-auto">
         <EditorContent editor={editor} className="min-h-full" />
       </div>

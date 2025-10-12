@@ -49,3 +49,13 @@ export const restoreTrashedNote = async (id) => {
   const { data } = await axiosInstance.post(`/note/restore/${id}`);
   return data.data;
 };
+
+export const addCollaborator = async (noteId, collaboratorData) => {
+  const { data } = await axiosInstance.post(`/note/${noteId}/collaborators`, collaboratorData);
+  return data.data;
+};
+
+export const removeCollaborator = async (noteId, collaboratorId) => {
+  const { data } = await axiosInstance.delete(`/note/${noteId}/collaborators/${collaboratorId}`);
+  return data.data;
+};

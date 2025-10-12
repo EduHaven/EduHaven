@@ -21,7 +21,6 @@ import { useEffect, useRef } from "react";
 import NoteEditor from "@/components/notes/NoteEditor.jsx";
 import NoteHeader from "@/components/notes/NoteHeader.jsx";
 import NotesList from "@/components/notes/NotesList.jsx";
-import SharePopup from "@/components/notes/SharePopup";
 
 import {
   useArchivedNotes,
@@ -39,7 +38,7 @@ import "@/components/notes/note.css";
 import TrashNotes from "@/components/notes/TrashNote";
 import axiosInstance from "@/utils/axios";
 import { useToast } from '@/contexts/ToastContext';
-import useNoteStore from '@/stores/useNoteStore';
+import { useNoteStore } from '@/stores/useNoteStore';
 
 const colors = [
   { name: "default", style: { backgroundColor: "var(--note-default)" } },
@@ -66,7 +65,13 @@ const Notes = () => {
     setStatus,
     setSearchTerm,
     setSelectedNote,
-    setShowColorPicker
+    setShowColorPicker,
+    createNewNote: createNewNoteAction,
+    updateNote: updateNoteAction,
+    togglePin: togglePinAction,
+    changeColor: changeColorAction,
+    sendToTrashNote: sendToTrashNoteAction,
+    archiveNote: archiveNoteAction,
   } = useNoteStore();
 
   const isFullScreen = !!noteId;
@@ -82,21 +87,6 @@ const Notes = () => {
   const archiveNoteMutation = useArchiveNote();
   const sendToTrashMutation = useTrashNote();
   const restoreMutation = useRestoreTrashedNote();
-
-  useEffect(() => {
-    if (noteId && notes.length > 0) {
-      const foundNote = notes.find((n) => n._id === noteId);
-      if (foundNote) {
-        setSelectedNote(foundNote);
-      }
-    }
-  }, [noteId, notes, setSelectedNote]);
-
-  const notesObj = {
-    active: notes,
-    archive: archiveNotes,
-    trash: trashNotes,
-  };
 
   const typingTimeoutRef = useRef(null);
 
@@ -231,13 +221,13 @@ const Notes = () => {
     content: selectedNote?.content || "",
     onUpdate: ({ editor }) => {
       if (!selectedNote) return;
-
+    
       const content = editor.getHTML();
-
+    
       clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = setTimeout(() => {
         updateNote(selectedNote._id, { content });
-      }, 1500); // waits 1500ms after last keystroke
+      }, 1500);
     },
     editorProps: {
       attributes: {
@@ -253,7 +243,7 @@ const Notes = () => {
       let replaced = false;
 
       doc.descendants((node, posNode) => {
-        if (replaced) return false; // stop early if already replaced
+        if (replaced) return false;
         if (node.isText && node.text && node.text.includes(placeholder)) {
           const idx = node.text.indexOf(placeholder);
           const from = posNode + idx;
@@ -339,6 +329,15 @@ const Notes = () => {
   };
 
   useEffect(() => {
+    if (noteId && notes.length > 0) {
+      const foundNote = notes.find((n) => n._id === noteId);
+      if (foundNote) {
+        setSelectedNote(foundNote);
+      }
+    }
+  }, [noteId, notes, setSelectedNote]);
+
+  useEffect(() => {
     if (editor && selectedNote) {
       const currentContent = editor.getHTML();
       if (currentContent !== selectedNote.content) {
@@ -348,24 +347,11 @@ const Notes = () => {
   }, [selectedNote, editor]);
 
   const createNewNote = () => {
-    createNoteMutation.mutate(
-      {
-        title: `Note ${notes.length + 1}`,
-        content: "Write here...",
-        color: "default",
-        pinnedAt: false,
-      },
-      {
-        onSuccess: (newNote) => setSelectedNote(newNote),
-      }
-    );
+    createNewNoteAction(createNoteMutation, notes);
   };
 
   const updateNote = (id, updates) => {
     updateNoteMutation.mutate({ id, ...updates });
-    if (selectedNote && selectedNote._id === id) {
-      setSelectedNote({ ...selectedNote, ...updates });
-    }
   };
 
   const deleteNote = (id) => {
@@ -378,11 +364,7 @@ const Notes = () => {
   };
 
   const sendToTrashNote = (id) => {
-    sendToTrashMutation.mutate(id, {
-      onSuccess: () => {
-        if (selectedNote?._id === id) setSelectedNote(null);
-      },
-    });
+    sendToTrashNoteAction(sendToTrashMutation, id);
   };
 
   const restoreNote = (id) => {
@@ -392,20 +374,15 @@ const Notes = () => {
   };
 
   const togglePin = (id, pinnedAt) => {
-    updateNote(id, { pinnedAt: !pinnedAt });
+    togglePinAction(updateNoteMutation, id, pinnedAt);
   };
 
   const changeColor = (id, color) => {
-    updateNote(id, { color });
-    setShowColorPicker(null);
+    changeColorAction(updateNoteMutation, id, color);
   };
 
   const archiveNote = (note) => {
-    archiveNoteMutation.mutate(note._id, {
-      onSuccess: () => {
-        if (selectedNote?._id === note._id) setSelectedNote(null);
-      },
-    });
+    archiveNoteAction(archiveNoteMutation, note);
   };
 
   const exportNote = (note) => {
@@ -426,26 +403,23 @@ const Notes = () => {
   const insertImage = () => {
     if (!editor) return;
 
-    // Create hidden input
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
     input.multiple = true;
 
-    // Attach change event
     input.addEventListener("change", async () => {
       const files = input?.files;
       console.log(files);
       if (!files || files.length === 0) return;
 
       try {
-        await handleImageUpload(editor, files, editor.state.selection.from); // your upload function
+        await handleImageUpload(editor, files, editor.state.selection.from);
       } catch (err) {
         console.error("Image upload failed:", err);
       }
     });
 
-    // Must be triggered synchronously from user click
     input.click();
   };
 
@@ -483,25 +457,10 @@ const Notes = () => {
     return text.substring(0, 100) + (text.length > 100 ? "..." : "");
   };
 
-  const handleShareNote = async (noteId, userId, accessLevel) => {
-    try {
-      const response = await axiosInstance.post(`/note/${noteId}/collaborators`, {
-        userId,
-        access: accessLevel
-      });
-
-      if (response.status === 200) {
-        return Promise.resolve();
-      } else {
-        throw new Error(response.data.error || "Failed to share note");
-      }
-    } catch (error) {
-      if (error.response) {
-        throw new Error(error.response.data?.error || error.response.data?.message || "Failed to share note");
-      } else {
-        throw error;
-      }
-    }
+  const notesObj = {
+    active: notes,
+    archive: archiveNotes,
+    trash: trashNotes,
   };
 
   const filteredNotes = notesObj[status].filter((note) => {
@@ -535,26 +494,18 @@ const Notes = () => {
       style={{ backgroundColor: "var(--bg-primary)", color: "var(--txt)" }}
     >
       <div className="flex h-screen">
-        {/* notes page (also works as sidebar} */}
         <div
           className={`${selectedNote ? "w-80" : "w-full"} overflow-auto p-4`}
         >
-          <NoteHeader
-            createNewNote={createNewNote}
-          />
+          <NoteHeader createNewNote={createNewNote} />
 
           {(status == "active" || status == "archive") && (
             <NotesList
               pinnedNotes={pinnedNotes}
               unpinnedNotes={unpinnedNotes}
               filteredNotes={filteredNotes}
-              togglePin={togglePin}
-              sendToTrashNote={sendToTrashNote}
-              archiveNote={archiveNote}
-              exportNote={exportNote}
-              changeColor={changeColor}
-              colors={colors}
               getPlainTextPreview={getPlainTextPreview}
+              exportNote={exportNote}
             />
           )}
 
@@ -568,15 +519,11 @@ const Notes = () => {
           )}
         </div>
 
-        {/* Note Editor */}
         {selectedNote && (
           <div className="flex-1 flex flex-col">
             <NoteEditor
-              selectedNote={selectedNote}
-              setSelectedNote={setSelectedNote}
               colors={colors}
               editor={editor}
-              updateNote={updateNote}
               insertLink={insertLink}
               insertImage={insertImage}
               insertTable={insertTable}
@@ -588,9 +535,6 @@ const Notes = () => {
           </div>
         )}
       </div>
-
-      {/* Share Popup */}
-      <SharePopup onShare={handleShareNote} />
     </div>
   );
 };

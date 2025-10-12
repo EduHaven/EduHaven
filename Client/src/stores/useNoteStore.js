@@ -1,78 +1,41 @@
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
 
-const useNoteStore = create(
-  devtools((set, get) => ({
-    // State
-    status: 'active', // active, archive, trash
-    searchTerm: '',
-    selectedNote: null,
-    showColorPicker: null,
-    sharePopup: {
-      isOpen: false,
-      note: null,
-      shareLink: '',
-      searchTerm: '',
-      users: [],
-      selectedUser: null,
-      accessLevel: 'view',
-      loading: false,
-      generatingLink: false,
-    },
-    
-    // Actions
-    setStatus: (status) => set({ status }),
-    setSearchTerm: (searchTerm) => set({ searchTerm }),
-    setSelectedNote: (selectedNote) => set({ selectedNote }),
-    setShowColorPicker: (showColorPicker) => set({ showColorPicker }),
-    
-    // Share Popup Actions
-    openSharePopup: (note) => set({ 
-      sharePopup: { 
-        ...get().sharePopup, 
-        isOpen: true, 
-        note: { ...note }, // Create a copy to avoid mutations
-        shareLink: '',
-        searchTerm: '',
-        users: [],
-        selectedUser: null,
-        accessLevel: 'view',
-        loading: false,
-        generatingLink: false,
-      }
-    }),
-    
-    closeSharePopup: () => set({ 
-      sharePopup: { 
-        ...get().sharePopup, 
-        isOpen: false,
-        note: null,
-      }
-    }),
-    
-    setSharePopupState: (updates) => set({ 
-      sharePopup: { ...get().sharePopup, ...updates } 
-    }),
-    
-    // Reset state when needed
-    resetNoteState: () => set({
-      status: 'active',
-      searchTerm: '',
-      selectedNote: null,
-      showColorPicker: null,
-      sharePopup: {
-        isOpen: false,
-        note: null,
-        shareLink: '',
-        searchTerm: '',
-        users: [],
-        selectedUser: null,
-        accessLevel: 'view',
-        loading: false,
-        generatingLink: false,
-      }
-    })
-  }))
-);
-
-export default useNoteStore;
+export const useNoteStore = create((set, get) => ({
+  // State
+  status: 'active', // active, archive, trash
+  searchTerm: '',
+  selectedNote: null,
+  showColorPicker: null,
+  
+  // Actions
+  setStatus: (status) => set({ status }),
+  setSearchTerm: (searchTerm) => set({ searchTerm }),
+  setSelectedNote: (selectedNote) => set({ selectedNote }),
+  setShowColorPicker: (showColorPicker) => set({ showColorPicker }),
+  
+  // Note actions
+  updateNote: (id, updates) => {
+    const { selectedNote } = get();
+    if (selectedNote && selectedNote._id === id) {
+      set({ selectedNote: { ...selectedNote, ...updates } });
+    }
+    return { id, updates };
+  },
+  
+  togglePin: (id, pinnedAt) => {
+    const { selectedNote } = get();
+    if (selectedNote && selectedNote._id === id) {
+      set({ selectedNote: { ...selectedNote, pinnedAt: !pinnedAt } });
+    }
+    return { id, updates: { pinnedAt: !pinnedAt } };
+  },
+  
+  changeColor: (id, color) => {
+    const { selectedNote } = get();
+    if (selectedNote && selectedNote._id === id) {
+      set({ selectedNote: { ...selectedNote, color } });
+    }
+    set({ showColorPicker: null });
+    return { id, updates: { color } };
+  },
+}));

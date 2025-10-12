@@ -1,19 +1,16 @@
 import { Archive, FileText, Plus, Search, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import useNoteStore from '@/stores/useNoteStore';
+import { useNoteStore } from '@/stores/useNoteStore';
 
-const NoteHeader = ({
-  createNewNote,
-}) => {
-  // Zustand store
+const NoteHeader = ({ createNewNote }) => {
   const {
+    status,
     searchTerm,
     selectedNote,
-    status,
-    setSearchTerm,
     setStatus,
-    setSelectedNote
+    setSearchTerm,
+    setSelectedNote,
   } = useNoteStore();
 
   return (
@@ -24,7 +21,6 @@ const NoteHeader = ({
           : "flex-row items-start gap-6 mb-3"
       }`}
     >
-      {/* 🔹 Navigation Tabs */}
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
