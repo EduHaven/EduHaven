@@ -236,18 +236,10 @@ const ProfileCard = ({ isCurrentUser = false }) => {
   }, [isCurrentUser, userId]);
 
   useEffect(() => {
-    if (showPopup) {
-      const handleClickOutside = (event) => {
-        if (popupRef.current && !popupRef.current.contains(event.target)) {
-          setShowPopup(false);
-        }
-      };
-
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }
+    // Intentionally do NOT close the friends popup on outside clicks.
+    // Other popups in the app rely on the popup's own close button/backdrop
+    // behavior. Closing on any document click caused this popup to close
+    // immediately when users interact with other parts of the page.
   }, [showPopup]);
 
   if (isLoading || !user) return <ProfileSkeleton />;
