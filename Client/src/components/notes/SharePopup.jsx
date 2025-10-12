@@ -16,6 +16,23 @@ const SharePopup = ({ note, onClose, onShare }) => {
   const [generatingLink, setGeneratingLink] = useState(false);
   const [collaborators, setCollaborators] = useState(note?.collaborators || []);
 
+  /* 🩵 NEW: Fetch collaborators from backend when popup mounts */
+  useEffect(() => {
+    const fetchCollaborators = async () => {
+      try {
+        const response = await axiosInstance.get(`/note/${note._id}`);
+        if (response.data?.collaborators) {
+          setCollaborators(response.data.collaborators);
+        }
+      } catch (error) {
+        console.error("Failed to fetch collaborators:", error);
+        toast.error("Failed to fetch collaborators");
+      }
+    };
+    fetchCollaborators();
+  }, [note._id]);
+  /* ------------------------------ */
+
   const generateShareLink = async () => {
     setGeneratingLink(true);
     try {
@@ -50,13 +67,7 @@ const SharePopup = ({ note, onClose, onShare }) => {
     setLoading(true);
     try {
       const response = await axiosInstance.get(`/user/find-user?search=${encodeURIComponent(query)}`);
-      const data = response.data;
-
-      if (data.users) {
-        setUsers(data.users);
-      } else {
-        setUsers([]);
-      }
+      setUsers(response.data?.users || []);
     } catch (error) {
       console.error("Error searching users:", error);
       setUsers([]);
@@ -69,7 +80,6 @@ const SharePopup = ({ note, onClose, onShare }) => {
     const timer = setTimeout(() => {
       searchUsers(searchTerm);
     }, 500);
-
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
@@ -82,10 +92,7 @@ const SharePopup = ({ note, onClose, onShare }) => {
   const handleVisibilityChange = async (newVisibility) => {
     setVisibility(newVisibility);
     try {
-      await axiosInstance.put(`/note/${note._id}`, {
-        visibility: newVisibility
-      });
-
+      await axiosInstance.put(`/note/${note._id}`, { visibility: newVisibility });
       if (newVisibility === "public" && !shareLink) {
         await generateShareLink();
       }
@@ -97,10 +104,11 @@ const SharePopup = ({ note, onClose, onShare }) => {
 
   const handleAddCollaborator = async () => {
     if (!selectedUser) return;
-
     try {
       await onShare(note._id, selectedUser._id, accessLevel);
-      toast.success(`Note shared successfully with ${selectedUser.FirstName + " " + selectedUser.LastName + "(" + selectedUser.Username + ")"}!`);
+      toast.success(
+        `Note shared with ${selectedUser.FirstName} ${selectedUser.LastName} (${selectedUser.Username})`
+      );
       setCollaborators((prev) => [...prev, { user: selectedUser, access: accessLevel }]);
       setSelectedUser(null);
       setSearchTerm("");
@@ -152,10 +160,9 @@ const SharePopup = ({ note, onClose, onShare }) => {
         </div>
 
         <div className="space-y-6">
+          {/* ---- Add People Section ---- */}
           <div>
-            <h4 className="text-sm font-medium mb-3 text-[var(--txt)]">
-              Add people
-            </h4>
+            <h4 className="text-sm font-medium mb-3 text-[var(--txt)]">Add people</h4>
 
             <div className="relative mb-3">
               <Search
@@ -181,7 +188,7 @@ const SharePopup = ({ note, onClose, onShare }) => {
               <div className="max-h-32 overflow-y-auto border border-[var(--bg-ter)] rounded-lg mb-3">
                 {users.map((user, index) => (
                   <div
-                    key={user._id || user.id || index}
+                    key={user._id || index}
                     className={`p-3 cursor-pointer transition-colors ${
                       selectedUser?._id === user._id
                         ? "bg-[var(--btn)]/20"
@@ -195,11 +202,9 @@ const SharePopup = ({ note, onClose, onShare }) => {
                       </div>
                       <div className="flex-1">
                         <div className="text-[var(--txt)] text-sm">
-                          {user.FirstName + " " + user.LastName || user.Username || 'Unknown User'}
+                          {user.FirstName + " " + user.LastName || user.Username || "Unknown User"}
                         </div>
-                        <div className="text-xs text-[var(--txt-dim)]">
-                          {user.Email}
-                        </div>
+                        <div className="text-xs text-[var(--txt-dim)]">{user.Email}</div>
                       </div>
                     </div>
                   </div>
@@ -223,16 +228,14 @@ const SharePopup = ({ note, onClose, onShare }) => {
                   <option value="view">Can view</option>
                   <option value="edit">Can edit</option>
                 </select>
-                <Button
-                  onClick={handleAddCollaborator}
-                  className="text-sm"
-                >
+                <Button onClick={handleAddCollaborator} className="text-sm">
                   Add
                 </Button>
               </div>
             )}
           </div>
 
+          {/* ---- People with Access ---- */}
           {collaborators && collaborators.length > 0 && (
             <div>
               <h4 className="text-sm font-medium mb-3 text-[var(--txt)]">
@@ -269,11 +272,9 @@ const SharePopup = ({ note, onClose, onShare }) => {
             </div>
           )}
 
+          {/* ---- Visibility Section ---- */}
           <div className="border-t border-[var(--bg-ter)] pt-4">
-            <h4 className="text-sm font-medium mb-3 text-[var(--txt)]">
-              General access
-            </h4>
-
+            <h4 className="text-sm font-medium mb-3 text-[var(--txt)]">General access</h4>
             <div className="space-y-2">
               <div
                 className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
@@ -327,12 +328,7 @@ const SharePopup = ({ note, onClose, onShare }) => {
                     readOnly
                     className="flex-1 text-xs p-2 rounded border border-[var(--bg-secondary)] bg-[var(--bg-primary)] text-[var(--txt)]"
                   />
-                  <Button
-                    onClick={copyToClipboard}
-                    size="sm"
-                    variant="secondary"
-                    className="flex items-center gap-1"
-                  >
+                  <Button onClick={copyToClipboard} size="sm" variant="secondary" className="flex items-center gap-1">
                     <Copy size={14} />
                     Copy
                   </Button>
@@ -345,10 +341,7 @@ const SharePopup = ({ note, onClose, onShare }) => {
           </div>
 
           <div className="flex justify-end pt-2">
-            <Button
-              onClick={onClose}
-              variant="secondary"
-            >
+            <Button onClick={onClose} variant="secondary">
               Done
             </Button>
           </div>
