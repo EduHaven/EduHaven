@@ -110,83 +110,126 @@ export default function YourRooms({ myRooms }) {
                     <div
                       key={user._id}
                       onClick={() => OpenProfile(user)}
-                      className="flex flex-col cursor-pointer gap-2 p-2.5 bg-gray-700/50 rounded-lg"
+                      className="flex flex-col cursor-pointer gap-3 p-4 rounded-lg transition-all duration-200 border"
+                      style={{
+                        backgroundColor: 'var(--bg-sec)',
+                        borderColor: 'var(--bg-ter)',
+                        boxShadow: `0 4px 6px -1px rgba(var(--shadow-rgb), 0.1)`,
+                      }}
                     >
-                      <div className="flex flex-col items-start gap-2.5">
-                        <div className="flex justify-between items-center gap-2">
+                      {/* TOP SECTION: Avatar, Names, and Bio */}
+                      <div className="flex flex-col items-start gap-3 w-full">
+                        <div className="flex items-start gap-3 w-full">
+                          {/* Profile Picture */}
                           <img
                             src={
                               user.ProfilePicture ||
-                              "https://ui-avatars.com/api/?name=" +
-                                user.Username
+                              "https://toppng.com//public/uploads/preview/donna-picarro-dummy-avatar-115633298255iautrofxa.png"
                             }
                             alt={user.Username}
-                            className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                            className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2"
+                            style={{ borderColor: 'var(--bg-ter)' }}
                           />
+                          
                           <div className="flex-1 min-w-0">
-                            <span className="font-medium text-white block text-sm">
+                            {/* 1. Username */}
+                            <span
+                              className="font-semibold block text-base truncate"
+                              style={{ color: 'var(--txt)' }}
+                              title={user.Username}
+                            >
                               {user.Username}
                             </span>
-                            <p className="text-xs text-gray-400 line-clamp-2 mt-0.5">
-                              {user.Bio || "No bio provided"}
+                            
+                            {/* 2. Full Name */}
+                            <p
+                              className="text-sm truncate mt-0.5"
+                              style={{ color: 'var(--txt-dim)' }}
+                            >
+                              {user.FirstName} {user.LastName}
+                            </p>
+
+                            {/* 3. Truncated Bio (Line-clamp logic applied) */}
+                            <p
+                              className="text-xs line-clamp-2 mt-1 italic"
+                              style={{ color: 'var(--txt-dim)' }}
+                              title={user.Bio}
+                            >
+                              {user.Bio}
                             </p>
                           </div>
                         </div>
 
+                        {/* 4. Skills Section */}
                         {user.OtherDetails?.skills && (
-                          <div className="mb-2">
-                            <p className="text-xs font-medium text-gray-300 mb-1.5">
+                          <div className="w-full pt-2">
+                            <p
+                              className="text-sm font-medium mb-2"
+                              style={{ color: 'var(--txt-dim)' }}
+                            >
                               Skills
                             </p>
-                            <div className="flex flex-wrap gap-1.5">
+                            <div className="flex flex-wrap gap-2">
                               {user.OtherDetails.skills
                                 .split(",")
                                 .slice(0, 3)
                                 .map((s, i) => (
                                   <span
                                     key={`skill-${i}`}
-                                    className="inline-flex items-center px-2.5 py-1 bg-amber-900/40 text-amber-300 text-[10px] sm:text-xs rounded-full whitespace-nowrap border border-amber-700/30 hover:bg-amber-900/60 transition-colors"
+                                    className="inline-flex items-center px-3 py-1 text-[11px] rounded-full whitespace-nowrap transition-colors border"
+                                    style={{
+                                      backgroundColor: 'var(--btn)',
+                                      color: 'var(--bg-primary)',
+                                      borderColor: 'var(--btn-hover)', 
+                                    }}
                                   >
                                     {s.trim()}
                                   </span>
                                 ))}
-                              {user.OtherDetails.skills.split(",").length >
-                                3 && (
-                                <span className="text-gray-500 text-[10px] sm:text-xs px-2 py-1">
-                                  +
-                                  {user.OtherDetails.skills.split(",").length -
-                                    3}{" "}
-                                  more
+                              {user.OtherDetails.skills.split(",").length > 3 && (
+                                <span
+                                  className="text-[11px] px-2 py-1"
+                                  style={{ color: 'var(--txt-dim)' }}
+                                >
+                                  + {user.OtherDetails.skills.split(",").length - 3} more
                                 </span>
                               )}
                             </div>
                           </div>
                         )}
 
+                        {/* 5. Interests Section */}
                         {user.OtherDetails?.interests && (
-                          <div className="mb-4">
-                            <p className="text-xs font-medium text-gray-300 mb-1.5">
+                          <div className="w-full pt-2">
+                            <p
+                              className="text-sm font-medium mb-2"
+                              style={{ color: 'var(--txt-dim)' }}
+                            >
                               Interests
                             </p>
-                            <div className="flex flex-wrap gap-1.5">
+                            <div className="flex flex-wrap gap-2">
                               {user.OtherDetails.interests
                                 .split(",")
                                 .slice(0, 3)
                                 .map((i, idx) => (
                                   <span
                                     key={`interest-${idx}`}
-                                    className="inline-flex items-center px-2.5 py-1 bg-cyan-900/40 text-cyan-300 text-[10px] sm:text-xs rounded-full whitespace-nowrap border border-cyan-700/30 hover:bg-cyan-900/60 transition-colors"
+                                    className="inline-flex items-center px-3 py-1 text-[11px] rounded-full whitespace-nowrap transition-colors border"
+                                    style={{
+                                      backgroundColor: 'var(--bg-ter)', 
+                                      color: 'var(--txt)',          
+                                      borderColor: 'var(--txt-dim)', 
+                                    }}
                                   >
                                     {i.trim()}
                                   </span>
                                 ))}
-                              {user.OtherDetails.interests.split(",").length >
-                                3 && (
-                                <span className="text-gray-500 text-[10px] sm:text-xs px-2 py-1">
-                                  +
-                                  {user.OtherDetails.interests.split(",")
-                                    .length - 3}{" "}
-                                  more
+                              {user.OtherDetails.interests.split(",").length > 3 && (
+                                <span
+                                  className="text-[11px] px-2 py-1"
+                                  style={{ color: 'var(--txt-dim)' }}
+                                >
+                                  + {user.OtherDetails.interests.split(",").length - 3} more
                                 </span>
                               )}
                             </div>
@@ -194,10 +237,16 @@ export default function YourRooms({ myRooms }) {
                         )}
                       </div>
 
-                      <div className="flex gap-2 w-full">
+                      {/* 6. Action Buttons */}
+                      <div className="flex gap-3 w-full pt-4 border-t" style={{ borderColor: 'var(--bg-ter)' }}>
                         <UIButton
                           size="sm"
-                          className="bg-green-600 hover:bg-green-700 text-white flex-1 h-9 text-sm"
+                          style={{
+                            backgroundColor: 'var(--btn)',
+                            color: 'var(--bg-primary)',
+                            transition: 'background-color 0.2s',
+                          }}
+                          className="hover:!bg-[var(--btn-hover)] flex-1 h-10 text-base font-semibold"
                           onClick={() =>
                             handleRequest(room._id, user._id, "approve")
                           }
@@ -207,7 +256,7 @@ export default function YourRooms({ myRooms }) {
                         <UIButton
                           size="sm"
                           variant="destructive"
-                          className="flex-1 h-9 text-sm"
+                          className="flex-1 h-10 text-base font-semibold"
                           onClick={() =>
                             handleRequest(room._id, user._id, "reject")
                           }

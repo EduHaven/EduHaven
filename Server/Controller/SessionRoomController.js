@@ -25,18 +25,28 @@ import SessionRoom from "../Model/SessionModel.js";
 export const getRoomLists = async (req, res) => {
   try {
     const userId = req.user._id;
+
     const rooms = await SessionRoom.find()
       .sort({ createdAt: -1 })
       .populate({
         path: "pendingRequests",
-        select: "Username ProfilePicture Bio OtherDetails",
+        select: "Username ProfilePicture FirstName LastName Bio OtherDetails",
+      })
+      .populate({
+        path: "members",
+        select: "Username ProfilePicture FirstName LastName Bio OtherDetails",
+      })
+      .populate({
+        path: "createdBy",
+        select: "Username ProfilePicture FirstName LastName Bio",
       })
       .lean();
 
     const myRooms = [];
     const otherRooms = [];
+
     for (const r of rooms) {
-      (r.createdBy.toString() === userId.toString()
+      (r.createdBy._id.toString() === userId.toString()
         ? myRooms
         : otherRooms
       ).push(r);
@@ -44,9 +54,11 @@ export const getRoomLists = async (req, res) => {
 
     return res.json({ myRooms, otherRooms });
   } catch (err) {
+    console.error("Error fetching rooms:", err);
     return res.status(500).json({ error: err.message });
   }
 };
+
 
 export const createRoom = async (req, res) => {
   try {
