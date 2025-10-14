@@ -37,12 +37,8 @@ import {
 import "@/components/notes/note.css";
 import TrashNotes from "@/components/notes/TrashNote";
 import axiosInstance from "@/utils/axios";
-<<<<<<< HEAD
 import { useToast } from '@/contexts/ToastContext';
 import { useNoteStore } from '@/stores/useNoteStore';
-=======
-import { useToast } from "@/contexts/ToastContext";
->>>>>>> main
 
 const colors = [
   { name: "default", style: { backgroundColor: "var(--note-default)" } },

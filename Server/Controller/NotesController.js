@@ -98,16 +98,9 @@ export const updateNote = async (req, res) => {
   try {
     const { title, content, color, visibility, collaborators, pinnedAt } = req.body;
     const userId = req.user._id;
-<<<<<<< HEAD
     
     const note = await Note.findById(req.params.id)
       .populate('collaborators.user', 'FirstName LastName Email Username');
-=======
-    const note = await Note.findById(req.params.id).populate(
-      "collaborators.user",
-      "FirstName LastName Email Username"
-    );
->>>>>>> main
 
     if (!note) {
       return res.status(404).json({ success: false, error: "Note not found" });
