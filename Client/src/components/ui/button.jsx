@@ -15,6 +15,7 @@ const buttonVariants = cva(
         destructive: "bg-red-600 text-white hover:bg-red-700",
         transparent: "text-[var(--txt)]",
         link: "text-[var(--txt)] underline-offset-4 hover:underline",
+        danger: "bg-[var(--bg)] text-foreground hover:bg-red-600 hover:text-white",
       },
       size: {
         default:
