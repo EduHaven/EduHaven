@@ -59,3 +59,8 @@ export const removeCollaborator = async (noteId, collaboratorId) => {
   const { data } = await axiosInstance.delete(`/note/${noteId}/collaborators/${collaboratorId}`);
   return data.data;
 };
+
+export const generateShareLink = async (noteId) => {
+  const { data } = await axiosInstance.post(`/note/${noteId}/share-link`);
+  return data.data;
+}

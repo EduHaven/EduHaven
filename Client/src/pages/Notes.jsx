@@ -61,13 +61,7 @@ const Notes = () => {
     status,
     searchTerm,
     selectedNote,
-    showColorPicker,
-    setStatus,
-    setSearchTerm,
     setSelectedNote,
-    setShowColorPicker,
-    createNewNote: createNewNoteAction,
-    updateNote: updateNoteAction,
     togglePin: togglePinAction,
     changeColor: changeColorAction,
     sendToTrashNote: sendToTrashNoteAction,
@@ -221,9 +215,9 @@ const Notes = () => {
     content: selectedNote?.content || "",
     onUpdate: ({ editor }) => {
       if (!selectedNote) return;
-    
+
       const content = editor.getHTML();
-    
+
       clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = setTimeout(() => {
         updateNote(selectedNote._id, { content });
@@ -347,7 +341,17 @@ const Notes = () => {
   }, [selectedNote, editor]);
 
   const createNewNote = () => {
-    createNewNoteAction(createNoteMutation, notes);
+    createNoteMutation.mutate(
+      {
+        title: `Note ${notes.length + 1}`,
+        content: "Write here...",
+        color: "default",
+        pinnedAt: false,
+      },
+      {
+        onSuccess: (newNote) => setSelectedNote(newNote),
+      }
+    );
   };
 
   const updateNote = (id, updates) => {

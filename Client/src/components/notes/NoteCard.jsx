@@ -14,6 +14,19 @@ import { useNoteStore } from '@/stores/useNoteStore';
 import { useUpdateNote, useArchiveNote, useTrashNote } from "@/queries/NoteQueries";
 import axiosInstance from "@/utils/axios";
 
+const getCurrentUserId = () => {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+
+  try {
+    const decodedToken = JSON.parse(atob(token.split('.')[1]));
+    return decodedToken?.id || null;
+  } catch (e) {
+    console.error("Failed to decode token:", e);
+    return null;
+  }
+};
+
 const NoteCard = ({
   note,
   getPlainTextPreview,
@@ -34,22 +47,35 @@ const NoteCard = ({
   const archiveNoteMutation = useArchiveNote();
   const trashNoteMutation = useTrashNote();
 
+  const currentUserId = getCurrentUserId();
+
+  // Check if the current user is the owner or has edit access
+  const isOwner = note?.owner === currentUserId;
+  const hasEditAccess = note?.collaborators.some(
+    (collaborator) => collaborator.user._id === currentUserId && collaborator.access === "edit"
+  );
+  const canEdit = isOwner || hasEditAccess;
+
   // Create handlers that combine store actions with mutations
   const handleTogglePin = (id, pinnedAt) => {
+    if (!canEdit) return;
     const { updates } = togglePin(id, pinnedAt);
     updateNoteMutation.mutate({ id, ...updates });
   };
 
   const handleChangeColor = (id, color) => {
+    if (!canEdit) return;
     const { updates } = changeColor(id, color);
     updateNoteMutation.mutate({ id, ...updates });
   };
 
   const handleArchiveNote = (noteToArchive) => {
+    if (!canEdit) return; 
     archiveNoteMutation.mutate(noteToArchive._id);
   };
 
   const handleSendToTrash = (id) => {
+    if (!canEdit) return;
     trashNoteMutation.mutate(id);
   };
 
@@ -112,9 +138,8 @@ const NoteCard = ({
           handleTogglePin(note?._id, note?.pinnedAt);
         }}
         className={`absolute top-2 right-2 p-1 rounded-full bg-black/10 hover:bg-black/20 transition-opacity
-        ${
-          note?.pinnedAt ? "opacity-100" : hovered ? "opacity-100" : "opacity-0"
-        }`}
+        ${note?.pinnedAt ? "opacity-100" : hovered ? "opacity-100" : "opacity-0"}`}
+        disabled={!canEdit} 
       >
         <Pin
           size={16}
@@ -163,6 +188,7 @@ const NoteCard = ({
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
+            disabled={!canEdit} 
           >
             <Palette size={16} />
           </Button>
@@ -172,6 +198,7 @@ const NoteCard = ({
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
+            disabled={!canEdit} 
           >
             <Archive size={16} />
           </Button>
@@ -193,6 +220,7 @@ const NoteCard = ({
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
+            disabled={!canEdit}
           >
             <UserPlus size={16} />
           </Button>
@@ -202,6 +230,7 @@ const NoteCard = ({
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
+            disabled={!canEdit}
           >
             <Trash2 size={16} />
           </Button>
@@ -235,6 +264,7 @@ const NoteCard = ({
                   note?.color === color.name ? "var(--btn)" : "var(--bg-secondary)",
                 borderWidth: note?.color === color.name ? "2px" : "1px",
               }}
+              disabled={!canEdit}
             />
           ))}
         </motion.div>

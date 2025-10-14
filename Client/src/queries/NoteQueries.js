@@ -9,6 +9,8 @@ import {
   restoreTrashedNote,
   trashNote,
   updateNote,
+  removeCollaborator,
+  generateShareLink
 } from "@/api/NoteApi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -161,3 +163,26 @@ export const useRestoreTrashedNote = () => {
     onError: (error) => handleError(error, "Failed to restore note"),
   });
 };
+
+export const useRemoveCollaborator = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: removeCollaborator,
+    onSuccess: (_, { noteId, collaboratorId }) => {
+      toast.success("Collaborator removed successfully!");
+    },
+    onError: (error) => handleError(error, "Failed to remove collaborator"),
+  });
+};
+
+export const useGenerateShareLink = () =>
+  useMutation({
+    mutationFn: (noteId) => generateShareLink(noteId),
+    onSuccess: (data) => {
+      toast.success("Share link generated successfully");
+    },
+    onError: (error) => {
+      console.error("Error generating share link:", error);
+      toast.error(error.response?.data?.message || "Failed to generate share link");
+    }
+  });
