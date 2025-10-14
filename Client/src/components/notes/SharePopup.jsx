@@ -16,7 +16,7 @@ const SharePopup = ({ note, onClose, onShare }) => {
   const [loading, setLoading] = useState(false);
   const [collaborators, setCollaborators] = useState(note?.collaborators || []);
 
-  const { mutate: generateShareLinkMutate, isLoading: generatingLink } = useGenerateShareLink();
+  const { mutateAsync: generateShareLinkMutate } = useGenerateShareLink();
   const { mutate: removeCollaboratorMutate } = useRemoveCollaborator();
 
   useEffect(() => {
@@ -81,7 +81,7 @@ const SharePopup = ({ note, onClose, onShare }) => {
     if (visibility === "public" && !shareLink) {
       handleGenerateShareLink();
     }
-  }, [visibility, shareLink]);
+  }, [visibility]);
 
   const handleVisibilityChange = async (newVisibility) => {
     setVisibility(newVisibility);

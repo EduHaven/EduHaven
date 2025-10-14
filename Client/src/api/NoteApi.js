@@ -61,6 +61,6 @@ export const removeCollaborator = async (noteId, collaboratorId) => {
 };
 
 export const generateShareLink = async (noteId) => {
-  const { data } = await axiosInstance.post(`/note/${noteId}/share-link`);
-  return data.data;
+  const { data } = await axiosInstance.post(`/note/${noteId}/generate-share-link`);
+  return data;
 }
