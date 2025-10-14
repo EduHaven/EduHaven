@@ -35,29 +35,45 @@ export default function FriendRequests() {
     return <FriendsSkeletonLoader />;
   }
 
-  if (!requests.length) {
-    return <div className="text-center text-gray-500">No requests</div>;
-  }
+  const hasRequests = requests.length > 0;
 
   return (
     <div>
-      {requests.length > 0 && (
-        <SearchBar
-          onSearch={handleSearch}
-          placeholder="Search friend requests..."
-        />
-      )}
-
-      <div className="flex flex-wrap justify-center gap-3 2xl:gap-4 mt-4">
-        {filteredRequests.map((user) => (
-          <UserCard key={user._id} user={user} selectedTab="friendRequests" />
-        ))}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <h2 className="text-2xl font-semibold text-[var(--txt)]">
+          Friend Requests
+        </h2>
+        {hasRequests && (
+          <SearchBar
+            onSearch={handleSearch}
+            placeholder="Search friend requests..."
+            className="mb-0 sm:max-w-sm lg:max-w-md"
+          />
+        )}
       </div>
 
-      {filteredRequests.length === 0 && searchTerm && (
-        <div className="text-center text-gray-500 mt-4">
-          No matching friend requests found
-        </div>
+      {!hasRequests && (
+        <div className="text-center text-gray-500">No requests</div>
+      )}
+
+      {hasRequests && (
+        <>
+          <div className="flex flex-wrap justify-center gap-3 2xl:gap-4 mt-4">
+            {filteredRequests.map((user) => (
+              <UserCard
+                key={user._id}
+                user={user}
+                selectedTab="friendRequests"
+              />
+            ))}
+          </div>
+
+          {filteredRequests.length === 0 && searchTerm && (
+            <div className="text-center text-gray-500 mt-4">
+              No matching friend requests found
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -2,8 +2,13 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import PropTypes from "prop-types";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-function SearchBar({ onSearch, placeholder = "Search friends..." }) {
+function SearchBar({
+  onSearch,
+  placeholder = "Search friends...",
+  className = "",
+}) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = (e) => {
@@ -13,7 +18,7 @@ function SearchBar({ onSearch, placeholder = "Search friends..." }) {
   };
 
   return (
-    <div className="relative mb-4 w-full max-w-md">
+    <div className={cn("relative mb-4 w-full max-w-md", className)}>
       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
         <Search className="w-5 h-5 txt-dim" />
       </div>
@@ -43,6 +48,7 @@ function SearchBar({ onSearch, placeholder = "Search friends..." }) {
 SearchBar.propTypes = {
   onSearch: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
+  className: PropTypes.string,
 };
 
 export default SearchBar;

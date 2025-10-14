@@ -20,10 +20,16 @@ export default function FindPeople() {
 
   return (
     <div>
-      <SearchBar
-        onSearch={handleSearch}
-        placeholder="Search by name, email, skills, or interests..."
-      />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <h2 className="text-2xl font-semibold text-[var(--txt)]">
+          Suggested Friends
+        </h2>
+        <SearchBar
+          onSearch={handleSearch}
+          placeholder="Search by name, email, skills, or interests..."
+          className="mb-0 sm:max-w-sm lg:max-w-md"
+        />
+      </div>
 
       {isLoading && <FriendsSkeletonLoader />}
 
