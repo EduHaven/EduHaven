@@ -54,10 +54,6 @@ export const useCreateNote = () => {
     mutationFn: createNote,
     onSuccess: (newNote) => {
       queryClient.setQueryData(["notes"], (old = []) => [...old, newNote]);
-      queryClient.setQueryData(["archivedNotes"], (old = []) => [
-        ...old,
-        newNote,
-      ]);
     },
     onError: (error) => handleError(error, "Failed to create note"),
   });
@@ -104,24 +100,11 @@ export const useArchiveNote = () => {
   return useMutation({
     mutationFn: archiveNote,
     onSuccess: (updatedNote) => {
-      if (updatedNote.status === "archived") {
-        queryClient.setQueryData(["notes"], (old = []) =>
-          old.filter((note) => note._id !== updatedNote._id)
-        );
-        queryClient.setQueryData(["archivedNotes"], (old = []) => [
-          ...old,
-          updatedNote,
-        ]);
-      } else if (updatedNote.status === "active") {
-        queryClient.setQueryData(["archivedNotes"], (old = []) =>
-          old.filter((note) => note._id !== updatedNote._id)
-        );
-        queryClient.setQueryData(["notes"], (old = []) => [
-          ...old,
-          updatedNote,
-        ]);
-      }
-
+      // Invalidate and refetch both queries to ensure data consistency
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      queryClient.invalidateQueries({ queryKey: ["archivedNotes"] });
+      
+      // Also update the individual note cache
       queryClient.setQueryData(["notes", updatedNote._id], updatedNote);
     },
     onError: (error) => handleError(error, "Failed to archive/unarchive note"),

@@ -54,7 +54,6 @@ const Notes = () => {
   const { noteId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const isFullScreen = !!noteId;
   const { data: notes = [], isLoading } = useNotes();
   const { data: archiveNotes = [], isLoading: isArchiveLoading } =
     useArchivedNotes();
@@ -72,6 +71,7 @@ const Notes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNote, setSelectedNote] = useState(null);
   const [showColorPicker, setShowColorPicker] = useState(null);
+  const [archivingNoteId, setArchivingNoteId] = useState(null);
 
   useEffect(() => {
     if (noteId && notes.length > 0) {
@@ -130,7 +130,7 @@ const Notes = () => {
                 if (node && node.type.name !== "text") {
                   break;
                 }
-              } catch (e) {
+              } catch {
                 break;
               }
             }
@@ -391,9 +391,21 @@ const Notes = () => {
   };
 
   const archiveNote = (note) => {
+    const truncateTitle = (title, maxLength = 30) => {
+      if (!title || title.length <= maxLength) return title || "Untitled";
+      return title.substring(0, maxLength) + "...";
+    };
+
+    setArchivingNoteId(note._id);
     archiveNoteMutation.mutate(note._id, {
       onSuccess: () => {
         if (selectedNote?._id === note._id) setSelectedNote(null);
+        const truncatedTitle = truncateTitle(note.title);
+        toast.success(`Note "${truncatedTitle}" is archived`);
+        setArchivingNoteId(null);
+      },
+      onError: () => {
+        setArchivingNoteId(null);
       },
     });
   };
@@ -534,6 +546,7 @@ const Notes = () => {
               setShowColorPicker={setShowColorPicker}
               colors={colors}
               getPlainTextPreview={getPlainTextPreview}
+              archivingNoteId={archivingNoteId}
             />
           )}
 

@@ -6,6 +6,7 @@ import {
   Pin,
   Trash2,
   UserPlus,
+  Loader2,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ const NoteCard = ({
   setShowColorPicker,
   colors,
   getPlainTextPreview,
+  isArchiving,
 }) => {
   const [hovered, setHovered] = useState(false);
   const [showSharePopup, setShowSharePopup] = useState(false);
@@ -116,8 +118,13 @@ const NoteCard = ({
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
+            disabled={isArchiving}
           >
-            <Archive size={16} />
+            {isArchiving ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Archive size={16} />
+            )}
           </Button>
 
           <Button

@@ -16,6 +16,7 @@ const NotesList = ({
   setShowColorPicker,
   colors,
   getPlainTextPreview,
+  archivingNoteId,
 }) => {
   const handleShareNote = async (noteId, userId, accessLevel) => {
     try {
@@ -77,6 +78,7 @@ const NotesList = ({
                 colors={colors}
                 getPlainTextPreview={getPlainTextPreview}
                 onShare={handleShareNote}
+                isArchiving={archivingNoteId === note?._id}
               />
             ))}
           </div>
@@ -115,6 +117,7 @@ const NotesList = ({
                 colors={colors}
                 getPlainTextPreview={getPlainTextPreview}
                 onShare={handleShareNote}
+                isArchiving={archivingNoteId === note?._id}
               />
             ))}
           </div>
