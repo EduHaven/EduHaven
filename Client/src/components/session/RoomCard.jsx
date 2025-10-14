@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axiosInstance from "@/utils/axios";
 import {
   Activity,
@@ -6,24 +6,24 @@ import {
   Pin,
   PinOff,
   Trash,
-  Link,
+  Link as LinkIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function RoomCard({ room, onDelete, showCategory, loading }) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
-  const dropdownRef = useRef(null);
+  const [joinStatus, setJoinStatus] = useState(null); // 'member', 'pending', 'none'
   const navigate = useNavigate();
 
-  const dropdownVariants = {
-    hidden: { opacity: 0, y: -10, scale: 0.95 },
-    visible: { opacity: 1, y: 0, scale: 1 },
-    exit: { opacity: 0, y: -10, scale: 0.95 },
-  };
-
+  // Load pinned state
   useEffect(() => {
     if (!room) return;
     const pinned = JSON.parse(localStorage.getItem("pinnedRooms") || "[]");
@@ -31,32 +31,14 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
     setIsPinned(found);
   }, [room, room?._id]);
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
-  }, [menuOpen]);
-
-  const [joinStatus, setJoinStatus] = useState(null); // 'member', 'pending', 'none'
-  const [userId, setUserId] = useState(null);
-
+  // Load join status
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
-    setUserId(user?._id);
     if (room && user) {
       axiosInstance
         .get(`/session-room/${room._id}/join-status`)
-        .then((res) => {
-          setJoinStatus(res.data.status);
-        })
-        .catch(() => {
-          setJoinStatus(null);
-        });
+        .then((res) => setJoinStatus(res.data.status))
+        .catch(() => setJoinStatus(null));
     }
   }, [room]);
 
@@ -109,17 +91,17 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
           });
         }
       } else if (joinStatus === "pending") {
-        import("react-toastify").then(({ toast }) => {
-          toast.info("Your join request is pending approval.");
-        });
+        import("react-toastify").then(({ toast }) =>
+          toast.info("Your join request is pending approval.")
+        );
       } else {
         // Send join request
         try {
           await axiosInstance.post(`/session-room/${room._id}/request-join`);
           setJoinStatus("pending");
-          import("react-toastify").then(({ toast }) => {
-            toast.success("Join request sent.");
-          });
+          import("react-toastify").then(({ toast }) =>
+            toast.success("Join request sent.")
+          );
         } catch (err) {
           const message = err.response?.data?.error;
           if (message && message.toLowerCase().includes("already a member")) {
@@ -136,18 +118,18 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
         }
       }
     } else {
-      // Public room: join directly
       try {
         const res = await axiosInstance.post(`/session-room/${room._id}/join`);
+
+        if (joinStatus === "member") {
+          toast.success("Entering room...");
+        } else {
+          toast.success("Joining room...");
+        }
         setJoinStatus("member");
-        import("react-toastify").then(({ toast }) => {
-          toast.success(res.data?.message || "Joined room.");
-        });
         navigate(`/session/${room._id}`);
       } catch (err) {
-        import("react-toastify").then(({ toast }) => {
-          toast.error(err.response?.data?.error || "Failed to join room");
-        });
+        toast.error(err.response?.data?.error || "Failed to join room");
       }
     }
   };
@@ -246,76 +228,57 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
             </span>
           )}
         </div>
-        <Button
-          onClick={() => setMenuOpen(!menuOpen)}
-          variant="transparent"
-          size="icon"
-          className="txt hover:txt-dim"
-        >
-          <MoreHorizontal className="w-6 h-6" />
-        </Button>
-      </div>
 
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            ref={dropdownRef}
-            key="dropdown"
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={dropdownVariants}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="absolute right-4 top-12 bg-ter rounded-xl shadow-md z-10 p-1"
-          >
-            {!isPinned ? (
-              <Button
-                onClick={handlePin}
-                variant="transparent"
-                size="lg"
-                className="flex items-center w-full justify-start gap-2 txt hover:btn px-4 py-2.5 text-md"
-              >
-                <Pin size={20} />
-                Pin to home
-              </Button>
-            ) : (
-              <Button
-                onClick={handleUnpin}
-                variant="transparent"
-                size="lg"
-                className="flex items-center w-full justify-start gap-2 txt hover:btn px-4 py-2.5 text-md"
-              >
-                <PinOff size={20} />
-                Unpin from home
-              </Button>
-            )}
+        {/* Dropdown Menu ->for mantaing UI*/}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button
-              onClick={handleCopyLink}
               variant="transparent"
-              size="lg"
-              className="flex items-center w-full justify-start gap-2 txt hover:btn px-4 py-2.5 text-md"
+              size="icon"
+              className="txt hover:txt-dim"
             >
-              <Link size={20} />
-              Copy Link
+              <MoreHorizontal className="w-6 h-6" />
             </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-ter rounded-xl shadow-md">
+            {!isPinned ? (
+              <DropdownMenuItem
+                onClick={handlePin}
+                className="flex items-center gap-2 txt cursor-pointer"
+              >
+                <Pin size={18} />
+                Pin to home
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem
+                onClick={handleUnpin}
+                className="flex items-center gap-2 txt cursor-pointer"
+              >
+                <PinOff size={18} />
+                Unpin from home
+              </DropdownMenuItem>
+            )}
+
+            <DropdownMenuItem
+              onClick={handleCopyLink}
+              className="flex items-center gap-2 txt cursor-pointer"
+            >
+              <LinkIcon size={18} />
+              Copy Link
+            </DropdownMenuItem>
 
             {onDelete && (
-              <Button
-                onClick={() => {
-                  onDelete(room);
-                  setMenuOpen(false);
-                }}
-                variant="transparent"
-                size="lg"
-                className="flex items-center w-full justify-start gap-2 txt hover:btn px-4 py-2.5 text-md"
+              <DropdownMenuItem
+                onClick={() => onDelete(room)}
+                className="flex items-center gap-2 text-red-500 cursor-pointer"
               >
-                <Trash size={20} />
+                <Trash size={18} />
                 Delete
-              </Button>
+              </DropdownMenuItem>
             )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
       {showCategory && (
         <p className="txt-dim mb-4 capitalize">
@@ -352,20 +315,21 @@ export default function RoomCard({ room, onDelete, showCategory, loading }) {
             Request Join
           </Button>
         )
-      ) : joinStatus !== "member" ? (
+      ) : joinStatus === "member" ? (
+        <Button
+          onClick={handleJoin}
+          className="w-full flex items-center justify-center gap-2"
+        >
+          <Activity className="w-5 h-5" />
+          Enter Room
+        </Button>
+      ) : (
         <Button
           onClick={handleJoin}
           className="w-full flex items-center justify-center gap-2"
         >
           <Activity className="w-5 h-5" />
           Join
-        </Button>
-      ) : (
-        <Button
-          disabled
-          className="w-full flex items-center justify-center gap-2 bg-gray-400/30 cursor-not-allowed"
-        >
-          Already Joined
         </Button>
       )}
     </div>
