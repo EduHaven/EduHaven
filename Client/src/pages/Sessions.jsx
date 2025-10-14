@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import OtherRoom from "../components/session/OtherRooms.jsx";
 import OnlineFriends from "../components/session/friendsSection/OnlineFriends.jsx";
-import FriendRequests from "../components/session/friendsSection/FriendsRequests.jsx";
-import SuggestedFriends from "../components/session/friendsSection/SuggestedFriends.jsx";
-import SentRequests from "../components/session/friendsSection/SentRequests.jsx";
 import YourRooms from "@/components/session/YourRooms.jsx";
 import NotLogedInPage from "@/components/NotLogedInPage.jsx";
 import axiosInstance from "@/utils/axios";
@@ -38,15 +35,8 @@ function Session() {
       </div>
       <aside className="w-[20%] overflow-scroll min-w-72 space-y-3 2xl:space-y-6 overflow-x-hidden p-3 2xl:p-6 border-l border-gray-500/20">
         <OnlineFriends />
-        <FriendRequests />
-        {view === "suggested" ? (
-          <SuggestedFriends onViewSentRequests={() => setView("sent")} />
-        ) : (
-          <SentRequests onBack={() => setView("suggested")} />
-        )}
       </aside>
     </div>
   );
 }
-
 export default Session;

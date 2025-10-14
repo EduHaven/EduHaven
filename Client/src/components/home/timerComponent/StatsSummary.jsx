@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { ChevronDown, Clock4, Flame, BarChart2 } from "lucide-react";
 import { useConsolidatedStats } from "@/queries/timerQueries";
 import { levels } from "@/components/stats/MonthlyLevel";
@@ -7,12 +7,8 @@ import { fetchConsolidatedStats } from "@/api/timerApi";
 import { useTimerStore } from "@/stores/timerStore";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-
-// Variants for dropdown buttons
-const dropdownButtonVariants = {
-  initial: { backgroundColor: "transparent" },
-  hover: { backgroundColor: "var(--bg-ter)" },
-};
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} 
+from "@/components/ui/dropdown-menu";
 
 const periodMapping = {
   Today: "daily",
@@ -37,8 +33,6 @@ const getMonthlyLevel = (monthlyHours) => {
 
 function StatsSummary() {
   const [selectedTime, setSelectedTime] = useState("Today");
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
 
   // Get current timer state from store
   const { time: currentTimerTime, isRunning, startTime } = useTimerStore();
@@ -62,17 +56,14 @@ function StatsSummary() {
     const start = new Date(startTime);
     const sessionSeconds = Math.floor((now - start) / 1000);
     // const totalCurrentSeconds = sessionSeconds + (currentTimerTime.hours * 3600 + currentTimerTime.minutes * 60 + currentTimerTime.seconds);
-    
-    // return totalCurrentSeconds / 3600;
-    return sessionSeconds/3600;
-   
 
+    // return totalCurrentSeconds / 3600;
+    return sessionSeconds / 3600;
   };
 
   const stats = data?.userStats;
 
   const currentSessionHours = getCurrentSessionHours();
-
 
   // Debug: log raw and derived values to help trace any calculation issues
   /*
@@ -90,8 +81,7 @@ function StatsSummary() {
     }
   }, [stats, currentSessionHours]);
 */
-   const getEnhancedValue = (baseValue, timeFilter) => {
-
+  const getEnhancedValue = (baseValue, timeFilter) => {
     const base = parseFloat(baseValue) || 0;
 
     if (timeFilter === "Today" && currentSessionHours > 0) {
@@ -145,17 +135,6 @@ function StatsSummary() {
         },
       };
 
-  // Handle click outside dropdown
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   // Handle refresh - use refetch from TanStack Query
   const handleRefresh = () => {
     refetch();
@@ -174,7 +153,8 @@ function StatsSummary() {
     const nextMin = nextLevel ? Number(nextLevel.min) : null;
 
     // Compute hours left to next level (absolute hours)
-    const hoursToNextTotal = nextMin !== null ? Math.max(0, nextMin - totalHours) : 0;
+    const hoursToNextTotal =
+      nextMin !== null ? Math.max(0, nextMin - totalHours) : 0;
 
     // Progress should be numeric
     const progress = Number(lvl.progress) || 0;
@@ -182,14 +162,23 @@ function StatsSummary() {
     return { totalHours, hoursToNextTotal, progress };
   };
 
-  const { totalHours: computedTotalHours, hoursToNextTotal, progress: computedProgress } = computeLevelNumbers();
+  const {
+    totalHours: computedTotalHours,
+    hoursToNextTotal,
+    progress: computedProgress,
+  } = computeLevelNumbers();
   // Prefer to compute level based on monthly total (same source used earlier). If missing, fall back to computed total.
-  const monthlyTotal = Number(getEnhancedValue(stats?.timePeriods?.thisMonth || "0.0", "Today")) || computedTotalHours;
+  const monthlyTotal =
+    Number(getEnhancedValue(stats?.timePeriods?.thisMonth || "0.0", "Today")) ||
+    computedTotalHours;
   const totalForLevel = monthlyTotal;
 
   // Compute hours left to next level based on totalForLevel and levels array
   const findNextLevelThreshold = () => {
-    const baseLevel = levels.find((lvl) => totalForLevel >= lvl.min && totalForLevel < lvl.max) || levels[levels.length - 1];
+    const baseLevel =
+      levels.find(
+        (lvl) => totalForLevel >= lvl.min && totalForLevel < lvl.max
+      ) || levels[levels.length - 1];
     const next = levels[levels.indexOf(baseLevel) + 1];
     if (!next) return 0;
     return Math.max(0, next.min - totalForLevel);
@@ -255,7 +244,7 @@ function StatsSummary() {
     );
   }
 
-  // Render content UI - no changes needed here
+  // Render content UI
   return (
     <motion.div
       className="txt m-4 mt-2 w-[25%] h-full"
@@ -264,48 +253,29 @@ function StatsSummary() {
       transition={{ duration: 0.5 }}
     >
       <div className="flex items-center justify-between -mb-3">
-        <div ref={dropdownRef} className="relative ml-auto">
-          <Button
-            onClick={() => setIsOpen(!isOpen)}
-            variant="transparent"
-            size="default"
-            className="flex items-center space-x-1 txt-dim hover:txt"
-          >
-            <span>{selectedTime}</span>
-            <motion.span
-              animate={{ rotate: isOpen ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="transparent"
+              size="default"
+              className="flex items-center space-x-1 txt-dim hover:txt ml-auto"
             >
+              <span>{selectedTime}</span>
               <ChevronDown className="w-4 h-4" />
-            </motion.span>
-          </Button>
-          <AnimatePresence>
-            {isOpen && (
-              <motion.div
-                className="absolute right-0 top-5 mt-2 w-32 bg-primary txt rounded-lg shadow-lg overflow-hidden z-10"
-                initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                transition={{ duration: 0.2 }}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            {Object.keys(studyData).map((time) => (
+              <DropdownMenuItem
+                key={time}
+                onClick={() => setSelectedTime(time)}
+                className="cursor-pointer"
               >
-                {Object.keys(studyData).map((time) => (
-                  <Button
-                    key={time}
-                    onClick={() => {
-                      setSelectedTime(time);
-                      setIsOpen(false);
-                    }}
-                    variant="default"
-                    size="default"
-                    className="block w-full text-left px-4 py-2 btn-rad m-2"
-                  >
-                    {time}
-                  </Button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                {time}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <motion.div
@@ -341,7 +311,6 @@ function StatsSummary() {
           {userStats.streak || 0} days
         </p>
       </motion.div>
- 
 
       <motion.p
         className="text-md txt-dim pl-2"
@@ -349,11 +318,8 @@ function StatsSummary() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.4 }}
       >
-
-        {getMonthlyLevel(totalForLevel.toString()).name} 
-        ({getMonthlyLevel(totalForLevel.toString()).range})
-
-       
+        {getMonthlyLevel(totalForLevel.toString()).name}(
+        {getMonthlyLevel(totalForLevel.toString()).range})
       </motion.p>
 
       <div className="relative w-full bg-ter h-5 rounded-2xl mt-2">

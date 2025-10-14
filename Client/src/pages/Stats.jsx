@@ -11,11 +11,15 @@ import Goals from "../components/stats/Goals";
 import Leaderboard from "../components/stats/Leaderboard";
 import Test from "../components/stats/Test.jsx";
 import AdCard from "@/components/AdCard";
+import axiosInstance from "@/utils/axios";
+import UserRoomsCard from "@/components/session/UserRoomsCard.jsx";
 
 const Stats = ({ isCurrentUser = false }) => {
   const { userId } = useParams();
   const { user: currentUser, fetchUserDetails } = useUserProfile();
   const [userStats, setUserStats] = useState(null);
+  const [myRooms, setMyRooms] = useState([]);
+  const [userRooms, setUserRooms] = useState([]);
   // const [loading, setLoading] = useState(true);
   const [fetched, setFetched] = useState(false);
 
@@ -27,10 +31,13 @@ const Stats = ({ isCurrentUser = false }) => {
           if (!token) {
             setFetched(true);
             return;
-          };
+          }
 
           const decoded = jwtDecode(token);
           await fetchUserDetails(decoded.id);
+
+          const { data } = await axiosInstance.get("/session-room");
+          setMyRooms(data.myRooms);
 
           setUserStats({
             name: `${currentUser?.FirstName ?? ""} ${currentUser?.LastName ?? ""}`.trim(),
@@ -51,6 +58,14 @@ const Stats = ({ isCurrentUser = false }) => {
           });
         } else {
           const res = await fetchUserStats(userId);
+
+          const { data } = await axiosInstance.get("/session-room");
+
+          const filteredRooms = data.otherRooms.filter(
+            (room) => room.createdBy === userId
+          );
+          setUserRooms(filteredRooms);
+
           setUserStats({
             name: `${res.userInfo?.firstName ?? ""} ${res.userInfo?.lastName ?? ""}`.trim(),
             bio: res.userInfo?.bio ?? "",
@@ -88,7 +103,7 @@ const Stats = ({ isCurrentUser = false }) => {
       <div className="m-3 2xl:m-6">
         User not found or error loading profile.
       </div>
-  );
+    );
 
   return (
     <div className="m-3 2xl:m-6">
@@ -106,6 +121,14 @@ const Stats = ({ isCurrentUser = false }) => {
       <div className="flex flex-col lg:flex-row gap-3 2xl:gap-6 w-full content-center">
         <div className="lg:w-[20%] min-w-72 space-y-3 2xl:space-y-6">
           <ProfileCard isCurrentUser={isCurrentUser} user={userStats} />
+          {(isCurrentUser ? myRooms : userRooms)?.length > 0 && (
+            <UserRoomsCard
+              isCurrentUser={isCurrentUser}
+              myRooms={isCurrentUser ? myRooms : userRooms}
+            />
+          )}
+
+          {/*  Here we will add room created by me */}
           <div className="h-auto w-full rounded-3xl bg-[var(--bg-sec)] p-5 shadow-md space-y-4">
             <AdCard />
           </div>

@@ -11,40 +11,45 @@ import { createSocket, initSocketHandlers } from "./Config/socketConfig.js";
 import notFound from "./Middlewares/notFound.js";
 import errorHandler from "./Middlewares/errorHandler.js";
 import {
-    doGracefulShutdown,
-    setupGracefulShutdown,
+  doGracefulShutdown,
+  setupGracefulShutdown,
 } from "./Config/shutdownConfig.js";
 
 // morganMiddleware Import
 import morganMiddleware from "./logger/morganLogger.js";
 
 // import mongoSanitize
-import { mongoSecurity } from './security/mongoSanitize.js'
+import { mongoSecurity } from "./security/mongoSanitize.js";
+
+// import qs [queryParser]
+import { queryParser } from "./security/queryParser.js";
 
 dotenv.config();
 
 // Polyfill fetch for Node (if needed)
 if (!globalThis.fetch) {
-    globalThis.fetch = fetch;
-    globalThis.Headers = Headers;
-    globalThis.Request = Request;
-    globalThis.Response = Response;
+  globalThis.fetch = fetch;
+  globalThis.Headers = Headers;
+  globalThis.Request = Request;
+  globalThis.Response = Response;
 }
 
 const app = express();
 export const PORT = Number(process.env.PORT) || 3000;
 export const NODE_ENV = process.env.NODE_ENV || "development";
-export const CORS_ORIGIN =
-    process.env.CORS_ORIGIN || "http://localhost:5174";
+export const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5174";
 
 // security middleware
 applySecurity(app);
 applyCommonMiddleware(app);
 
+// queryParser
+app.use(queryParser);
+
 // mongoSanitize
 mongoSecurity(app);
 
-// morgan 
+// morgan
 app.use(morganMiddleware);
 
 mountHealthRoutes(app);
@@ -59,21 +64,21 @@ const io = createSocket(server);
 setupGracefulShutdown(server);
 
 async function start() {
-    try {
-        console.log("🚀 Starting server...");
-        await ConnectDB();
+  try {
+    console.log("🚀 Starting server...");
+    await ConnectDB();
 
-        initSocketHandlers(io);
+    initSocketHandlers(io);
 
-        server.listen(PORT, () => {
-            console.log(`🚀 Server running at http://localhost:${PORT}`);
-        });
-    } catch (err) {
-        console.error("Failed to start server:", err);
-        // Run defensive graceful shutdown so the same cleanup path runs
-        // This will attempt DB cleanup (noop if not connected) then exit.
-        doGracefulShutdown("startupFailure");
-    }
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running at http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error("Failed to start server:", err);
+    // Run defensive graceful shutdown so the same cleanup path runs
+    // This will attempt DB cleanup (noop if not connected) then exit.
+    doGracefulShutdown("startupFailure");
+  }
 }
 
 start();

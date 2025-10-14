@@ -261,7 +261,9 @@ const NoteCard = ({
               style={{
                 ...color.style,
                 borderColor:
-                  note?.color === color.name ? "var(--btn)" : "var(--bg-secondary)",
+                  note?.color === color.name
+                    ? "var(--btn)"
+                    : "var(--bg-secondary)",
                 borderWidth: note?.color === color.name ? "2px" : "1px",
               }}
               disabled={!canEdit}

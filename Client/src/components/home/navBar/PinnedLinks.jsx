@@ -3,6 +3,13 @@ import { ExternalLink, Plus, X, MoreVertical } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import PopupContainer from "@/components/ui/Popup";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+
 
 // Helper to get domain from a URL
 function getDomain(url) {
@@ -223,162 +230,132 @@ function PinnedLinks() {
 
   return (
     <div className="relative z-50">
-      <Button
-        variant="transparent"
-        size="default"
-        ref={buttonRef}
-        onClick={() => setShowDropdown(!showDropdown)}
-        className="flex gap-3 font-bold text-lg items-center txt"
-      >
-        <ExternalLink />
-        Links
-      </Button>
 
-      {/* Dropdown of existing pinned links + add button */}
-      {/* <AnimatePresence mode="wait"> */}
-      {showDropdown && (
-        <motion.div
-          initial={{
-            opacity: 0,
-            height: 0,
-            scale: 0.95,
-            y: -8,
-          }}
-          animate={{
-            opacity: 1,
-            height: "auto",
-            scale: 1,
-            y: 0,
-          }}
-          exit={{
-            opacity: 0,
-            height: 0,
-            scale: 0.95,
-            y: -8,
-          }}
-          transition={{
-            duration: 0.15,
-            ease: [0.25, 0.1, 0.25, 1],
-            // height: { duration: 0.35 },
-            // opacity: { duration: 0.25 },
-            // scale: { duration: 0.3 },
-            // y: { duration: 0.3 },
-          }}
-          ref={dropdownRef}
-          className="absolute top-full left-0 mt-2 bg-sec shadow-lg rounded-lg p-2 z-10 min-w-[17rem] overflow-hidden backdrop-blur-sm border border-opacity-20 border-gray-300"
-          style={{
-            boxShadow:
-              "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1, duration: 0.3 }}
+    {/* Modified dropdown menu for consistent UI */}
+
+      <DropdownMenu open={showDropdown} onOpenChange={setShowDropdown}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="transparent"
+            size="default"
+            ref={buttonRef}
+            className="flex gap-3 font-bold text-lg items-center txt"
           >
-            {pinnedLinks.map((item, index) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between px-4 py-2 txt hover:bg-ter rounded-md transition-all duration-200 hover:px-3"
+            <ExternalLink />
+            Links
+          </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent
+          ref={dropdownRef}
+          className="bg-sec shadow-lg rounded-lg p-2 z-10 min-w-[17rem] overflow-hidden backdrop-blur-sm border border-opacity-20 border-gray-300"
+          side="bottom"
+          align="start"
+        >
+          {pinnedLinks.map((item, index) => (
+            <div
+              key={item.id}
+              className="flex items-center justify-between px-4 py-2 txt hover:bg-ter rounded-md transition-all duration-200 hover:px-3"
+            >
+              <motion.div
+                className="flex items-center gap-2 cursor-pointer flex-1"
+                onClick={() => openWorkspace(item.links)}
+                whileTap={{ scale: 0.98 }}
               >
                 <motion.div
-                  className="flex items-center gap-2 cursor-pointer flex-1"
-                  onClick={() => openWorkspace(item.links)}
-                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-1"
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: index * 0.05, duration: 0.2 }}
                 >
-                  <motion.div
-                    className="flex items-center gap-1"
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: index * 0.05, duration: 0.2 }}
-                  >
-                    {item.links.map((link, idx) => (
-                      <motion.img
-                        key={idx}
-                        src={getFaviconUrl(link)}
-                        alt="icon"
-                        className="w-4 h-4 rounded-sm"
-                        initial={{ opacity: 0, rotate: -90 }}
-                        animate={{ opacity: 1, rotate: 0 }}
-                        transition={{
-                          delay: index * 0.05 + idx * 0.02,
-                          duration: 0.4,
-                        }}
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                        }}
-                      />
-                    ))}
-                  </motion.div>
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: index * 0.05, duration: 0.3 }}
-                  >
-                    {item.title}
-                  </motion.span>
+                  {item.links.map((link, idx) => (
+                    <motion.img
+                      key={idx}
+                      src={getFaviconUrl(link)}
+                      alt="icon"
+                      className="w-4 h-4 rounded-sm"
+                      initial={{ opacity: 0, rotate: -90 }}
+                      animate={{ opacity: 1, rotate: 0 }}
+                      transition={{
+                        delay: index * 0.05 + idx * 0.02,
+                        duration: 0.4,
+                      }}
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
+                    />
+                  ))}
                 </motion.div>
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: index * 0.05, duration: 0.3 }}
+                >
+                  {item.title}
+                </motion.span>
+              </motion.div>
 
-                <div className="relative">
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setOpenMenuId(openMenuId === item.id ? null : item.id);
-                    }}
-                    variant="transparent"
-                    size="icon"
-                    className="p-1 rounded hover:bg-ter transition-colors duration-200"
-                  >
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
+              <div className="relative">
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenMenuId(openMenuId === item.id ? null : item.id);
+                  }}
+                  variant="transparent"
+                  size="icon"
+                  className="p-1 rounded hover:bg-ter transition-colors duration-200"
+                >
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
 
-                  <AnimatePresence>
-                    {openMenuId === item.id && (
-                      <motion.div
-                        initial={{
-                          opacity: 0,
-                          scale: 0.9,
-                          y: -5,
-                        }}
-                        animate={{
-                          opacity: 1,
-                          scale: 1,
-                          y: 0,
-                        }}
-                        exit={{
-                          opacity: 0,
-                          scale: 0.9,
-                          y: -5,
-                        }}
-                        transition={{
-                          duration: 0.2,
-                          ease: [0.25, 0.46, 0.45, 0.94],
-                        }}
-                        className="absolute right-0 mt-1 bg-ter shadow-lg rounded-md p-1 z-10 min-w-[5rem] border border-opacity-10 border-gray-400"
+                <AnimatePresence>
+                  {openMenuId === item.id && (
+                    <motion.div
+                      initial={{
+                        opacity: 0,
+                        scale: 0.9,
+                        y: -5,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        scale: 1,
+                        y: 0,
+                      }}
+                      exit={{
+                        opacity: 0,
+                        scale: 0.9,
+                        y: -5,
+                      }}
+                      transition={{
+                        duration: 0.2,
+                        ease: [0.25, 0.46, 0.45, 0.94],
+                      }}
+                      className="absolute right-0 mt-1 bg-ter shadow-lg rounded-md p-1 z-10 min-w-[5rem] border border-opacity-10 border-gray-400"
+                    >
+                      <Button
+                        onClick={() => handleEditLink(item.id)}
+                        variant="secondary"
+                        size="default"
+                        className="block w-full text-left px-2 py-1 rounded-sm txt hover:bg-sec transition-colors duration-150"
                       >
-                        <Button
-                          onClick={() => handleEditLink(item.id)}
-                          variant="secondary"
-                          size="default"
-                          className="block w-full text-left px-2 py-1 rounded-sm txt hover:bg-sec transition-colors duration-150"
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          onClick={() => handleDeleteLink(item.id)}
-                          variant="destructive"
-                          size="default"
-                          className="block w-full text-left px-2 py-1 rounded-sm txt hover:bg-sec transition-colors duration-150"
-                        >
-                          Delete
-                        </Button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                        Edit
+                      </Button>
+                      <Button
+                        onClick={() => handleDeleteLink(item.id)}
+                        variant="destructive"
+                        size="default"
+                        className="block w-full text-left px-2 py-1 rounded-sm txt hover:bg-sec transition-colors duration-150"
+                      >
+                        Delete
+                      </Button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            ))}
+            </div>
+          ))}
 
+          <DropdownMenuItem asChild>
             <Button
               onClick={handleAddNew}
               variant="default"
@@ -406,10 +383,10 @@ function PinnedLinks() {
                 Add Link
               </motion.span>
             </Button>
-          </motion.div>
-        </motion.div>
-      )}
-      {/* </AnimatePresence> */}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
 
       {/* Modal for adding/editing a workspace */}
       {showModal && (

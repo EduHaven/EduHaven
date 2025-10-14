@@ -1,7 +1,13 @@
+import { roomRateLimit } from "./rateLimiter.js";
+
 const handleRoomOperations = (socket, io, onlineUsers) => {
   // Join an existing room
   socket.on("join_room", async (data) => {
     try {
+      // Apply rate limiting
+      const allowed = await roomRateLimit(socket, data);
+      if (!allowed) return;
+
       const { roomId } = data;
 
       // TODO: Validate room exists in database
@@ -49,6 +55,10 @@ const handleRoomOperations = (socket, io, onlineUsers) => {
   // Leave room
   socket.on("leave_room", async (data) => {
     try {
+      // Apply rate limiting
+      const allowed = await roomRateLimit(socket, data);
+      if (!allowed) return;
+
       const { roomId } = data;
 
       socket.leave(roomId);

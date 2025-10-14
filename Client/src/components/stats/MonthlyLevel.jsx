@@ -21,7 +21,10 @@ const MonthlyLevel = () => {
       <div className="bg-[var(--bg-sec)] rounded-3xl shadow-md p-6 flex flex-col gap-4 w-full">
         <div className="flex justify-between">
           <h3 className="text-xl font-semibold txt">Monthly Level</h3>
-          <p className="flex gap-1 items-end txt-dim">Total: <span className="w-10 h-5 bg-ter rounded-lg animate-pulse inline-block mb-0.5"></span></p>
+          <p className="flex gap-1 items-end txt-dim">
+            Total:{" "}
+            <span className="w-10 h-5 bg-ter rounded-lg animate-pulse inline-block mb-0.5"></span>
+          </p>
         </div>
         <div className="flex items-center gap-4 animate-pulse">
           <div className="w-28 h-28 bg-ter rounded-full"></div>
