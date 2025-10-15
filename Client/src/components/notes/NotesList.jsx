@@ -29,7 +29,9 @@ const NotesList = ({
                 key={note?._id}
                 note={note}
                 getPlainTextPreview={getPlainTextPreview}
+
                 onExport={exportNote}
+
               />
             ))}
           </div>

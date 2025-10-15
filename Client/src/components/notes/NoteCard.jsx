@@ -6,6 +6,7 @@ import {
   Pin,
   Trash2,
   UserPlus,
+  Loader2,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -138,8 +139,10 @@ const NoteCard = ({
           handleTogglePin(note?._id, note?.pinnedAt);
         }}
         className={`absolute top-2 right-2 p-1 rounded-full bg-black/10 hover:bg-black/20 transition-opacity
+
         ${note?.pinnedAt ? "opacity-100" : hovered ? "opacity-100" : "opacity-0"}`}
         disabled={!canEdit} 
+
       >
         <Pin
           size={16}
@@ -230,9 +233,14 @@ const NoteCard = ({
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
+
             disabled={!canEdit}
           >
-            <Trash2 size={16} />
+            {isDeleting ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Trash2 size={16} />
+            )}
           </Button>
         </motion.div>
       )}
