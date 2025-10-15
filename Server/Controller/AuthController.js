@@ -177,11 +177,17 @@ const login = async (req, res) => {
       httpOnly: true,
     });
 
+    // safe user for return response
+    const safeUser = await User.findOne(
+      {$or: [{ Email: identifier }, { Username: identifier }]},
+      {Password: 0}
+    );
+
     return res.status(200).json({
       message: "User Login Successfully",
       token,
       refreshToken,
-      user,
+      safeUser,
     });
   } catch (error) {
     console.error(error);
