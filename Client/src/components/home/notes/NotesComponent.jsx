@@ -49,6 +49,7 @@ function NotesComponent() {
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(0);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchNotes();
@@ -61,6 +62,7 @@ function NotesComponent() {
 
   const fetchNotes = async () => {
     try {
+      setIsLoading(true);
       const response = await axiosInstance.get(`/note`);
       if (response.data.success) {
         if (!response.data.data || response.data.data.length === 0) {
@@ -74,6 +76,8 @@ function NotesComponent() {
       }
     } catch (err) {
       setError(err?.response?.data?.error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -299,6 +303,7 @@ function NotesComponent() {
             contentTimeoutRef={contentTimeoutRef}
             handleSync={handleSync}
             validateFields={validateFields}
+            isLoading={isLoading}
           />
 
           <BottomControls

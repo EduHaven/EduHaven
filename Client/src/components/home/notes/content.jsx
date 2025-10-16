@@ -17,6 +17,7 @@ function NoteContent({
   setIsSynced,
   contentTimeoutRef,
   handleSync,
+  isLoading,
 }) {
   const editor = useEditor({
     extensions: [
@@ -96,9 +97,21 @@ function NoteContent({
   return (
     <>
       <div className="w-full h-[336px] txt-dim p-2 px-3 overflow-auto">
-        <EditorContent editor={editor} />
+        {isLoading ? (
+          <div className="space-y-2 mt-2">
+            <div className="h-3 w-full rounded opacity-60 animate-pulse" style={{ backgroundColor: 'var(--bg-ter)' }}></div>
+            <div className="h-3 w-11/12 rounded opacity-60 animate-pulse" style={{ backgroundColor: 'var(--bg-ter)' }}></div>
+            <div className="h-3 w-5/6 rounded opacity-60 animate-pulse" style={{ backgroundColor: 'var(--bg-ter)' }}></div>
+            <div className="h-3 w-4/5 rounded opacity-60 animate-pulse" style={{ backgroundColor: 'var(--bg-ter)' }}></div>
+            <div className="h-3 w-3/4 rounded opacity-60 animate-pulse" style={{ backgroundColor: 'var(--bg-ter)' }}></div>
+            <div className="h-3 w-full rounded opacity-60 animate-pulse" style={{ backgroundColor: 'var(--bg-ter)' }}></div>
+            <div className="h-3 w-5/6 rounded opacity-60 animate-pulse" style={{ backgroundColor: 'var(--bg-ter)' }}></div>
+          </div>
+        ) : (
+          <EditorContent editor={editor} />
+        )}
       </div>
-      {err && (
+      {err && !isLoading && (
         <span className="text-red-400 text-xs mt-1 absolute bottom-4 left-3">
           {err}
         </span>
