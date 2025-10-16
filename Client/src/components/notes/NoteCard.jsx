@@ -11,8 +11,12 @@ import {
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SharePopup from "./SharePopup";
-import { useNoteStore } from '@/stores/useNoteStore';
-import { useUpdateNote, useArchiveNote, useTrashNote } from "@/queries/NoteQueries";
+import { useNoteStore } from "@/stores/useNoteStore";
+import {
+  useUpdateNote,
+  useArchiveNote,
+  useTrashNote,
+} from "@/queries/NoteQueries";
 import axiosInstance from "@/utils/axios";
 
 const getCurrentUserId = () => {
@@ -20,7 +24,7 @@ const getCurrentUserId = () => {
   if (!token) return null;
 
   try {
-    const decodedToken = JSON.parse(atob(token.split('.')[1]));
+    const decodedToken = JSON.parse(atob(token.split(".")[1]));
     return decodedToken?.id || null;
   } catch (e) {
     console.error("Failed to decode token:", e);
@@ -28,13 +32,10 @@ const getCurrentUserId = () => {
   }
 };
 
-const NoteCard = ({
-  note,
-  getPlainTextPreview,
-  onExport,
-}) => {
+const NoteCard = ({ note, getPlainTextPreview, onExport }) => {
   const [hovered, setHovered] = useState(false);
   const [showSharePopup, setShowSharePopup] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     setSelectedNote,
@@ -53,7 +54,8 @@ const NoteCard = ({
   // Check if the current user is the owner or has edit access
   const isOwner = note?.owner === currentUserId;
   const hasEditAccess = note?.collaborators.some(
-    (collaborator) => collaborator.user._id === currentUserId && collaborator.access === "edit"
+    (collaborator) =>
+      collaborator.user._id === currentUserId && collaborator.access === "edit"
   );
   const canEdit = isOwner || hasEditAccess;
 
@@ -71,13 +73,15 @@ const NoteCard = ({
   };
 
   const handleArchiveNote = (noteToArchive) => {
-    if (!canEdit) return; 
+    if (!canEdit) return;
     archiveNoteMutation.mutate(noteToArchive._id);
   };
 
   const handleSendToTrash = (id) => {
+    setIsDeleting(true);
     if (!canEdit) return;
     trashNoteMutation.mutate(id);
+    setIsDeleting(false);
   };
 
   const getColorStyle = (colorName) => {
@@ -103,10 +107,13 @@ const NoteCard = ({
 
   const handleShareNote = async (noteId, userId, accessLevel) => {
     try {
-      const response = await axiosInstance.post(`/note/${noteId}/collaborators`, {
-        userId,
-        access: accessLevel
-      });
+      const response = await axiosInstance.post(
+        `/note/${noteId}/collaborators`,
+        {
+          userId,
+          access: accessLevel,
+        }
+      );
 
       if (response.status === 200) {
         return Promise.resolve();
@@ -115,7 +122,11 @@ const NoteCard = ({
       }
     } catch (error) {
       if (error.response) {
-        throw new Error(error.response.data?.error || error.response.data?.message || "Failed to share note");
+        throw new Error(
+          error.response.data?.error ||
+          error.response.data?.message ||
+          "Failed to share note"
+        );
       } else {
         throw error;
       }
@@ -140,9 +151,9 @@ const NoteCard = ({
         }}
         className={`absolute top-2 right-2 p-1 rounded-full bg-black/10 hover:bg-black/20 transition-opacity
 
-        ${note?.pinnedAt ? "opacity-100" : hovered ? "opacity-100" : "opacity-0"}`}
-        disabled={!canEdit} 
-
+        ${note?.pinnedAt ? "opacity-100" : hovered ? "opacity-100" : "opacity-0"
+          }`}
+        disabled={!canEdit}
       >
         <Pin
           size={16}
@@ -191,7 +202,7 @@ const NoteCard = ({
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
-            disabled={!canEdit} 
+            disabled={!canEdit}
           >
             <Palette size={16} />
           </Button>
@@ -201,7 +212,7 @@ const NoteCard = ({
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
-            disabled={!canEdit} 
+            disabled={!canEdit}
           >
             <Archive size={16} />
           </Button>
@@ -233,7 +244,6 @@ const NoteCard = ({
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
-
             disabled={!canEdit}
           >
             {isDeleting ? (
@@ -253,13 +263,25 @@ const NoteCard = ({
           animate={{ scale: 1 }}
         >
           {[
-            { name: "default", style: { backgroundColor: "var(--note-default)" } },
+            {
+              name: "default",
+              style: { backgroundColor: "var(--note-default)" },
+            },
             { name: "red", style: { backgroundColor: "var(--note-red)" } },
-            { name: "orange", style: { backgroundColor: "var(--note-orange)" } },
-            { name: "yellow", style: { backgroundColor: "var(--note-yellow)" } },
+            {
+              name: "orange",
+              style: { backgroundColor: "var(--note-orange)" },
+            },
+            {
+              name: "yellow",
+              style: { backgroundColor: "var(--note-yellow)" },
+            },
             { name: "green", style: { backgroundColor: "var(--note-green)" } },
             { name: "blue", style: { backgroundColor: "var(--note-blue)" } },
-            { name: "purple", style: { backgroundColor: "var(--note-purple)" } },
+            {
+              name: "purple",
+              style: { backgroundColor: "var(--note-purple)" },
+            },
             { name: "pink", style: { backgroundColor: "var(--note-pink)" } },
           ].map((color) => (
             <button
