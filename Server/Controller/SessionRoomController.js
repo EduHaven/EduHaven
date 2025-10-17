@@ -29,7 +29,7 @@ export const getRoomLists = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate({
         path: "pendingRequests",
-        select: "Username ProfilePicture Bio OtherDetails",
+        select: "Username ProfilePicture FirstName LastName Bio OtherDetails",
       })
       .lean();
 
