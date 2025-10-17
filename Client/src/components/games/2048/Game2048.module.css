@@ -115,7 +115,16 @@
   transition: background 0.2s;
 }
 .gameOverContent button:hover {
-  background: var(--bg-ter);
+  background: #c99f18;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Accessible focus styling (visible focus ring) */
+.gameOverContent button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(237, 194, 46, 0.18), 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
 /* Mobile adjustments */

@@ -1,5 +1,5 @@
 import PopupContainer from "@/components/ui/Popup";
-import { User, X } from "lucide-react";
+import { User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const FriendsPopup = ({
@@ -31,7 +31,6 @@ const FriendsPopup = ({
       <div
         onClick={() => setShowPopup(!showPopup)}
         className="text-center flex-1 cursor-pointer hover:bg-white/20 rounded-lg p-2 transition-colors"
-        ref={popupRef}
       >
         <span className="block text-2xl font-bold text-[var(--text-primary)]">
           {friendsList.length}
@@ -39,7 +38,6 @@ const FriendsPopup = ({
         <span className="text-sm text-[var(--text-secondary)]">Friends</span>
       </div>
 
-      {/* Updated Popup */}
       {showPopup && (
         <PopupContainer
           title="Friends List"
@@ -51,7 +49,6 @@ const FriendsPopup = ({
             </span>
           </div>
 
-          {/* Scrollable Friends List */}
           <div className="flex-1 overflow-y-auto max-h-[28rem]">
             {friendsList.length === 0 ? (
               <p className="txt-dim text-center mt-10">No friends yet</p>

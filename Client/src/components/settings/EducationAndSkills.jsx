@@ -312,8 +312,8 @@ function EducationAndSkills() {
         </div>
 
         {/* Skills Section */}
-        <div className="px-6 py-2">
-          <div className="space-y-4">
+        <div className="px-6">
+          <div className={`space-y-2`}>
             <div className="flex items-center justify-between">
               <label
                 htmlFor="skills"
@@ -326,7 +326,7 @@ function EducationAndSkills() {
                   type="button"
                   onClick={() => handleClearOtherDetails("skills")}
                   variant="transparent"
-                  className="text-[var(--txt-dim)] hover:text-red-500 flex items-center gap-1 text-sm"
+                  className="text-[var(--txt-dim)] hover:text-red-500 items-center flex gap-1 text-sm"
                   disabled={isLoading}
                 >
                   <Trash2 className="w-4 h-4" />
@@ -335,28 +335,8 @@ function EducationAndSkills() {
               )}
             </div>
 
-            <div className="flex gap-2 flex-wrap">
-              {skillsList.map((skill, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-2 bg-[var(--bg-sec)] px-3 py-2 rounded-lg"
-                >
-                  <span className="text-[var(--txt)] text-sm">{skill}</span>
-                  <Button
-                    type="button"
-                    onClick={() => removeSkill(skill)}
-                    variant="transparent"
-                    size="icon"
-                    className="text-[var(--txt-dim)] hover:text-red-500 p-1"
-                    disabled={isLoading}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-2">
+            <div className="space-y-4">
+              <div className="flex gap-2">
               <input
                 id="skills"
                 type="text"
@@ -383,12 +363,35 @@ function EducationAndSkills() {
                 Add
               </Button>
             </div>
+
+            <div className="flex gap-2 flex-wrap">
+              {skillsList.map((skill, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 bg-[var(--bg-sec)] px-3 py-2 rounded-lg"
+                >
+                  <span className="text-[var(--txt)] text-sm">{skill}</span>
+                  <Button
+                    type="button"
+                    onClick={() => removeSkill(skill)}
+                    variant="transparent"
+                    size="icon"
+                    className="text-[var(--txt-dim)] hover:text-red-500 p-1"
+                    disabled={isLoading}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div> 
+            </div>
+
           </div>
         </div>
 
         {/* Interests Section */}
-        <div className="px-6 py-2">
-          <div className="space-y-4">
+        <div className="px-6">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label
                 htmlFor="interests"
@@ -410,28 +413,8 @@ function EducationAndSkills() {
               )}
             </div>
 
-            <div className="flex gap-2 flex-wrap">
-              {interestsList.map((interest, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-2 bg-[var(--bg-sec)] px-3 py-2 rounded-lg"
-                >
-                  <span className="text-[var(--txt)] text-sm">{interest}</span>
-                  <Button
-                    type="button"
-                    onClick={() => removeInterest(interest)}
-                    variant="transparent"
-                    size="icon"
-                    className="text-[var(--txt-dim)] hover:text-red-500 p-1"
-                    disabled={isLoading}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-2">
+            <div className="space-y-4">
+              <div className="flex gap-2">
               <input
                 id="interests"
                 type="text"
@@ -458,6 +441,30 @@ function EducationAndSkills() {
                 Add
               </Button>
             </div>
+
+            <div className="flex gap-2 flex-wrap">
+              {interestsList.map((interest, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 bg-[var(--bg-sec)] px-3 py-2 rounded-lg"
+                >
+                  <span className="text-[var(--txt)] text-sm">{interest}</span>
+                  <Button
+                    type="button"
+                    onClick={() => removeInterest(interest)}
+                    variant="transparent"
+                    size="icon"
+                    className="text-[var(--txt-dim)] hover:text-red-500 p-1"
+                    disabled={isLoading}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            
+            </div>
+
           </div>
         </div>
 

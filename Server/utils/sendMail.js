@@ -1,19 +1,29 @@
+// Server/utils/sendMail.js
 import { Resend } from "resend";
 import dotenv from "dotenv";
 import fetch, { Headers, Request, Response } from "node-fetch";
 
-// Set up global fetch objects for Resend
+dotenv.config();
+
+// Polyfill global fetch for Resend
 global.Headers = Headers;
 global.fetch = fetch;
 global.Request = Request;
 global.Response = Response;
 
-dotenv.config();
-const resend = new Resend(process.env.RESEND_KEY);
+// Use Resend only if API key is provided
+let resend = null;
+if (process.env.RESEND_KEY) {
+  resend = new Resend(process.env.RESEND_KEY);
+} else {
+  console.warn(
+    "RESEND_KEY not found. Emails will be logged to console instead of sending."
+  );
+}
 
 const sendEmail = async (Email, FirstName, otp, emailType) => {
   try {
-    // different email content based on signupor reset
+    // Define email content based on type
     const emailContent = {
       signup: {
         subject: "Confirm your Email Address – Eduhaven",
@@ -33,6 +43,18 @@ const sendEmail = async (Email, FirstName, otp, emailType) => {
 
     const content = emailContent[emailType] || emailContent.signup;
 
+    if (!resend) {
+      // If RESEND_KEY is missing, just log email
+      console.log("EMAIL LOG (bypassed send):", {
+        to: Email,
+        subject: content.subject,
+        htmlOtp: otp,
+        type: emailType,
+      });
+      return true;
+    }
+
+    // Send via Resend
     const response = await resend.emails.send({
       from: "Eduhaven <noreply@eduhaven.online>",
       to: Email,
@@ -43,21 +65,16 @@ const sendEmail = async (Email, FirstName, otp, emailType) => {
           <p style="font-size: 16px; color: #333333;">
             ${content.message}
           </p>
-
           <div style="text-align: center; margin: 30px 0;">
             <span style="display: inline-block; background-color: #f5f5f5; padding: 15px 25px; font-size: 24px; font-weight: bold; color: #222; letter-spacing: 3px; border-radius: 6px;">
               ${otp}
             </span>
           </div>
-
           <p style="font-size: 14px; color: #777777;">
-           This code will expire in ${emailType === "reset" ? "15" : "10"} minutes. If you didn't request this email, you can safely ignore it.
+            This code will expire in ${emailType === "reset" ? "15" : "10"} minutes. If you didn't request this email, you can safely ignore it.
           </p>
-
           <p style="font-size: 16px; color: #333333;">${content.footer}</p>
-
           <hr style="margin: 40px 0; border: none; border-top: 1px solid #eeeeee;" />
-
           <p style="font-size: 12px; color: #999999; text-align: center;">
             ${content.disclaimer}
           </p>

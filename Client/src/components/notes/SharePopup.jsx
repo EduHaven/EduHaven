@@ -11,8 +11,9 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import axiosInstance from "@/utils/axios";
 import { toast } from "react-toastify";
+import { useRemoveCollaborator, useGenerateShareLink } from "@/queries/NoteQueries";
+import axiosInstance from "@/utils/axios";
 
 const SharePopup = ({ note, onClose, onShare }) => {
   const [visibility, setVisibility] = useState(note?.visibility || "private");
@@ -22,26 +23,33 @@ const SharePopup = ({ note, onClose, onShare }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [accessLevel, setAccessLevel] = useState("view");
   const [loading, setLoading] = useState(false);
-  const [generatingLink, setGeneratingLink] = useState(false);
   const [collaborators, setCollaborators] = useState(note?.collaborators || []);
 
-  // Generate share link for public notes
-  const generateShareLink = async () => {
-    setGeneratingLink(true);
+  const { mutateAsync: generateShareLinkMutate } = useGenerateShareLink();
+  const { mutate: removeCollaboratorMutate } = useRemoveCollaborator();
+
+  useEffect(() => {
+    const fetchCollaborators = async () => {
+      try {
+        const response = await axiosInstance.get(`/note/${note._id}`);
+        if (response.data.data?.collaborators) {
+          setCollaborators(response.data.data.collaborators);
+        }
+      } catch (error) {
+        toast.error("Failed to fetch collaborators");
+      }
+    };
+    fetchCollaborators();
+  }, [note._id]);
+
+  const handleGenerateShareLink = async () => {
     try {
-      const response = await axiosInstance.post(
-        `/note/${note._id}/generate-share-link`
-      );
-      const { shareLink } = response.data;
-      setShareLink(shareLink);
-      toast.success("Share link generated!");
+      const result = await generateShareLinkMutate(note._id);
+      if (result?.shareLink) {
+        setShareLink(result.shareLink);
+      }
     } catch (error) {
       console.error("Error generating share link:", error);
-      toast.error(
-        error.response?.data?.error || "Failed to generate share link"
-      );
-    } finally {
-      setGeneratingLink(false);
     }
   };
 
@@ -50,7 +58,6 @@ const SharePopup = ({ note, onClose, onShare }) => {
       await navigator.clipboard.writeText(shareLink);
       toast.success("Link copied to clipboard!");
     } catch (error) {
-      console.error("Failed to copy link:", error);
       toast.error("Failed to copy link");
     }
   };
@@ -63,18 +70,9 @@ const SharePopup = ({ note, onClose, onShare }) => {
 
     setLoading(true);
     try {
-      const response = await axiosInstance.get(
-        `/user/find-user?search=${encodeURIComponent(query)}`
-      );
-      const data = response.data;
-
-      if (data.users) {
-        setUsers(data.users);
-      } else {
-        setUsers([]);
-      }
+      const response = await axiosInstance.get(`/user/find-user?search=${encodeURIComponent(query)}`);
+      setUsers(response.data?.users || []);
     } catch (error) {
-      console.error("Error searching users:", error);
       setUsers([]);
     } finally {
       setLoading(false);
@@ -85,114 +83,75 @@ const SharePopup = ({ note, onClose, onShare }) => {
     const timer = setTimeout(() => {
       searchUsers(searchTerm);
     }, 500);
-
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Auto-generate link when visibility is set to public
   useEffect(() => {
     if (visibility === "public" && !shareLink) {
-      generateShareLink();
+      handleGenerateShareLink();
     }
   }, [visibility]);
 
   const handleVisibilityChange = async (newVisibility) => {
     setVisibility(newVisibility);
     try {
-      await axiosInstance.put(`/note/${note._id}`, {
-        visibility: newVisibility,
-      });
-
+      await axiosInstance.put(`/note/${note._id}`, { visibility: newVisibility });
       if (newVisibility === "public" && !shareLink) {
-        await generateShareLink();
+        handleGenerateShareLink();
       }
     } catch (error) {
-      console.error("Error updating note visibility:", error);
-      toast.error(
-        error.response?.data?.error || "Failed to update note visibility"
-      );
+      toast.error(error.response?.data?.error || "Failed to update note visibility");
     }
   };
 
   const handleAddCollaborator = async () => {
     if (!selectedUser) return;
-
     try {
       await onShare(note._id, selectedUser._id, accessLevel);
-      toast.success(
-        `Note shared successfully with ${selectedUser.FirstName + " " + selectedUser.LastName + "(" + selectedUser.Username + ")"}!`
-      );
-      setCollaborators((prev) => [
-        ...prev,
-        { user: selectedUser, access: accessLevel },
-      ]);
+      toast.success(`Note shared with ${selectedUser.FirstName} ${selectedUser.LastName}`);
+      setCollaborators((prev) => [...prev, { user: selectedUser, access: accessLevel }]);
       setSelectedUser(null);
       setSearchTerm("");
       setUsers([]);
     } catch (error) {
-      console.error("Error sharing note:", error);
       toast.error(error.message || "Failed to share note");
     }
   };
 
   const handleDeleteCollaborator = async (collaborator) => {
     try {
-      // console.log(collaborators)
-      await axiosInstance.delete(
-        `/note/${note._id}/collaborators/${collaborator._id}`
-      );
+      await removeCollaboratorMutate({
+        noteId: note._id,
+        collaboratorId: collaborator.user._id
+      });
       setCollaborators((prev) =>
         prev.filter((c) => c.user._id !== collaborator.user._id)
       );
-      toast.success("Collaborator removed successfully");
+      toast.success("Collaborator removed");
     } catch (error) {
-      console.error("Error removing collaborator:", error);
-      toast.error(
-        error.response?.data?.error || "Failed to remove collaborator"
-      );
+      toast.error(error.response?.data?.error || "Failed to remove collaborator");
     }
   };
 
   return (
-    <motion.div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <motion.div
-        className="bg-[var(--bg-primary)] rounded-lg p-6 w-96 max-w-[90vw] shadow-xl border border-[var(--bg-ter)]"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-      >
+    <motion.div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      <motion.div className="bg-[var(--bg-primary)] rounded-lg p-6 w-96 max-w-[90vw] shadow-xl border border-[var(--bg-ter)]"
+        initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}>
+
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-semibold text-[var(--txt)]">
-            Share "{note?.title}"
-          </h3>
-          <Button
-            variant="transparent"
-            size="icon"
-            onClick={onClose}
-            className="p-1 rounded-full hover:bg-[var(--bg-ter)]"
-          >
+          <h3 className="text-lg font-semibold text-[var(--txt)]">Share "{note?.title}"</h3>
+          <Button variant="transparent" size="icon" onClick={onClose} className="p-1 rounded-full hover:bg-[var(--bg-ter)]">
             <X size={20} />
           </Button>
         </div>
 
         <div className="space-y-6">
-          {/* Section 1: Add People */}
+          {/* Add People */}
           <div>
-            <h4 className="text-sm font-medium mb-3 text-[var(--txt)]">
-              Add people
-            </h4>
-
-            {/* Search Input */}
-            <div className="relative mb-3">
-              <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--txt-dim)]"
-                size={16}
-              />
+            <h4 className="text-sm font-medium mb-2 text-[var(--txt)]">Add people</h4>
+            <div className="relative mb-2">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--txt-dim)]" size={16} />
               <input
                 type="text"
                 placeholder="Search by username or email..."
@@ -202,38 +161,28 @@ const SharePopup = ({ note, onClose, onShare }) => {
               />
             </div>
 
-            {/* Search Results */}
             {loading && (
-              <div className="text-center py-2 rounded text-[var(--txt-dim)] bg-[var(--bg-ter)] text-sm">
-                Searching users...
-              </div>
+              <div className="text-center py-2 text-sm text-[var(--txt-dim)]">Searching users...</div>
             )}
 
             {!loading && users.length > 0 && (
-              <div className="max-h-32 overflow-y-auto border border-[var(--bg-ter)] rounded-lg mb-3">
-                {users.map((user, index) => (
+              <div className="max-h-32 overflow-y-auto border border-[var(--bg-ter)] rounded-lg mb-2">
+                {users.map((user) => (
                   <div
-                    key={user._id || user.id || index}
-                    className={`p-3 cursor-pointer transition-colors ${
-                      selectedUser?._id === user._id
-                        ? "bg-[var(--btn)]/20"
-                        : "hover:bg-[var(--bg-ter)]"
-                    }`}
+                    key={user._id}
+                    className={`p-3 cursor-pointer transition-colors ${selectedUser?._id === user._id
+                      ? "bg-[var(--btn)]/20"
+                      : "hover:bg-[var(--bg-ter)]"
+                      }`}
                     onClick={() => setSelectedUser(user)}
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-[var(--btn)] flex items-center justify-center">
                         <User size={16} className="text-[var(--btn-txt)]" />
                       </div>
-                      <div className="flex-1">
-                        <div className="text-[var(--txt)] text-sm">
-                          {user.FirstName + " " + user.LastName ||
-                            user.Username ||
-                            "Unknown User"}
-                        </div>
-                        <div className="text-xs text-[var(--txt-dim)]">
-                          {user.Email}
-                        </div>
+                      <div>
+                        <div className="text-sm text-[var(--txt)]">{user.FirstName + " " + user.LastName}</div>
+                        <div className="text-xs text-[var(--txt-dim)]">{user.Email}</div>
                       </div>
                     </div>
                   </div>
@@ -241,120 +190,47 @@ const SharePopup = ({ note, onClose, onShare }) => {
               </div>
             )}
 
-            {!loading && searchTerm && users.length === 0 && (
-              <div className="text-center py-2 rounded text-[var(--txt-dim)] bg-[var(--bg-ter)] text-sm mb-3">
-                No users found for "{searchTerm}"
-              </div>
-            )}
-
-            {/* Access Level and Add Button */}
             {selectedUser && (
               <div className="flex gap-2 items-center">
                 <select
                   value={accessLevel}
                   onChange={(e) => setAccessLevel(e.target.value)}
-                  className="flex-1 p-2 rounded-lg border border-[var(--bg-ter)] bg-[var(--bg-secondary)] text-[var(--txt)] focus:outline-none focus:ring-2 focus:ring-[var(--btn)] text-sm"
+                  className="flex-1 p-2 rounded-lg border border-[var(--bg-ter)] bg-[var(--bg-secondary)] text-[var(--txt)] text-sm"
                 >
                   <option value="view">Can view</option>
                   <option value="edit">Can edit</option>
                 </select>
-                <Button onClick={handleAddCollaborator} className="text-sm">
-                  Add
-                </Button>
+                <Button onClick={handleAddCollaborator} className="text-sm">Add</Button>
               </div>
             )}
           </div>
 
-          {/* Section 2: Current Collaborators */}
-          {collaborators && collaborators.length > 0 && (
-            <div>
-              <h4 className="text-sm font-medium mb-3 text-[var(--txt)]">
-                People with access
-              </h4>
-              <div className="space-y-2">
-                {collaborators.map((collaborator) => (
-                  <div
-                    key={collaborator._id}
-                    className="flex items-center justify-between p-2 rounded-lg hover:bg-[var(--bg-ter)]"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[var(--btn)] flex items-center justify-center">
-                        <User size={16} className="text-[var(--btn-txt)]" />
-                      </div>
-                      <div className="text-[var(--txt)] text-sm">
-                        {collaborator.user.FirstName +
-                          " " +
-                          collaborator.user.LastName}
-                      </div>
-                      <div className="text-xs text-[var(--txt-dim)]">
-                        {collaborator.user.Email} • {collaborator.access}
-                      </div>
-                    </div>
-                    <Button
-                      variant="transparent"
-                      size="icon"
-                      onClick={() => handleDeleteCollaborator(collaborator)}
-                      className="p-1 rounded-full hover:bg-[var(--bg-secondary)] text-[var(--txt-dim)] hover:text-[var(--txt)]"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Section 3: General Access */}
-          <div className="border-t border-[var(--bg-ter)] pt-4">
-            <h4 className="text-sm font-medium mb-3 text-[var(--txt)]">
-              General access
-            </h4>
-
-            <div className="space-y-2">
-              {/* Private Option */}
-              <div
-                className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                  visibility === "private"
-                    ? "border-[var(--btn)] bg-[var(--btn)]/10"
-                    : "border-[var(--bg-ter)] hover:border-[var(--btn)]/50"
-                }`}
+          {/* Visibility */}
+          <div>
+            <h4 className="text-sm font-medium mb-2 text-[var(--txt)]">Visibility</h4>
+            <div className="flex gap-2">
+              <button
                 onClick={() => handleVisibilityChange("private")}
+                className={`flex-1 py-2 rounded-full border text-sm font-medium flex items-center justify-center gap-2 transition-all
+                  ${visibility === "private"
+                    ? "bg-[var(--btn)] text-white"
+                    : "border-[var(--bg-ter)] text-[var(--txt-dim)] hover:border-[var(--btn)] hover:text-[var(--txt)]"
+                  }`}
               >
-                <div className="flex items-center gap-3">
-                  <Shield size={20} className="text-[var(--btn)]" />
-                  <div className="flex-1">
-                    <div className="font-medium text-[var(--txt)]">Private</div>
-                    <div className="text-xs text-[var(--txt-dim)]">
-                      Only people with access can open with the link
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Public Option */}
-              <div
-                className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                  visibility === "public"
-                    ? "border-[var(--btn)] bg-[var(--btn)]/10"
-                    : "border-[var(--bg-ter)] hover:border-[var(--btn)]/50"
-                }`}
+                <Shield size={16} /> Private
+              </button>
+              <button
                 onClick={() => handleVisibilityChange("public")}
+                className={`flex-1 py-2 rounded-full border text-sm font-medium flex items-center justify-center gap-2 transition-all
+                  ${visibility === "public"
+                    ? "bg-[var(--btn)] text-white"
+                    : "border-[var(--bg-ter)] text-[var(--txt-dim)] hover:border-[var(--btn)] hover:text-[var(--txt)]"
+                  }`}
               >
-                <div className="flex items-center gap-3">
-                  <Globe size={20} className="text-[var(--btn)]" />
-                  <div className="flex-1">
-                    <div className="font-medium text-[var(--txt)]">
-                      Public on the web
-                    </div>
-                    <div className="text-xs text-[var(--txt-dim)]">
-                      Anyone on the internet can find and view
-                    </div>
-                  </div>
-                </div>
-              </div>
+                <Globe size={16} /> Public
+              </button>
             </div>
 
-            {/* Share Link for Public Notes */}
             {visibility === "public" && shareLink && (
               <div className="mt-4 p-3 rounded-lg bg-[var(--bg-ter)] border border-[var(--bg-secondary)]">
                 <div className="flex items-center gap-2 mb-2">
@@ -370,12 +246,7 @@ const SharePopup = ({ note, onClose, onShare }) => {
                     readOnly
                     className="flex-1 text-xs p-2 rounded border border-[var(--bg-secondary)] bg-[var(--bg-primary)] text-[var(--txt)]"
                   />
-                  <Button
-                    onClick={copyToClipboard}
-                    size="sm"
-                    variant="secondary"
-                    className="flex items-center gap-1"
-                  >
+                  <Button onClick={copyToClipboard} size="sm" variant="secondary" className="flex items-center gap-1">
                     <Copy size={14} />
                     Copy
                   </Button>
@@ -387,11 +258,34 @@ const SharePopup = ({ note, onClose, onShare }) => {
             )}
           </div>
 
-          {/* Close Button */}
+          {/* Collaborators */}
+          {collaborators.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium mb-2 text-[var(--txt)]">Collaborators</h4>
+              <div className="space-y-2">
+                {collaborators.map((collaborator) => (
+                  <div key={collaborator.user._id} className="flex items-center justify-between p-2 rounded-lg bg-[var(--bg-secondary)]">
+                    <div>
+                      <div className="text-sm text-[var(--txt)]">{collaborator.user.FirstName + " " + collaborator.user.LastName}</div>
+                      <div className="text-xs text-[var(--txt-dim)]">{collaborator.user.Email} • {collaborator.access}</div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteCollaborator(collaborator)}
+                      className="text-[var(--txt-dim)] hover:text-[var(--txt)]"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+
           <div className="flex justify-end pt-2">
-            <Button onClick={onClose} variant="secondary">
-              Done
-            </Button>
+            <Button onClick={onClose} variant="secondary">Done</Button>
           </div>
         </div>
       </motion.div>

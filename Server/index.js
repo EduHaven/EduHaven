@@ -14,19 +14,15 @@ import {
   doGracefulShutdown,
   setupGracefulShutdown,
 } from "./Config/shutdownConfig.js";
-
-// morganMiddleware Import
 import morganMiddleware from "./logger/morganLogger.js";
-
-// import mongoSanitize
-import { mongoSecurity } from "./security/mongoSanitize.js";
-
-// import qs [queryParser]
+import { mongoSecurity } from './security/mongoSanitize.js';
 import { queryParser } from "./security/queryParser.js";
+import cron from "node-cron";
+import { updateLeaderboardBadges } from "./utils/leaderboardBadgeUpdater.js";
 
 dotenv.config();
 
-// Polyfill fetch for Node (if needed)
+// Polyfill fetch for Node
 if (!globalThis.fetch) {
   globalThis.fetch = fetch;
   globalThis.Headers = Headers;
@@ -52,6 +48,7 @@ mongoSecurity(app);
 // morgan
 app.use(morganMiddleware);
 
+// Routes
 mountHealthRoutes(app);
 mountRoutes(app);
 
@@ -67,7 +64,6 @@ async function start() {
   try {
     console.log("🚀 Starting server...");
     await ConnectDB();
-
     initSocketHandlers(io);
 
     server.listen(PORT, () => {
@@ -75,13 +71,24 @@ async function start() {
     });
   } catch (err) {
     console.error("Failed to start server:", err);
+
     // Run defensive graceful shutdown so the same cleanup path runs
     // This will attempt DB cleanup (noop if not connected) then exit.
     doGracefulShutdown("startupFailure");
   }
 }
 
+// Start server
 start();
+
+// ============================
+// Leaderboard badge cron job
+// ============================
+// Runs every day at midnight
+cron.schedule("0 0 * * *", async () => {
+  console.log("🏆 Updating leaderboard badges...");
+  await updateLeaderboardBadges();
+});
 
 // export for tests / external tooling
 export { app, server, io };

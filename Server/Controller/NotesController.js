@@ -96,14 +96,11 @@ export const createNote = async (req, res) => {
 
 export const updateNote = async (req, res) => {
   try {
-    const { title, content, color, visibility, collaborators, pinnedAt } =
-      req.body;
-
+    const { title, content, color, visibility, collaborators, pinnedAt } = req.body;
     const userId = req.user._id;
-    const note = await Note.findById(req.params.id).populate(
-      "collaborators.user",
-      "FirstName LastName Email Username"
-    );
+    
+    const note = await Note.findById(req.params.id)
+      .populate('collaborators.user', 'FirstName LastName Email Username');
 
     if (!note) {
       return res.status(404).json({ success: false, error: "Note not found" });
@@ -111,7 +108,7 @@ export const updateNote = async (req, res) => {
 
     const isOwner = note.owner.toString() === userId.toString();
     const isEditor = note.collaborators.some(
-      (c) => c.user.toString() === userId.toString() && c.access === "edit"
+      (c) => c.user._id.toString() === userId.toString() && c.access === "edit"
     );
 
     if (!isOwner && !isEditor) {
