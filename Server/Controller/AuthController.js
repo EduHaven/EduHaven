@@ -178,10 +178,9 @@ const login = async (req, res) => {
     });
 
     // safe user for return response
-    const safeUser = await User.findOne(
-      {$or: [{ Email: identifier }, { Username: identifier }]},
-      {Password: 0}
-    );
+    const safeUser = await User.findOne({
+      $or: [{ Email: identifier }, { Username: identifier }]
+    }).select('-Password');
 
     return res.status(200).json({
       message: "User Login Successfully",
