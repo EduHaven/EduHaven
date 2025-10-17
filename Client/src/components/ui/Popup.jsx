@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { X } from "lucide-react";
+import {boxWidth} from "@/components/stats/Badges"
 
 const PopupContainer = ({ title, onClose, children }) => {
   const [isVisible, setIsVisible] = useState(true);
@@ -35,7 +36,7 @@ const PopupContainer = ({ title, onClose, children }) => {
           onClick={handleBackdropClick}
         >
           <motion.div
-            className={`relative w-96 bg-sec rounded-3xl p-6 shadow-2xl shadow-black/40 border ${
+            className={`relative w-[${boxWidth}rem] bg-sec rounded-3xl p-6 shadow-2xl shadow-black/40 border ${
               isShaking
                 ? "border-2 border-[var(--txt-dim)] "
                 : "border-[var(--bg-ter)]"

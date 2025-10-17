@@ -8,12 +8,15 @@ import BadgeModal from "./BadgeModal";
 import BadgeTooltip from "./BadgeTooltip";
 import { Button } from "@/components/ui/button";
 
+export const boxWidth = "24"; // Width of the popup box in pixels
+
 const Badges = () => {
   const [earnedBadges, setEarnedBadges] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userId, setUserId] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const { user, fetchUserDetails } = useUserProfile();
+  
 
   // Get user ID from token
   useEffect(() => {
@@ -134,7 +137,8 @@ const Badges = () => {
         </div>
       </div>
 
-      <BadgeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <BadgeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}/>
+        {/* Pass the width of the box as needed */}
     </>
   );
 };
