@@ -125,7 +125,11 @@ const getUserDetails = async (req, res) => {
     if (!token)
       return res
         .status(200)
-        .json({ ...user, relationshipStatus: "Add friends" });
+        .json({
+          ...user,
+          hasGivenKudos: false,
+          relationshipStatus: "Add friends",
+        });
 
     let decoded;
     try {
@@ -137,10 +141,13 @@ const getUserDetails = async (req, res) => {
     }
 
     const currUser = await User.findById(decoded.id).select(
-      "friends friendRequests sentRequests"
+      "friends friendRequests sentRequests kudosGiven"
     );
+    
+
     if (!currUser)
       return res.status(200).json({ ...user, relationshipStatus: "unknown" });
+
 
     let relationshipStatus = "Add Friend";
     if (currUser.friends.includes(userId)) relationshipStatus = "Friends";
@@ -149,7 +156,11 @@ const getUserDetails = async (req, res) => {
     else if (currUser.friendRequests.includes(userId))
       relationshipStatus = "Accept Request";
 
-    return res.status(200).json({ ...user, relationshipStatus });
+
+    const hasGivenKudos = currUser.kudosGiven.includes(userId);
+
+
+    return res.status(200).json({ ...user, hasGivenKudos, relationshipStatus });
   } catch (error) {
     console.error("Error fetching user details:", error);
     return sendError(res, 500, "Failed to fetch user details", error.message);

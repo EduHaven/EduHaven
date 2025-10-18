@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
-
+import { fetchUserDetails } from "@/api/userApi";
 import {
   useAcceptRequest,
   useCancelRequest,
