@@ -18,6 +18,7 @@ import {
   useTrashNote,
 } from "@/queries/NoteQueries";
 import axiosInstance from "@/utils/axios";
+import NoteFooter from "./NoteFooter";
 
 const getCurrentUserId = () => {
   const token = localStorage.getItem("token");
@@ -124,8 +125,8 @@ const NoteCard = ({ note, getPlainTextPreview, onExport }) => {
       if (error.response) {
         throw new Error(
           error.response.data?.error ||
-          error.response.data?.message ||
-          "Failed to share note"
+            error.response.data?.message ||
+            "Failed to share note"
         );
       } else {
         throw error;
@@ -151,8 +152,9 @@ const NoteCard = ({ note, getPlainTextPreview, onExport }) => {
         }}
         className={`absolute top-2 right-2 p-1 rounded-full bg-black/10 hover:bg-black/20 transition-opacity
 
-        ${note?.pinnedAt ? "opacity-100" : hovered ? "opacity-100" : "opacity-0"
-          }`}
+        ${
+          note?.pinnedAt ? "opacity-100" : hovered ? "opacity-100" : "opacity-0"
+        }`}
         disabled={!canEdit}
       >
         <Pin
@@ -182,9 +184,8 @@ const NoteCard = ({ note, getPlainTextPreview, onExport }) => {
         </div>
       </div>
 
-      <div className="text-xs mt-2" style={{ color: "var(--txt-disabled)" }}>
-        {new Date(note?.createdAt).toLocaleDateString()}
-      </div>
+      {/* Note footer  */}
+      <NoteFooter note={note} />
 
       {hovered && (
         <motion.div
