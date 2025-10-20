@@ -1,5 +1,6 @@
+import { useState, useMemo } from "react";
 import PopupContainer from "@/components/ui/Popup";
-import { User } from "lucide-react";
+import { User, Search, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const FriendsPopup = ({
@@ -10,6 +11,25 @@ const FriendsPopup = ({
   user,
   kudosCount,
 }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filter friends based on search term
+  const filteredFriends = useMemo(() => {
+    if (!searchTerm.trim()) return friendsList;
+    
+    const searchLower = searchTerm.toLowerCase();
+    return friendsList.filter((friend) => {
+      const fullName = `${friend.FirstName || ""} ${friend.LastName || ""}`.toLowerCase();
+      const username = (friend.Username || "").toLowerCase();
+      return fullName.includes(searchLower) || username.includes(searchLower);
+    });
+  }, [friendsList, searchTerm]);
+
+  // Reset search when popup closes
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    setSearchTerm("");
+  };
   return (
     <div className="relative flex items-center mb-4 gap-4">
       <div className="w-28 h-28 rounded-full shadow-lg overflow-hidden">
@@ -41,7 +61,7 @@ const FriendsPopup = ({
       {showPopup && (
         <PopupContainer
           title="Friends List"
-          onClose={() => setShowPopup(false)}
+          onClose={handleClosePopup}
         >
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm txt-dim bg-sec px-3 py-1 rounded-full">
@@ -49,11 +69,49 @@ const FriendsPopup = ({
             </span>
           </div>
 
+          {/* Search Bar */}
+          <div className="relative mb-4 group">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+              <Search className="w-4 h-4 txt-dim transition-colors group-focus-within:text-[var(--btn)]" />
+            </div>
+            <input
+              type="text"
+              className="bg-ter border border-[var(--bg-sec)] txt text-sm rounded-xl focus:ring-2 focus:ring-[var(--btn)] focus:border-[var(--btn)] block w-full pl-11 pr-10 py-2.5 transition-all placeholder:txt-dim outline-none"
+              placeholder="Search friends..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 txt-dim hover:text-[var(--btn)] transition-colors"
+                aria-label="Clear search"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
           <div className="flex-1 overflow-y-auto max-h-[28rem]">
-            {friendsList.length === 0 ? (
-              <p className="txt-dim text-center mt-10">No friends yet</p>
+            {filteredFriends.length === 0 ? (
+              <div className="txt-dim text-center mt-10 py-8">
+                {searchTerm ? (
+                  <div className="space-y-2">
+                    <Search className="w-12 h-12 mx-auto opacity-30" />
+                    <p className="text-base font-medium">No friends found</p>
+                    <p className="text-sm opacity-75">
+                      Try a different search term
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <User className="w-12 h-12 mx-auto opacity-30" />
+                    <p>No friends yet</p>
+                  </div>
+                )}
+              </div>
             ) : (
-              friendsList.map((friend) => (
+              filteredFriends.map((friend) => (
                 <Link key={friend._id} to={`/user/${friend._id}`}>
                   <div className="flex items-center gap-3 p-4 cursor-pointer hover:bg-sec/70 transition rounded-lg mx-2">
                     <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden">

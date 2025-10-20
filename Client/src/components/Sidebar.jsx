@@ -16,13 +16,15 @@ import NotificationIndicator from "./NotificationIndicator";
 import { useUserStore } from "@/stores/userStore";
 
 function Sidebar() {
-  const {user}=useUserStore();
+  const {user, isBasicInfoComplete, isEduSkillsComplete}=useUserStore();
   const location = useLocation();
   const isHome = location.pathname === "/";
   const sidebarRef = useRef(null);
   const linkRefs = useRef({});
   const [indicatorPos, setIndicatorPos] = useState({ top: 0 });
-
+  const isProfileIncomplete = user
+  ? !isBasicInfoComplete() || !isEduSkillsComplete() // If user exists, check status
+  : true; // If user is null, show the dot);
 
   useEffect(() => {
     if (location.pathname === "/") return;
@@ -52,6 +54,9 @@ function Sidebar() {
             <span className="absolute top-2 right-2">
               <NotificationIndicator size={2} visibility={false} />
             </span>
+          )}
+          {label === "Settings" && isProfileIncomplete && (
+            <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-green-500 rounded-full" />
           )}
           <IconComponent
             className={`size-5 2xl:size-6 transition-colors duration-300 ${
