@@ -59,6 +59,8 @@ const NoteCard = ({ note, getPlainTextPreview, onExport }) => {
       collaborator.user._id === currentUserId && collaborator.access === "edit"
   );
   const canEdit = isOwner || hasEditAccess;
+  // Check is the note is shared
+  const isSharedCollaborator = !isOwner && note?.collaborators?.length > 0;
 
   // Create handlers that combine store actions with mutations
   const handleTogglePin = (id, pinnedAt) => {
@@ -203,7 +205,7 @@ const NoteCard = ({ note, getPlainTextPreview, onExport }) => {
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
-            disabled={!canEdit}
+            disabled={!canEdit || isSharedCollaborator}
           >
             <Palette size={16} />
           </Button>
@@ -213,7 +215,7 @@ const NoteCard = ({ note, getPlainTextPreview, onExport }) => {
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
-            disabled={!canEdit}
+            disabled={!canEdit || isSharedCollaborator}
           >
             <Archive size={16} />
           </Button>
@@ -235,7 +237,7 @@ const NoteCard = ({ note, getPlainTextPreview, onExport }) => {
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
-            disabled={!canEdit}
+            disabled={!canEdit || isSharedCollaborator}
           >
             <UserPlus size={16} />
           </Button>
@@ -245,7 +247,7 @@ const NoteCard = ({ note, getPlainTextPreview, onExport }) => {
             variant="transparent"
             size="icon"
             className="p-1 rounded hover:bg-[var(--bg-secondary)]"
-            disabled={!canEdit}
+            disabled={!canEdit || isSharedCollaborator}
           >
             {isDeleting ? (
               <Loader2 size={16} className="animate-spin" />
