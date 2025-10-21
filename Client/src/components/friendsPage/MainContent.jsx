@@ -21,6 +21,7 @@ function MainContent({ selectedTab }) {
     }
   };
 
+  // pass the centralized search term to the correct tab component
   const renderTab = (searchTerm) => {
     switch (selectedTab) {
       case "findFriends":
@@ -38,6 +39,7 @@ function MainContent({ selectedTab }) {
 
   const [searchTerm, setSearchTerm] = useState("");
 
+  // customize placeholder text per tab for better UX
   const getPlaceholder = () => {
     switch (selectedTab) {
       case "findFriends":
@@ -62,11 +64,11 @@ function MainContent({ selectedTab }) {
         <h2 className="text-2xl font-semibold text-[var(--txt)] pl-1">
           {getTitle()}
         </h2>
+        {/* header with centralized SearchBar */}
         <div className="ml-4 w-full max-w-2xl xl:max-w-xl lg:max-w-lg">
           <SearchBar onSearch={setSearchTerm} placeholder={getPlaceholder()} />
         </div>
       </div>
-
       <div className="space-y-4">{renderTab(searchTerm)}</div>
     </div>
   );
