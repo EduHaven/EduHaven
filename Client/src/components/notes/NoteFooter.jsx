@@ -40,8 +40,8 @@ const NoteFooter = ({ note }) => {
       style={{ color: "var(--txt-disabled)" }}
     >
       {new Date(note?.createdAt).toLocaleDateString()}
-      <div className="border px-2 h-7 rounded-full flex items-center space-x-2">
-        <span>{visibility}</span>
+      <div className="border px-1 h-7 rounded-full flex items-center justify-center">
+        <span className="mx-1">{visibility}</span>
         {visibility === "Shared" && !isOwner && owner?.ProfilePicture && (
           <img
             className="w-5 h-5 rounded-full"
