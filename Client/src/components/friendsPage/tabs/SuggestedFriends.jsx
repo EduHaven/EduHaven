@@ -1,29 +1,27 @@
 import { useAllSuggestedUsers } from "@/queries/friendQueries";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import SearchBar from "../SearchBar";
 import UserCard from "../UserCard";
 import { Loader2Icon } from "lucide-react";
 import FriendsSkeletonLoader from "@/components/skeletons/FriendsSkeletonLoader";
 
-export default function FindPeople() {
-  const [searchTerm, setSearchTerm] = useState("");
+export default function FindPeople({ searchTerm: externalSearchTerm = "" }) {
+  const [searchTerm, setSearchTerm] = useState(externalSearchTerm);
+
+  useEffect(() => {
+    setSearchTerm(externalSearchTerm);
+  }, [externalSearchTerm]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useAllSuggestedUsers(searchTerm);
 
   const users = data?.pages.flatMap((page) => page.users) || [];
 
-  const handleSearch = (term) => {
-    setSearchTerm(term);
-  };
+  // searchTerm is controlled by parent MainContent via prop
 
   return (
     <div>
-      <SearchBar
-        onSearch={handleSearch}
-        placeholder="Search by name, email, skills, or interests..."
-      />
+      {/* Search moved to header in MainContent */}
 
       {isLoading && <FriendsSkeletonLoader />}
 

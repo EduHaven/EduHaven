@@ -1,16 +1,15 @@
 import { useSentRequests } from "@/queries/friendQueries";
-import { useMemo, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import FriendsSkeletonLoader from "../../skeletons/FriendsSkeletonLoader";
-import SearchBar from "../SearchBar";
 import UserCard from "../UserCard";
 
-export default function SentRequests() {
-  const [searchTerm, setSearchTerm] = useState("");
+export default function SentRequests({ searchTerm: externalSearchTerm = "" }) {
+  const [searchTerm, setSearchTerm] = useState(externalSearchTerm);
   const { data: sentRequests = [], isLoading } = useSentRequests();
 
-  const handleSearch = (term) => {
-    setSearchTerm(term);
-  };
+  useEffect(() => {
+    setSearchTerm(externalSearchTerm);
+  }, [externalSearchTerm]);
 
   const filteredSent = useMemo(() => {
     const term = searchTerm;
@@ -41,12 +40,7 @@ export default function SentRequests() {
 
   return (
     <div>
-      {sentRequests.length > 0 && (
-        <SearchBar
-          onSearch={handleSearch}
-          placeholder="Search sent requests..."
-        />
-      )}
+      {/* Search moved to header in MainContent */}
 
       <div className="flex flex-wrap justify-center gap-3 2xl:gap-4 mt-4">
         {filteredSent?.map((user) => (

@@ -13,7 +13,7 @@ function SearchBar({ onSearch, placeholder = "Search friends..." }) {
   };
 
   return (
-    <div className="relative mb-4 w-full max-w-md">
+    <div className="relative mb-0 w-full max-w-2xl xl:max-w-xl lg:max-w-lg">
       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
         <Search className="w-5 h-5 txt-dim" />
       </div>

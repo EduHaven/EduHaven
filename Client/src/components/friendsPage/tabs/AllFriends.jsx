@@ -1,17 +1,16 @@
 import { useFriends } from "@/queries/friendQueries";
-import { useMemo, useState } from "react";
-import SearchBar from "../SearchBar";
+import { useMemo, useEffect, useState } from "react";
 import UserCard from "../UserCard";
 import FriendsSkeletonLoader from "../../skeletons/FriendsSkeletonLoader"; // 1. Import skeleton loader
 
-export default function AllFriends() {
-  const [searchTerm, setSearchTerm] = useState("");
+export default function AllFriends({ searchTerm: externalSearchTerm = "" }) {
+  const [searchTerm, setSearchTerm] = useState(externalSearchTerm);
 
   const { data: friends = [], isLoading } = useFriends();
 
-  const handleSearch = (term) => {
-    setSearchTerm(term);
-  };
+  useEffect(() => {
+    setSearchTerm(externalSearchTerm);
+  }, [externalSearchTerm]);
 
   const filteredFriends = useMemo(() => {
     const term = searchTerm;
@@ -43,9 +42,7 @@ export default function AllFriends() {
 
   return (
     <div>
-      {friends.length > 0 && (
-        <SearchBar onSearch={handleSearch} placeholder="Search friends..." />
-      )}
+      {/* Search moved to header in MainContent */}
 
       <div className="flex flex-wrap justify-center gap-3 2xl:gap-4 mt-4">
         {filteredFriends.map((user) => (
