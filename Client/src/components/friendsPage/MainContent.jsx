@@ -64,7 +64,6 @@ function MainContent({ selectedTab }) {
         <h2 className="text-2xl font-semibold text-[var(--txt)] pl-1">
           {getTitle()}
         </h2>
-        {/* header with centralized SearchBar */}
         <div className="ml-4 w-full max-w-2xl xl:max-w-xl lg:max-w-lg">
           <SearchBar onSearch={setSearchTerm} placeholder={getPlaceholder()} />
         </div>
