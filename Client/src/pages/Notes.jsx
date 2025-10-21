@@ -16,7 +16,7 @@ import Underline from "@tiptap/extension-underline";
 
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import NoteEditor from "@/components/notes/NoteEditor.jsx";
 import NoteHeader from "@/components/notes/NoteHeader.jsx";
@@ -30,15 +30,14 @@ import {
   useNotes,
   useRestoreTrashedNote,
   useTrashedNotes,
-  useTrashNote,
   useUpdateNote,
 } from "@/queries/NoteQueries";
 
 import "@/components/notes/note.css";
 import TrashNotes from "@/components/notes/TrashNote";
 import axiosInstance from "@/utils/axios";
-import { useToast } from '@/contexts/ToastContext';
-import { useNoteStore } from '@/stores/useNoteStore';
+import { useToast } from "@/contexts/ToastContext";
+import { useNoteStore } from "@/stores/useNoteStore";
 
 const colors = [
   { name: "default", style: { backgroundColor: "var(--note-default)" } },
@@ -55,20 +54,9 @@ const Notes = () => {
   const { noteId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  // Zustand store
-  const {
-    status,
-    searchTerm,
-    selectedNote,
-    setSelectedNote,
-    togglePin: togglePinAction,
-    changeColor: changeColorAction,
-    sendToTrashNote: sendToTrashNoteAction,
-    archiveNote: archiveNoteAction,
-  } = useNoteStore();
 
-  const isFullScreen = !!noteId;
+  // Zustand store
+  const { status, searchTerm, selectedNote, setSelectedNote } = useNoteStore();
   const { data: notes = [], isLoading } = useNotes();
   const { data: archiveNotes = [], isLoading: isArchiveLoading } =
     useArchivedNotes();
@@ -78,11 +66,19 @@ const Notes = () => {
   const createNoteMutation = useCreateNote();
   const updateNoteMutation = useUpdateNote();
   const deleteNoteMutation = useDeleteNote();
-  const archiveNoteMutation = useArchiveNote();
-  const sendToTrashMutation = useTrashNote();
   const restoreMutation = useRestoreTrashedNote();
+  const archiveNoteMutation = useArchiveNote();
+
+  const [archivingNoteId, setArchivingNoteId] = useState(null);
 
   const typingTimeoutRef = useRef(null);
+
+  // Set up notes object for different status
+  const notesObj = {
+    active: notes,
+    archive: archiveNotes,
+    trash: trashNotes,
+  };
 
   const BackspaceOnImage = Extension.create({
     addKeyboardShortcuts() {
@@ -124,7 +120,7 @@ const Notes = () => {
                 if (node && node.type.name !== "text") {
                   break;
                 }
-              } catch (e) {
+              } catch {
                 break;
               }
             }
@@ -367,26 +363,31 @@ const Notes = () => {
     });
   };
 
-  const sendToTrashNote = (id) => {
-    sendToTrashNoteAction(sendToTrashMutation, id);
-  };
-
   const restoreNote = (id) => {
     restoreMutation.mutate(id, {
       onSuccess: () => toast.success("Note restored"),
     });
   };
 
-  const togglePin = (id, pinnedAt) => {
-    togglePinAction(updateNoteMutation, id, pinnedAt);
-  };
-
-  const changeColor = (id, color) => {
-    changeColorAction(updateNoteMutation, id, color);
-  };
-
   const archiveNote = (note) => {
-    archiveNoteAction(archiveNoteMutation, note);
+    const truncateTitle = (title, maxLength = 30) => {
+      if (!title || title.length <= maxLength) return title || "Untitled";
+      return title.substring(0, maxLength) + "...";
+    };
+
+    setArchivingNoteId(note._id);
+    archiveNoteMutation.mutate(note._id, {
+      onSuccess: () => {
+        if (selectedNote?._id === note._id) setSelectedNote(null);
+        const truncatedTitle = truncateTitle(note.title);
+        toast.success(`Note "${truncatedTitle}" is archived`);
+        setArchivingNoteId(null);
+      },
+      onError: () => {
+        toast.error("Failed to archive note");
+        setArchivingNoteId(null);
+      },
+    });
   };
 
   const exportNote = (note) => {
@@ -461,12 +462,6 @@ const Notes = () => {
     return text.substring(0, 100) + (text.length > 100 ? "..." : "");
   };
 
-  const notesObj = {
-    active: notes,
-    archive: archiveNotes,
-    trash: trashNotes,
-  };
-
   const filteredNotes = notesObj[status].filter((note) => {
     const plainContent = getPlainTextPreview(note.content);
     const matchesSearch =
@@ -510,6 +505,8 @@ const Notes = () => {
               filteredNotes={filteredNotes}
               getPlainTextPreview={getPlainTextPreview}
               exportNote={exportNote}
+              onArchive={archiveNote}
+              archivingNoteId={archivingNoteId}
             />
           )}
 

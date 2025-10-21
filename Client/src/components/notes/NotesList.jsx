@@ -1,5 +1,4 @@
 import NoteCard from "./NoteCard";
-import { useNoteStore } from '@/stores/useNoteStore';
 
 const NotesList = ({
   pinnedNotes,
@@ -7,6 +6,8 @@ const NotesList = ({
   filteredNotes,
   getPlainTextPreview,
   exportNote,
+  onArchive,
+  archivingNoteId,
 }) => {
   return (
     <>
@@ -29,9 +30,9 @@ const NotesList = ({
                 key={note?._id}
                 note={note}
                 getPlainTextPreview={getPlainTextPreview}
-
                 onExport={exportNote}
-
+                onArchive={onArchive}
+                isArchiving={archivingNoteId === note?._id}
               />
             ))}
           </div>
@@ -60,6 +61,8 @@ const NotesList = ({
                 note={note}
                 getPlainTextPreview={getPlainTextPreview}
                 onExport={exportNote}
+                onArchive={onArchive}
+                isArchiving={archivingNoteId === note?._id}
               />
             ))}
           </div>

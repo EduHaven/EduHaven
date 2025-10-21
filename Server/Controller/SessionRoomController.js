@@ -25,6 +25,7 @@ import SessionRoom from "../Model/SessionModel.js";
 export const getRoomLists = async (req, res) => {
   try {
     const userId = req.user._id;
+    
     const rooms = await SessionRoom.find()
       .sort({ createdAt: -1 })
       .populate({
@@ -33,16 +34,25 @@ export const getRoomLists = async (req, res) => {
       })
       .lean();
 
+
     const myRooms = [];
     const otherRooms = [];
+    const joinedRooms = [];
+    
     for (const r of rooms) {
-      (r.createdBy.toString() === userId.toString()
-        ? myRooms
-        : otherRooms
-      ).push(r);
+      const isCreator = r.createdBy.toString() === userId.toString();
+      const isMember = r.members.some(memberId => memberId.toString() === userId.toString());
+      
+      if (isCreator) {
+        myRooms.push(r);
+      } else if (isMember) {
+        joinedRooms.push(r);
+      } else {
+        otherRooms.push(r);
+      }
     }
 
-    return res.json({ myRooms, otherRooms });
+    return res.json({ myRooms, otherRooms, joinedRooms });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

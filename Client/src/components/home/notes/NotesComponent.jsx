@@ -6,6 +6,8 @@ import BottomControls from "./BottomControls";
 import NoteContent from "./content";
 import { motion, AnimatePresence } from "framer-motion";
 import "@/components/notes/note.css";
+import { useArchiveNote } from "@/queries/NoteQueries";
+import { useToast } from "@/contexts/ToastContext";
 
 const colors = [
   { name: "default", style: { backgroundColor: "var(--note-default)" } },
@@ -49,7 +51,11 @@ function NotesComponent() {
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(0);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [archivingNoteId, setArchivingNoteId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { toast } = useToast();
+  const archiveNoteMutation = useArchiveNote();
 
   useEffect(() => {
     fetchNotes();
@@ -198,6 +204,36 @@ function NotesComponent() {
     }
   };
 
+  // Handle archive note
+  const handleArchiveNote = (note) => {
+    const noteId = note._id || note.id;
+    if (!noteId) return;
+
+    const truncateTitle = (title, maxLength = 30) => {
+      if (!title || title.length <= maxLength) return title || "Untitled";
+      return title.substring(0, maxLength) + "...";
+    };
+
+    setArchivingNoteId(noteId);
+    archiveNoteMutation.mutate(noteId, {
+      onSuccess: () => {
+        const truncatedTitle = truncateTitle(note.title);
+        toast.success(`Note "${truncatedTitle}" is archived`);
+        setArchivingNoteId(null);
+
+        // Refresh notes after archiving
+        if (currentPage >= notes.length - 1 && currentPage > 0) {
+          setCurrentPage((prev) => prev - 1);
+        }
+        fetchNotes();
+      },
+      onError: () => {
+        setArchivingNoteId(null);
+        toast.error("Failed to archive note");
+      },
+    });
+  };
+
   const validateFields = (title, content) => {
     if (!title.trim()) setTitleError("*title is required");
     else setTitleError("");
@@ -312,10 +348,12 @@ function NotesComponent() {
             notes={notes}
             currentPage={currentPage}
             onDelete={handleDeleteNote}
+            onArchive={handleArchiveNote}
             colors={colors}
             showColorPicker={showColorPicker}
             setShowColorPicker={setShowColorPicker}
             changeColor={changeColor}
+            archivingNoteId={archivingNoteId}
           />
         </motion.div>
       </AnimatePresence>

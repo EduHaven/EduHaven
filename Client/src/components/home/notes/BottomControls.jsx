@@ -7,6 +7,7 @@ import {
   Check,
   Download,
   Archive,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -37,10 +38,12 @@ function BottomControls({
   notes,
   currentPage,
   onDelete,
+  onArchive,
   colors,
   showColorPicker,
   setShowColorPicker,
   changeColor,
+  archivingNoteId,
 }) {
   const navigate = useNavigate();
 
@@ -125,12 +128,17 @@ function BottomControls({
               <>
                 <Button
                   title="Move to archive"
-                  onClick={() => onDelete(notes[currentPage]?._id)}
+                  onClick={() => onArchive(notes[currentPage])}
                   variant="transparent"
                   size="icon"
                   className=" hover:bg-[var(--btn)] rounded-full"
+                  disabled={archivingNoteId === notes[currentPage]?._id}
                 >
-                  <Archive className="size-5" />
+                  {archivingNoteId === notes[currentPage]?._id ? (
+                    <Loader2 className="size-5 animate-spin" />
+                  ) : (
+                    <Archive className="size-5" />
+                  )}
                 </Button>
                 <Button
                   title="Move to trash"

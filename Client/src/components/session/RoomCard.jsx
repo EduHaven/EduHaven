@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function RoomCard({ room, onDelete, showCategory, loading, onRoomNotFound }) {
+export default function RoomCard({ room, onDelete, showCategory, loading, onRoomNotFound, isJoinedRoom = false }) {
   const [isPinned, setIsPinned] = useState(false);
   const [joinStatus, setJoinStatus] = useState(null); // 'member', 'pending', 'none'
   const navigate = useNavigate();
@@ -308,7 +308,15 @@ export default function RoomCard({ room, onDelete, showCategory, loading, onRoom
       {room.description && <p className="txt-dim mb-4">{room.description}</p>}
 
       {/* Join/Request Button Logic using joinStatus from backend */}
-      {room.isPrivate ? (
+      {isJoinedRoom ? (
+        <Button
+          onClick={handleJoin}
+          className="w-full flex items-center justify-center gap-2"
+        >
+          <Activity className="w-5 h-5" />
+          Enter Room
+        </Button>
+      ) : room.isPrivate ? (
         joinStatus === "member" ? (
           <Button
             onClick={handleJoin}
