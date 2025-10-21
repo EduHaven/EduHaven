@@ -21,7 +21,6 @@ function MainContent({ selectedTab }) {
     }
   };
 
-  // pass the centralized search term to the correct tab component
   const renderTab = (searchTerm) => {
     switch (selectedTab) {
       case "findFriends":
@@ -39,7 +38,6 @@ function MainContent({ selectedTab }) {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  // customize placeholder text per tab for better UX
   const getPlaceholder = () => {
     switch (selectedTab) {
       case "findFriends":
