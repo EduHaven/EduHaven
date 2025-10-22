@@ -12,7 +12,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
-import { useRemoveCollaborator, useGenerateShareLink } from "@/queries/NoteQueries";
+import {
+  useRemoveCollaborator,
+  useGenerateShareLink,
+} from "@/queries/NoteQueries";
 import axiosInstance from "@/utils/axios";
 
 const SharePopup = ({ note, onClose, onShare }) => {
@@ -70,7 +73,9 @@ const SharePopup = ({ note, onClose, onShare }) => {
 
     setLoading(true);
     try {
-      const response = await axiosInstance.get(`/user/find-user?search=${encodeURIComponent(query)}`);
+      const response = await axiosInstance.get(
+        `/user/find-user?search=${encodeURIComponent(query)}`
+      );
       setUsers(response.data?.users || []);
     } catch (error) {
       setUsers([]);
@@ -95,12 +100,16 @@ const SharePopup = ({ note, onClose, onShare }) => {
   const handleVisibilityChange = async (newVisibility) => {
     setVisibility(newVisibility);
     try {
-      await axiosInstance.put(`/note/${note._id}`, { visibility: newVisibility });
+      await axiosInstance.put(`/note/${note._id}`, {
+        visibility: newVisibility,
+      });
       if (newVisibility === "public" && !shareLink) {
         handleGenerateShareLink();
       }
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to update note visibility");
+      toast.error(
+        error.response?.data?.error || "Failed to update note visibility"
+      );
     }
   };
 
@@ -108,8 +117,13 @@ const SharePopup = ({ note, onClose, onShare }) => {
     if (!selectedUser) return;
     try {
       await onShare(note._id, selectedUser._id, accessLevel);
-      toast.success(`Note shared with ${selectedUser.FirstName} ${selectedUser.LastName}`);
-      setCollaborators((prev) => [...prev, { user: selectedUser, access: accessLevel }]);
+      toast.success(
+        `Note shared with ${selectedUser.FirstName} ${selectedUser.LastName}`
+      );
+      setCollaborators((prev) => [
+        ...prev,
+        { user: selectedUser, access: accessLevel },
+      ]);
       setSelectedUser(null);
       setSearchTerm("");
       setUsers([]);
@@ -118,30 +132,45 @@ const SharePopup = ({ note, onClose, onShare }) => {
     }
   };
 
-  const handleDeleteCollaborator = async (collaborator) => {
-    try {
-      await removeCollaboratorMutate({
-        noteId: note._id,
-        collaboratorId: collaborator.user._id
-      });
-      setCollaborators((prev) =>
-        prev.filter((c) => c.user._id !== collaborator.user._id)
-      );
-      toast.success("Collaborator removed");
-    } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to remove collaborator");
-    }
-  };
+const handleDeleteCollaborator = async (collaborator) => {
+  console.log("Removing collaborator:", collaborator, note);
+  try {
+    removeCollaboratorMutate({
+      noteId: note?._id,
+      collaboratorId: collaborator?.user?._id
+    });
+    setCollaborators((prev) =>
+      prev.filter((c) => c.user._id !== collaborator.user._id)
+    );
+    toast.success("Collaborator removed");
+  } catch (error) {
+    toast.error(error.response?.data?.error || "Failed to remove collaborator");
+  }
+};
 
   return (
-    <motion.div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <motion.div className="bg-[var(--bg-primary)] rounded-lg p-6 w-96 max-w-[90vw] shadow-xl border border-[var(--bg-ter)]"
-        initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}>
-
+    <motion.div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div
+        className="bg-[var(--bg-primary)] rounded-lg p-6 w-96 max-w-[90vw] shadow-xl border border-[var(--bg-ter)]"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+      >
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-semibold text-[var(--txt)]">Share "{note?.title}"</h3>
-          <Button variant="transparent" size="icon" onClick={onClose} className="p-1 rounded-full hover:bg-[var(--bg-ter)]">
+          <h3 className="text-lg font-semibold text-[var(--txt)]">
+            Share "{note?.title}"
+          </h3>
+          <Button
+            variant="transparent"
+            size="icon"
+            onClick={onClose}
+            className="p-1 rounded-full hover:bg-[var(--bg-ter)]"
+          >
             <X size={20} />
           </Button>
         </div>
@@ -149,9 +178,14 @@ const SharePopup = ({ note, onClose, onShare }) => {
         <div className="space-y-6">
           {/* Add People */}
           <div>
-            <h4 className="text-sm font-medium mb-2 text-[var(--txt)]">Add people</h4>
+            <h4 className="text-sm font-medium mb-2 text-[var(--txt)]">
+              Add people
+            </h4>
             <div className="relative mb-2">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--txt-dim)]" size={16} />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--txt-dim)]"
+                size={16}
+              />
               <input
                 type="text"
                 placeholder="Search by username or email..."
@@ -162,7 +196,9 @@ const SharePopup = ({ note, onClose, onShare }) => {
             </div>
 
             {loading && (
-              <div className="text-center py-2 text-sm text-[var(--txt-dim)]">Searching users...</div>
+              <div className="text-center py-2 text-sm text-[var(--txt-dim)]">
+                Searching users...
+              </div>
             )}
 
             {!loading && users.length > 0 && (
@@ -170,10 +206,11 @@ const SharePopup = ({ note, onClose, onShare }) => {
                 {users.map((user) => (
                   <div
                     key={user._id}
-                    className={`p-3 cursor-pointer transition-colors ${selectedUser?._id === user._id
-                      ? "bg-[var(--btn)]/20"
-                      : "hover:bg-[var(--bg-ter)]"
-                      }`}
+                    className={`p-3 cursor-pointer transition-colors ${
+                      selectedUser?._id === user._id
+                        ? "bg-[var(--btn)]/20"
+                        : "hover:bg-[var(--bg-ter)]"
+                    }`}
                     onClick={() => setSelectedUser(user)}
                   >
                     <div className="flex items-center gap-3">
@@ -181,8 +218,12 @@ const SharePopup = ({ note, onClose, onShare }) => {
                         <User size={16} className="text-[var(--btn-txt)]" />
                       </div>
                       <div>
-                        <div className="text-sm text-[var(--txt)]">{user.FirstName + " " + user.LastName}</div>
-                        <div className="text-xs text-[var(--txt-dim)]">{user.Email}</div>
+                        <div className="text-sm text-[var(--txt)]">
+                          {user.FirstName + " " + user.LastName}
+                        </div>
+                        <div className="text-xs text-[var(--txt-dim)]">
+                          {user.Email}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -200,21 +241,26 @@ const SharePopup = ({ note, onClose, onShare }) => {
                   <option value="view">Can view</option>
                   <option value="edit">Can edit</option>
                 </select>
-                <Button onClick={handleAddCollaborator} className="text-sm">Add</Button>
+                <Button onClick={handleAddCollaborator} className="text-sm">
+                  Add
+                </Button>
               </div>
             )}
           </div>
 
           {/* Visibility */}
           <div>
-            <h4 className="text-sm font-medium mb-2 text-[var(--txt)]">Visibility</h4>
+            <h4 className="text-sm font-medium mb-2 text-[var(--txt)]">
+              Visibility
+            </h4>
             <div className="flex gap-2">
               <button
                 onClick={() => handleVisibilityChange("private")}
                 className={`flex-1 py-2 rounded-full border text-sm font-medium flex items-center justify-center gap-2 transition-all
-                  ${visibility === "private"
-                    ? "bg-[var(--btn)] text-white"
-                    : "border-[var(--bg-ter)] text-[var(--txt-dim)] hover:border-[var(--btn)] hover:text-[var(--txt)]"
+                  ${
+                    visibility === "private"
+                      ? "bg-[var(--btn)] text-white"
+                      : "border-[var(--bg-ter)] text-[var(--txt-dim)] hover:border-[var(--btn)] hover:text-[var(--txt)]"
                   }`}
               >
                 <Shield size={16} /> Private
@@ -222,9 +268,10 @@ const SharePopup = ({ note, onClose, onShare }) => {
               <button
                 onClick={() => handleVisibilityChange("public")}
                 className={`flex-1 py-2 rounded-full border text-sm font-medium flex items-center justify-center gap-2 transition-all
-                  ${visibility === "public"
-                    ? "bg-[var(--btn)] text-white"
-                    : "border-[var(--bg-ter)] text-[var(--txt-dim)] hover:border-[var(--btn)] hover:text-[var(--txt)]"
+                  ${
+                    visibility === "public"
+                      ? "bg-[var(--btn)] text-white"
+                      : "border-[var(--bg-ter)] text-[var(--txt-dim)] hover:border-[var(--btn)] hover:text-[var(--txt)]"
                   }`}
               >
                 <Globe size={16} /> Public
@@ -246,7 +293,12 @@ const SharePopup = ({ note, onClose, onShare }) => {
                     readOnly
                     className="flex-1 text-xs p-2 rounded border border-[var(--bg-secondary)] bg-[var(--bg-primary)] text-[var(--txt)]"
                   />
-                  <Button onClick={copyToClipboard} size="sm" variant="secondary" className="flex items-center gap-1">
+                  <Button
+                    onClick={copyToClipboard}
+                    size="sm"
+                    variant="secondary"
+                    className="flex items-center gap-1"
+                  >
                     <Copy size={14} />
                     Copy
                   </Button>
@@ -261,13 +313,24 @@ const SharePopup = ({ note, onClose, onShare }) => {
           {/* Collaborators */}
           {collaborators.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium mb-2 text-[var(--txt)]">Collaborators</h4>
+              <h4 className="text-sm font-medium mb-2 text-[var(--txt)]">
+                Collaborators
+              </h4>
               <div className="space-y-2">
                 {collaborators.map((collaborator) => (
-                  <div key={collaborator.user._id} className="flex items-center justify-between p-2 rounded-lg bg-[var(--bg-secondary)]">
+                  <div
+                    key={collaborator.user._id}
+                    className="flex items-center justify-between p-2 rounded-lg bg-[var(--bg-secondary)]"
+                  >
                     <div>
-                      <div className="text-sm text-[var(--txt)]">{collaborator.user.FirstName + " " + collaborator.user.LastName}</div>
-                      <div className="text-xs text-[var(--txt-dim)]">{collaborator.user.Email} • {collaborator.access}</div>
+                      <div className="text-sm text-[var(--txt)]">
+                        {collaborator.user.FirstName +
+                          " " +
+                          collaborator.user.LastName}
+                      </div>
+                      <div className="text-xs text-[var(--txt-dim)]">
+                        {collaborator.user.Email} • {collaborator.access}
+                      </div>
                     </div>
                     <Button
                       variant="ghost"
@@ -283,9 +346,10 @@ const SharePopup = ({ note, onClose, onShare }) => {
             </div>
           )}
 
-
           <div className="flex justify-end pt-2">
-            <Button onClick={onClose} variant="secondary">Done</Button>
+            <Button onClick={onClose} variant="secondary">
+              Done
+            </Button>
           </div>
         </div>
       </motion.div>
