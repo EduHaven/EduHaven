@@ -19,13 +19,7 @@ const ProfileHeader = ({ user, profilelink, isCurrentUser }) => {
   };
 
   return (
-    <div className="flex items-center justify-between px-6 mb-4">
-      <div>
-        <h1 className="text-2xl font-semibold text-[var(--text-primary)]">
-          {user.FirstName} {user.LastName}
-        </h1>
-        <p className="text-[var(--text-secondary)] text-sm">@{user.Username}</p>
-      </div>
+    <div className="flex items-center justify-end px-6 mb-4">
 
       <div className="flex items-center gap-3">
         {isCurrentUser && (
@@ -39,9 +33,9 @@ const ProfileHeader = ({ user, profilelink, isCurrentUser }) => {
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="flex items-center space-x-2 text-sm"
+              className="flex px-0 items-center space-x-2 text-sm"
             >
-              <Share2 className="w-4 h-4" />
+              <Share2 className="w-6 h-6" />
             </Button>
           </DropdownMenuTrigger>
 
