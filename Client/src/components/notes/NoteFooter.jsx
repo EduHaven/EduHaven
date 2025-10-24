@@ -42,7 +42,7 @@ const NoteFooter = ({ note }) => {
       }
     };
     getCollaborators();
-  }, [note?.collaborators]);
+  }, [note?.collaborators?.length]);
 
   const isOwner = note.owner === currentUserId;
 
@@ -60,7 +60,7 @@ const NoteFooter = ({ note }) => {
   return (
     <>
       {visibility === "Shared" && isOwner && note?.collaborators.length && (
-        <div className="flex items-center space-x-2 w-full">
+        <div className="flex items-center space-x-1 w-full">
           {visibleCollaborators.map((collab) => (
             <img
               key={collab._id}
