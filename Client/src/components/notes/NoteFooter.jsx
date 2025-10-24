@@ -1,5 +1,5 @@
-import { useNoteStore } from "@/stores/useNoteStore";
-import { useEffect } from "react";
+import { fetchUserDetails } from "@/api/userApi";
+import { useEffect, useState } from "react";
 
 const getCurrentUserId = () => {
   const token = localStorage.getItem("token");
@@ -15,19 +15,41 @@ const getCurrentUserId = () => {
 };
 
 const NoteFooter = ({ note }) => {
+  const [owner, setOwner] = useState(null);
+  const [collaboratorsData, setCollaboratorsData] = useState([]);
   const currentUserId = getCurrentUserId();
-  const { owners, collaborators, setOwner, setCollaborators } = useNoteStore();
 
   // fetch real owner
   useEffect(() => {
-    if (note?.owner && !owners[note.owner]) setOwner(note.owner);
-    if (note?.collaborators?.length && !collaborators[note._id])
-      setCollaborators(note);
-  }, [note, owners, collaborators, setOwner, setCollaborators]);
+    const getUser = async () => {
+      const data = await fetchUserDetails(note?.owner);
+      setOwner(data);
+    };
+    getUser();
+  }, [note?.owner]);
 
-  const owner = owners[note.owner];
-  const collabs = collaborators[note._id] || [];
+  // fetch collaborators details
+  useEffect(() => {
+    const getCollaborators = async () => {
+      if (note?.collaborators?.length) {
+        const data = await Promise.all(
+          note.collaborators.map(async (collab) => {
+            const res = await fetchUserDetails(collab.user._id);
+            return res;
+          })
+        );
+        setCollaboratorsData(data);
+      }
+    };
+    getCollaborators();
+  }, [note?.collaborators]);
+
   const isOwner = note.owner === currentUserId;
+
+  // limit displaying collaborators profile (default: 5)
+  const visibleCollaborators = collaboratorsData.slice(0, 5);
+  // remaining collaborators count
+  const extraCount = collaboratorsData.length - 5;
 
   // visibility
   let visibility = "Private";
@@ -35,19 +57,16 @@ const NoteFooter = ({ note }) => {
   else if (note.visibility === "private" && note.collaborators?.length)
     visibility = "Shared";
 
-  const visibleCollabs = collabs.slice(0, 5);
-  const extraCount = collabs.length - 5;
-
   return (
     <>
-      {visibility === "Shared" && isOwner && (
+      {visibility === "Shared" && isOwner && note?.collaborators.length && (
         <div className="flex items-center space-x-2 w-full">
-          {visibleCollabs.map((c) => (
+          {visibleCollaborators.map((collab) => (
             <img
-              key={c._id}
+              key={collab._id}
               className="w-5 h-5 rounded-full"
-              src={c?.ProfilePicture}
-              alt={c?.FirstName}
+              src={collab?.ProfilePicture}
+              alt={collab?.FirstName}
             />
           ))}
           {extraCount > 0 && <span className="text-xs">+{extraCount}</span>}
